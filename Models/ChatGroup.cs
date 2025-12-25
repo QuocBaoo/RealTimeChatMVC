@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations; // Quan trọng: Để dùng được [Key]
 
-namespace RealTimeChatMVC.Models 
+namespace RealTimeChatMVC.Models
 {
     public class ChatGroup
     {
+        [Key] // Khóa chính
         public string Name { get; set; }
+        
         public string Description { get; set; }
         public string Avatar { get; set; }
         public string CreatedBy { get; set; }
