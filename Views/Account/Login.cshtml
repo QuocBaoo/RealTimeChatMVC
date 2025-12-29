@@ -1,0 +1,47 @@
+@model RealTimeChatMVC.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng Nhập";
+}
+
+<link rel="stylesheet" href="~/css/Login.css" />
+
+<div class="main-content-wrapper">
+    <div class="login-container">
+        
+        <h2>Chào Mừng Trở Lại!</h2>
+
+        <form asp-action="Login" method="post">
+            
+            <div class="input-group">
+                <label asp-for="Username">Tên đăng nhập</label>
+                <input asp-for="Username" type="text" placeholder="Nhập username" required />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="Password">Mật khẩu</label>
+                <input asp-for="Password" type="password" id="password" placeholder="••••••" required />
+                <span class="toggle-password" onclick="togglePass('password', this)">👁️</span>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit">ĐĂNG NHẬP</button>
+
+            <p>Chưa có tài khoản? <a asp-controller="Account" asp-action="Register">Tạo tài khoản mới</a></p>
+        </form>
+    </div>
+</div>
+
+<script>
+    function togglePass(inputId, icon) {
+        var input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.style.opacity = "1"; 
+        } else {
+            input.type = "password";
+            icon.style.opacity = "0.3";
+        }
+    }
+</script>
