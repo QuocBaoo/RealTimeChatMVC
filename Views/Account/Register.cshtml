@@ -1,0 +1,59 @@
+@model RealTimeChatMVC.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Đăng Ký";
+}
+
+<link rel="stylesheet" href="~/css/Login.css" />
+
+<div class="main-content-wrapper">
+    <div class="login-container">
+        <h2>Tạo Tài Khoản</h2>
+
+        <form asp-action="Register" method="post">
+            
+            <div class="input-group">
+                <label asp-for="FullName">Họ và Tên</label>
+                <input asp-for="FullName" type="text" placeholder="" required />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="Username">Tên đăng nhập</label>
+                <input asp-for="Username" type="text" placeholder="" required />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="Password">Mật khẩu</label>
+                <input asp-for="Password" type="password" id="password" placeholder="••••••" required />
+                <span class="toggle-password" onclick="togglePass('password', this)">👁️</span>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="input-group">
+                <label asp-for="ConfirmPassword">Xác nhận mật khẩu</label>
+                <input asp-for="ConfirmPassword" type="password" id="confirmPassword" placeholder="••••••" required />
+                <span class="toggle-password" onclick="togglePass('confirmPassword', this)">👁️</span>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit">ĐĂNG KÝ NGAY</button>
+
+            <p>Đã có tài khoản? <a asp-controller="Account" asp-action="Login">Đăng nhập</a></p>
+        </form>
+    </div>
+</div>
+
+<script>
+    function togglePass(inputId, icon) {
+        var input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.style.opacity = "1"; /* Khi bấm vào thì hiện rõ luôn */
+        } else {
+            input.type = "password";
+            icon.style.opacity = "0.3"; /* Quay về trạng thái mờ */
+        }
+    }
+</script>
