@@ -1,46 +1,143 @@
-@model RealTimeChatMVC.Models.RegisterViewModel
-
+@model RealTimeChatMVC.Models.User
 @{
     ViewData["Title"] = "Đăng Ký";
 }
 
-<link rel="stylesheet" href="~/css/Login.css" />
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;800&display=swap" rel="stylesheet">
 
-<div class="main-content-wrapper">
-    <div class="login-container">
+<style>
+    /* 1. XỬ LÝ THANH CUỘN & CĂN CHỈNH */
+    .register-wrapper {
+        font-family: 'Quicksand', sans-serif;
+        height: 100vh; /* Chiều cao cố định bằng màn hình */
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Căn giữa dọc */
+        padding-top: 50px; /* Đẩy nhẹ xuống để né menu, nhưng không quá nhiều */
+        overflow: hidden; /* QUAN TRỌNG: Ẩn thanh cuộn dư thừa */
+    }
+
+    /* 2. THU NHỎ KHUNG (COMPACT DESIGN) */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 30px 40px; /* Giảm padding để khung nhỏ lại */
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        max-width: 400px; /* Giảm chiều rộng tối đa (cũ là 450px) */
+        text-align: center;
+    }
+
+    /* Thu nhỏ ô nhập liệu tí xíu cho gọn */
+    .form-control {
+        border-radius: 50px;
+        padding: 10px 20px; /* Giảm độ cao ô nhập */
+        background: #f4f7f6;
+        border: 2px solid #eaeff2;
+        font-size: 0.95rem; /* Chữ nhỏ lại xíu */
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .form-control:focus {
+        background: white;
+        box-shadow: 0 0 0 4px rgba(38, 208, 206, 0.15);
+        border-color: #26D0CE;
+    }
+
+    .btn-register-submit {
+        width: 100%;
+        padding: 12px; /* Nút gọn hơn */
+        border-radius: 50px;
+        background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
+        border: none;
+        color: white;
+        font-weight: 800;
+        font-size: 1rem;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-register-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(38, 208, 206, 0.5);
+    }
+
+    .input-label {
+        display: block;
+        text-align: left;
+        font-weight: 800;
+        color: #1A2980;
+        margin-bottom: 5px; /* Giảm khoảng cách dưới label */
+        margin-left: 15px;
+        font-size: 0.8rem; /* Label nhỏ gọn hơn */
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Giảm khoảng cách giữa các ô nhập */
+    .input-group-custom {
+        margin-bottom: 12px; 
+    }
+
+    h2 { 
+        color: #1A2980; 
+        font-weight: 900; 
+        margin-bottom: 20px; /* Giảm khoảng cách tiêu đề */
+        text-transform: uppercase;
+        font-size: 1.8rem; /* Tiêu đề vừa vặn hơn */
+        letter-spacing: -0.5px;
+    }
+</style>
+
+<div class="register-wrapper">
+    <div class="glass-card">
         <h2>Tạo Tài Khoản</h2>
+@if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger" style="border-radius: 15px; font-size: 0.85rem; padding: 8px; margin-bottom: 15px;">
+                @ViewBag.Error
+            </div>
+        }
 
-        <form asp-action="Register" method="post">
+        <form id="registerForm" asp-action="Register" method="post">
             
-            <div class="input-group">
-                <label asp-for="FullName">Họ và Tên</label>
-                <input asp-for="FullName" type="text" placeholder="" required />
-                <span asp-validation-for="FullName" class="text-danger"></span>
+            <div class="input-group-custom">
+                <label class="input-label" asp-for="FullName">Họ và Tên</label>
+                <input asp-for="FullName" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" required />
+            </div>
+            
+            <div class="input-group-custom">
+                <label class="input-label" asp-for="Username">Tên đăng nhập</label>
+                <input asp-for="Username" class="form-control" placeholder="Chọn tên user..." required />
+            </div>
+            
+            <div class="input-group-custom">
+                <label class="input-label">Mật khẩu</label>
+                <div style="position: relative;">
+                    <input asp-for="Password" type="password" id="password" class="form-control" placeholder="Nhập mật khẩu..." required />
+                    <span onclick="togglePass('password', this)" style="position: absolute; right: 15px; top: 10px; cursor: pointer; opacity: 0.5; color: #1A2980;">👁️</span>
+                </div>
             </div>
 
-            <div class="input-group">
-                <label asp-for="Username">Tên đăng nhập</label>
-                <input asp-for="Username" type="text" placeholder="" required />
-                <span asp-validation-for="Username" class="text-danger"></span>
+            <div class="input-group-custom">
+                <label class="input-label">Xác nhận mật khẩu</label>
+                <div style="position: relative;">
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Nhập lại lần nữa..." required />
+                    <span onclick="togglePass('confirmPassword', this)" style="position: absolute; right: 15px; top: 10px; cursor: pointer; opacity: 0.5; color: #1A2980;">👁️</span>
+                </div>
+                <span id="confirmError" style="color:#ff4b2b; display:none; font-size: 0.8em; font-weight:700; margin-top: 5px; text-align: left; margin-left: 15px;">Mật khẩu không khớp!</span>
             </div>
+            
+            <button type="submit" class="btn-register-submit">Đăng Ký Ngay</button>
 
-            <div class="input-group">
-                <label asp-for="Password">Mật khẩu</label>
-                <input asp-for="Password" type="password" id="password" placeholder="••••••" required />
-                <span class="toggle-password" onclick="togglePass('password', this)">👁️</span>
-                <span asp-validation-for="Password" class="text-danger"></span>
+            <div style="margin-top: 15px; font-size: 0.9rem; font-weight: 700;">
+                Đã có tài khoản? <a asp-controller="Account" asp-action="Login" style="color: #26D0CE; text-decoration: none;">Đăng nhập</a>
             </div>
-
-            <div class="input-group">
-                <label asp-for="ConfirmPassword">Xác nhận mật khẩu</label>
-                <input asp-for="ConfirmPassword" type="password" id="confirmPassword" placeholder="••••••" required />
-                <span class="toggle-password" onclick="togglePass('confirmPassword', this)">👁️</span>
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-
-            <button type="submit">ĐĂNG KÝ NGAY</button>
-
-            <p>Đã có tài khoản? <a asp-controller="Account" asp-action="Login">Đăng nhập</a></p>
         </form>
     </div>
 </div>
@@ -48,12 +145,18 @@
 <script>
     function togglePass(inputId, icon) {
         var input = document.getElementById(inputId);
-        if (input.type === "password") {
-            input.type = "text";
-            icon.style.opacity = "1"; /* Khi bấm vào thì hiện rõ luôn */
-        } else {
-            input.type = "password";
-            icon.style.opacity = "0.3"; /* Quay về trạng thái mờ */
-        }
+        if (input.type === "password") { input.type = "text"; icon.style.opacity = "1"; } 
+        else { input.type = "password"; icon.style.opacity = "0.5"; }
     }
-</script>
+
+    document.getElementById("registerForm").addEventListener("submit", function(event) {
+        var pass = document.getElementById("password").value;
+var confirm = document.getElementById("confirmPassword").value;
+        if (pass !== confirm) {
+            event.preventDefault(); 
+            document.getElementById("confirmError").style.display = "block"; 
+        } else {
+            document.getElementById("confirmError").style.display = "none";
+        }
+    });
+</script>                

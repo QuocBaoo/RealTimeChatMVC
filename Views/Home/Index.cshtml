@@ -1,8 +1,113 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang Chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+    
+    body {
+        /* Phủ màu nền cho toàn bộ Body */
+        background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%); /* Xanh biển sâu sang Xanh ngọc */
+        /* Hoặc dùng màu Tím mộng mơ này nếu thích: */
+        /* background: linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%); */
+        background-attachment: fixed; /* Giữ nền đứng im khi cuộn */
+        color: white;
+        overflow-x: hidden;
+    }
+
+    /* Ẩn bớt padding mặc định của Layout cũ để nó rộng ra */
+    .container {
+        max-width: 100% !important; 
+    }
+
+    /* 2. Căn giữa toàn bộ nội dung */
+    .full-screen-wrapper {
+        min-height: 80vh; /* Chiều cao chiếm 80% màn hình */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    /* 3. Tên Web Hiệu ứng Neon */
+    .main-title {
+        font-size: 5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        background: -webkit-linear-gradient(#fff, #b3e5fc); /* Chữ màu trắng pha xanh nhạt */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0px 0px 30px rgba(255, 255, 255, 0.3);
+        margin-bottom: 20px;
+    }
+
+    .sub-title {
+        font-size: 1.2rem;
+        font-weight: 400;
+        margin-bottom: 50px;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 700px;
+        line-height: 1.6;
+    }
+
+    /* 4. Nút bấm hiệu ứng Kính mờ (Glassmorphism) */
+    .btn-glass {
+        background: rgba(255, 255, 255, 0.2); /* Màu trắng trong suốt */
+        backdrop-filter: blur(10px); /* Làm mờ nền sau nút */
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: white;
+        padding: 15px 40px;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+
+    .btn-glass:hover {
+        background: white;
+        color: #1A2980; /* Đổi chữ thành màu xanh khi di chuột */
+        transform: scale(1.05);
+        box-shadow: 0 10px 40px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Icon chat bay bay */
+    .chat-icon-3d {
+        font-size: 6rem;
+        margin-bottom: 20px;
+        animation: floatIcon 4s ease-in-out infinite;
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+    }
+
+    @@keyframes floatIcon {
+        0% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(5deg); }
+        100% { transform: translateY(0px) rotate(0deg); }
+    }
+</style>
+<div class="full-screen-wrapper">
+    
+    <div class="chat-icon-3d">💬</div>
+
+    <h1 class="main-title">RealTimeChat MVC</h1>
+
+    <p class="sub-title">
+        Kết nối mọi người, chia sẻ ý tưởng trong thời gian thực. <br>
+        Giao diện hiện đại - Tốc độ siêu nhanh - Bảo mật tuyệt đối.
+    </p>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <a asp-controller="Chat" asp-action="Index" class="btn btn-glass">
+            🚀 Vào Phòng Chat Ngay
+        </a>
+    }
+    else
+    {
+        }
 </div>
