@@ -1,4 +1,6 @@
-@model List<RealTimeChatMVC.Models.Message>
+@{
+    // Không cần Model nữa vì sẽ load bằng AJAX
+}
 
 @{
     ViewData["Title"] = "Phòng Chat";
@@ -153,17 +155,7 @@
         </div>
 
         <div class="chat-box" id="chatBox">
-            @if (Model != null)
-            {
-                foreach (var msg in Model)
-                {
-                    bool isMine = msg.SenderName == User.Identity.Name;
-                    <div class="message-item @(isMine ? "msg-right" : "msg-left")">
-                        <div class="message-content">@msg.Content</div>
-                        <div class="message-info">@(isMine ? "Bạn" : msg.SenderName) • @msg.Timestamp.ToString("HH:mm")</div>
-                    </div>
-                }
-            }
+            <!-- Tin nhắn sẽ được nạp vào đây bằng JavaScript -->
         </div>
 
         <div class="chat-input-area">
@@ -174,37 +166,8 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+<!-- Truyền biến currentUser sang file JS ngoài -->
 <script>
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
     var currentUser = "@User.Identity.Name";
-
-    connection.on("ReceiveMessage", function (user, message, time) {
-        var chatBox = document.getElementById("chatBox");
-        var isMine = (user === currentUser);
-        var divItem = document.createElement("div");
-        divItem.className = isMine ? "message-item msg-right" : "message-item msg-left";
-        divItem.innerHTML = `<div class="message-content">${message}</div><div class="message-info">${isMine ? "Bạn" : user} • ${time}</div>`;
-        chatBox.appendChild(divItem);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    });
-
-    connection.start().catch(err => console.error(err.toString()));
-
-    document.getElementById("sendButton").addEventListener("click", function (event) {
-        var input = document.getElementById("messageInput");
-        if(input.value.trim() !== "") {
-            connection.invoke("SendMessage", "", input.value).catch(err => console.error(err.toString()));
-            input.value = ""; input.focus();
-        }
-        event.preventDefault();
-    });
-
-    document.getElementById("messageInput").addEventListener("keyup", function(event) {
-        if (event.key === "Enter") document.getElementById("sendButton").click();
-    });
-
-    window.onload = function() {
-        var chatBox = document.getElementById("chatBox");
-        chatBox.scrollTop = chatBox.scrollHeight;
-    };
 </script>
+<script src="~/js/chat.js"></script>

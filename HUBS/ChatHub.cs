@@ -67,7 +67,7 @@ namespace RealTimeChatMVC.Hubs
             {
                 SenderName = realUser,
                 Content = message,
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.UtcNow.AddHours(7) // Fix: Giờ Việt Nam
             };
 
             _context.Messages.Add(msgEntity);
@@ -75,7 +75,7 @@ namespace RealTimeChatMVC.Hubs
 
             // 2. Gửi ra cho mọi người (Kèm giờ giấc)
             // Format gửi về: User, Message, Time (Khớp với chat.js mới nhất)
-await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Timestamp.ToString("HH:mm"));
+            await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Timestamp.ToString("HH:mm:ss"));
         }
 
         // -----------------------------------------------------------------------
@@ -86,7 +86,7 @@ await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Times
         // Gửi Sticker
         public async Task SendSticker(string user, string stickerUrl)
         {
-            await Clients.All.SendAsync("ReceiveMessage", user, stickerUrl, DateTime.Now.ToString("HH:mm"));
+            await Clients.All.SendAsync("ReceiveMessage", user, stickerUrl, DateTime.UtcNow.AddHours(7).ToString("HH:mm:ss"));
         }
 
         // Chat Riêng (Private)
@@ -100,9 +100,9 @@ await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Times
             if (!string.IsNullOrEmpty(targetConn))
             {
                 // Gửi cho người nhận
-                await Clients.Client(targetConn).SendAsync("ReceivePrivateMessage", fromUser, message, DateTime.Now.ToString("HH:mm"));
+                await Clients.Client(targetConn).SendAsync("ReceivePrivateMessage", fromUser, message, DateTime.UtcNow.AddHours(7).ToString("HH:mm:ss"));
                 // Gửi lại cho chính mình (để hiện lên màn hình mình)
-                await Clients.Caller.SendAsync("ReceivePrivateMessage", fromUser, message, DateTime.Now.ToString("HH:mm"));
+                await Clients.Caller.SendAsync("ReceivePrivateMessage", fromUser, message, DateTime.UtcNow.AddHours(7).ToString("HH:mm:ss"));
             }
         }
 
@@ -124,7 +124,7 @@ await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Times
         {
             string user = Context.User.Identity.Name;
             // Gửi tin nhắn vào nhóm cụ thể
-            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", user, groupName, message, DateTime.Now.ToString("HH:mm"));
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", user, groupName, message, DateTime.UtcNow.AddHours(7).ToString("HH:mm:ss"));
         }
 
         // Vào nhóm

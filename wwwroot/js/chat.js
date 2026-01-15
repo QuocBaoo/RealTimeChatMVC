@@ -1,59 +1,86 @@
 "use strict";
 
+// 1. Khởi tạo kết nối SignalR
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-// Tắt nút gửi khi chưa kết nối xong
+// Tắt nút gửi cho đến khi kết nối thành công
 document.getElementById("sendButton").disabled = true;
 
-// 1. Nhận tin nhắn thường (Text/Sticker)
-connection.on("ReceiveMessage", function (msgObj) {
-  // msgObj bây giờ là một cục dữ liệu: { sender, content, time, type }
-  var li = document.createElement("li");
-  document.getElementById("messagesList").appendChild(li);
+// --- HÀM HỖ TRỢ: Thêm tin nhắn vào giao diện ---
+function appendMessage(user, message, time) {
+    var chatBox = document.getElementById("chatBox");
+    var isMine = (user === currentUser);
+    
+    var divItem = document.createElement("div");
+    divItem.className = isMine ? "message-item msg-right" : "message-item msg-left";
+    
+    // Fix bảo mật: Dùng textContent cho message để tránh XSS
+    divItem.innerHTML = `
+        <div class="message-content"></div>
+        <div class="message-info">${isMine ? "Bạn" : user} • ${time}</div>
+    `;
+    divItem.querySelector(".message-content").textContent = message;
 
-  // Hiển thị đẹp: [12:30:45] Tên: Nội dung
-  li.textContent = `[${msgObj.time}] ${msgObj.sender}: ${msgObj.content}`;
-});
+    chatBox.appendChild(divItem);
+    scrollToBottom();
+}
 
-// 2. Nhận tin nhắn riêng (Private)
-connection.on("ReceivePrivateMessage", function (msgObj) {
-  var li = document.createElement("li");
-  li.style.color = "red";
-  li.style.fontWeight = "bold";
-  document.getElementById("messagesList").appendChild(li);
-  li.textContent = `[MẬT - ${msgObj.time}] ${msgObj.sender}: ${msgObj.content}`;
-});
+function scrollToBottom() {
+    var chatBox = document.getElementById("chatBox");
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-// 3. Nhận tin nhắn nhóm
+// --- SIGNALR EVENTS ---
+
+// 2. Nhận tin nhắn từ Server (Real-time)
 connection.on("ReceiveMessage", function (user, message, time) {
-  var li = document.createElement("li");
-  li.className = "list-group-item";
-
-  // Hiển thị: [10:30] Hùng: Hello anh em
-  li.innerHTML = `<strong>[${time}] ${user}:</strong> ${message}`;
-
-  document.getElementById("messagesList").appendChild(li);
+    appendMessage(user, message, time);
 });
-// Bắt đầu kết nối
-connection
-  .start()
-  .then(function () {
+
+// 3. Bắt đầu kết nối
+connection.start().then(function () {
     document.getElementById("sendButton").disabled = false;
-  })
-  .catch(function (err) {
+    console.log("SignalR Connected!");
+}).catch(function (err) {
     return console.error(err.toString());
-  });
+});
 
-// Xử lý nút Gửi
-document
-  .getElementById("sendButton")
-  .addEventListener("click", function (event) {
-    var user = document.getElementById("userInput").value;
-    var message = document.getElementById("messageInput").value;
+// --- DOM EVENTS ---
 
-    // Gọi hàm SendMessage bên Hub
-    connection.invoke("SendMessage", user, message).catch(function (err) {
-      return console.error(err.toString());
-    });
-    event.preventDefault();
-  });
+// 4. Xử lý nút Gửi
+document.getElementById("sendButton").addEventListener("click", function (event) {
+    var input = document.getElementById("messageInput");
+    var message = input.value;
+
+    if (message.trim() !== "") {
+        // Gọi hàm SendMessage bên Hub (Server)
+        // Tham số đầu tiên là user (để trống vì Server tự lấy từ Context), tham số 2 là message
+        connection.invoke("SendMessage", "", message).catch(function (err) {
+            return console.error(err.toString());
+        });
+        input.value = "";
+        input.focus();
+    }
+    event.preventDefault(); // Chặn reload trang
+});
+
+// 5. Bấm Enter để gửi
+document.getElementById("messageInput").addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+        document.getElementById("sendButton").click();
+    }
+});
+
+// --- API CALLS ---
+
+// 6. Load lịch sử tin nhắn khi trang vừa tải
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/Chat/GetHistory')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(msg => {
+                appendMessage(msg.user, msg.message, msg.time);
+            });
+        })
+        .catch(error => console.error('Lỗi tải lịch sử:', error));
+});
