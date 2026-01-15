@@ -42,7 +42,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 // 5. Kích hoạt chế độ Xác thực (Bắt buộc đặt trước Authorization)
-app.UseAuthentication(); 
+app.UseAuthentication();
 
 app.UseAuthorization();
 
@@ -51,5 +51,22 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}"); // Mặc định vào trang chủ, sau này mình sẽ sửa để vào Login trước
 
 app.MapHub<ChatHub>("/chatHub");
+
+// --- TỰ ĐỘNG TẠO DATABASE (MIGRATION) ---
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ChatDbContext>();
+        context.Database.EnsureCreated(); // Tự động tạo bảng dựa trên code (không cần file Migration)
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Lỗi khi khởi tạo Database (Migration).");
+    }
+}
+// ----------------------------------------
 
 app.Run();
