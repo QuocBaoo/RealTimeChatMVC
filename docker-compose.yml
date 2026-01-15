@@ -12,8 +12,10 @@ services:
       - db
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
       # Server=db (trỏ xuống dưới), Password khớp với bên dưới
       - ConnectionStrings__DefaultConnection=Server=db;Database=ChatDB;User Id=sa;Password=Password123!;TrustServerCertificate=True;
+    restart: on-failure
 
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest

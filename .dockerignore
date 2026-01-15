@@ -1,0 +1,21 @@
+**/.dockerignore
+**/.env
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/out
+
+# Loại bỏ các thư mục backup/copy nếu có
+**/Backup*
+**/Copy*
+**/Old*
+**/*.old
+**/*.bak
+**/*.swp
+**/*-Copy*
+**/* - Copy*
+**/*(1)*
+**/*.tmp
