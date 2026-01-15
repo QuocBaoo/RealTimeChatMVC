@@ -31,8 +31,8 @@ namespace RealTimeChatMVC.Controllers
             {
                 var newGroup = new ChatGroup
                 {
-                    GroupName = groupName,
-                    CreatorName = User.Identity.Name // Lấy tên người đang đăng nhập
+                    Name = groupName,
+                    CreatedBy = User.Identity.Name // Lấy tên người đang đăng nhập
                 };
 
                 _context.ChatGroups.Add(newGroup);
