@@ -1,0 +1,210 @@
+@model List<RealTimeChatMVC.Models.Message>
+
+@{
+    ViewData["Title"] = "Phòng Chat";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+    /* 1. KHUNG BAO NGOÀI (CĂN CHỈNH LẠI VỊ TRÍ) */
+    .chat-wrapper {
+        font-family: 'Quicksand', sans-serif;
+        height: 100vh; /* Chiều cao bằng đúng màn hình */
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* QUAN TRỌNG: Đẩy xuống 90px để né thanh Menu (Navbar) */
+        padding-top: 90px; 
+        padding-bottom: 30px; /* Cách đáy một chút cho thoáng */
+        overflow: hidden; /* Chặn thanh cuộn ngoài */
+    }
+
+    /* 2. THẺ CHAT (GLASS) */
+    .chat-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 1000px; /* Rộng hơn xíu cho thoải mái */
+        height: 100%; /* Chiếm hết chiều cao cho phép trong wrapper */
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* 3. HEADER */
+    .chat-header {
+        padding: 15px 25px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        background: rgba(255,255,255,0.8);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0; /* Không bị co lại */
+    }
+    .chat-title {
+        color: #1A2980;
+        font-weight: 800;
+        font-size: 1.4rem;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+    }
+
+    /* 4. DANH SÁCH TIN NHẮN (Cuộn dọc) */
+    .chat-box {
+        flex: 1; /* Tự động giãn để chiếm hết chỗ trống */
+        padding: 20px;
+        overflow-y: auto; /* Chỉ cuộn riêng phần tin nhắn */
+        background: #f4f7f6;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* BONG BÓNG CHAT */
+    .message-item {
+        display: flex;
+        flex-direction: column;
+        max-width: 75%; /* Tin nhắn dài hơn xíu */
+    }
+
+    .message-content {
+        padding: 12px 18px;
+        border-radius: 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.5;
+        word-wrap: break-word;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .message-info {
+        font-size: 0.75rem;
+        margin-top: 5px;
+        opacity: 0.7;
+        font-weight: 700;
+    }
+
+    /* Tin người khác (Trái) */
+    .msg-left { align-self: flex-start; }
+    .msg-left .message-content {
+        background: white; color: #333; border: 1px solid #e1e8ed; border-bottom-left-radius: 2px;
+    }
+    .msg-left .message-info { margin-left: 10px; color: #555; }
+
+    /* Tin của mình (Phải) */
+    .msg-right { align-self: flex-end; }
+    .msg-right .message-content {
+        background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
+        color: white; border-bottom-right-radius: 2px; box-shadow: 0 5px 15px rgba(38, 208, 206, 0.3);
+    }
+    .msg-right .message-info { margin-right: 10px; text-align: right; color: #1A2980; }
+
+    /* 5. KHUNG NHẬP LIỆU (Footer) */
+    .chat-input-area {
+        padding: 15px 25px;
+        background: white;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-shrink: 0; /* Không bị co lại */
+    }
+
+    .input-mess {
+        flex: 1; 
+        border-radius: 50px; 
+        padding: 14px 25px; 
+        border: 2px solid #eaeff2; 
+        background: #f9f9f9; 
+        font-weight: 600; 
+        font-size: 1rem;
+        outline: none; 
+        transition: all 0.3s;
+    }
+    .input-mess:focus { border-color: #26D0CE; background: white; box-shadow: 0 0 0 4px rgba(38, 208, 206, 0.1); }
+
+    .btn-send {
+        background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
+        color: white; border: none; width: 55px; height: 55px; border-radius: 50%;
+        font-size: 1.4rem; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 5px 15px rgba(26, 41, 128, 0.3);
+    }
+    .btn-send:hover { transform: scale(1.1) rotate(-10deg); }
+
+    /* Thanh cuộn đẹp */
+    .chat-box::-webkit-scrollbar { width: 6px; }
+    .chat-box::-webkit-scrollbar-thumb { background: #bbb; border-radius: 10px; }
+    .chat-box::-webkit-scrollbar-track { background: transparent; }
+</style>
+
+<div class="chat-wrapper">
+    <div class="chat-card">
+        <div class="chat-header">
+            <h3 class="chat-title">💬  Chat</h3>
+            <div style="display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.1); padding: 5px 15px; border-radius: 20px;">
+                <span style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 5px #2ecc71;"></span>
+                <span style="font-weight: 800; font-size: 0.85rem; color: #2ecc71; text-transform: uppercase;">Online</span>
+            </div>
+        </div>
+
+        <div class="chat-box" id="chatBox">
+            @if (Model != null)
+            {
+                foreach (var msg in Model)
+                {
+                    bool isMine = msg.SenderName == User.Identity.Name;
+                    <div class="message-item @(isMine ? "msg-right" : "msg-left")">
+                        <div class="message-content">@msg.Content</div>
+                        <div class="message-info">@(isMine ? "Bạn" : msg.SenderName) • @msg.Timestamp.ToString("HH:mm")</div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="messageInput" class="input-mess" placeholder="Nhập tin nhắn..." autocomplete="off">
+            <button id="sendButton" class="btn-send">➤</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+<script>
+    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+    var currentUser = "@User.Identity.Name";
+
+    connection.on("ReceiveMessage", function (user, message, time) {
+        var chatBox = document.getElementById("chatBox");
+        var isMine = (user === currentUser);
+        var divItem = document.createElement("div");
+        divItem.className = isMine ? "message-item msg-right" : "message-item msg-left";
+        divItem.innerHTML = `<div class="message-content">${message}</div><div class="message-info">${isMine ? "Bạn" : user} • ${time}</div>`;
+        chatBox.appendChild(divItem);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    connection.start().catch(err => console.error(err.toString()));
+
+    document.getElementById("sendButton").addEventListener("click", function (event) {
+        var input = document.getElementById("messageInput");
+        if(input.value.trim() !== "") {
+            connection.invoke("SendMessage", "", input.value).catch(err => console.error(err.toString()));
+            input.value = ""; input.focus();
+        }
+        event.preventDefault();
+    });
+
+    document.getElementById("messageInput").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") document.getElementById("sendButton").click();
+    });
+
+    window.onload = function() {
+        var chatBox = document.getElementById("chatBox");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    };
+</script>
