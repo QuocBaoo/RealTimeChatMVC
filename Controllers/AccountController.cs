@@ -1,9 +1,111 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using RealTimeChatMVC.Data;
+using RealTimeChatMVC.Models;
+
 namespace RealTimeChatMVC.Controllers
 {
     public class AccountController : Controller
     {
-        public IActionResult Login() => View();
-        public IActionResult Register() => View();
+        private readonly ChatDbContext _context;
+
+        public AccountController(ChatDbContext context)
+        {
+            _context = context;
+        }
+
+        // --- ĐĂNG KÝ ---
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        // SỬA LỖI: Dùng tên đầy đủ "RealTimeChatMVC.Models.User" để tránh nhầm lẫn
+        public async Task<IActionResult> Register(RealTimeChatMVC.Models.User user)
+        {
+            // 1. Kiểm tra dữ liệu nhập vào
+            if (!ModelState.IsValid)
+            {
+                // Gom các lỗi lại thành 1 dòng để dễ đọc
+                var errors = string.Join("; ", ModelState.Values
+                                                .SelectMany(v => v.Errors)
+                                                .Select(e => e.ErrorMessage));
+                ViewBag.Error = "Dữ liệu chưa đúng: " + errors;
+                return View(user);
+            }
+
+            try
+            {
+                // 2. Kiểm tra trùng tên
+                var existingUser = _context.Users.FirstOrDefault(u => u.Username == user.Username);
+                if (existingUser != null)
+                {
+                    ViewBag.Error = $"Tài khoản '{user.Username}' đã có người dùng!";
+                    return View(user);
+                }
+
+                // 3. Lưu vào Database
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                // 4. Thành công
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Lỗi Database: " + ex.Message;
+                if (ex.InnerException != null)
+                {
+                    ViewBag.Error += " (" + ex.InnerException.Message + ")";
+                }
+                return View(user);
+            }
+        }
+
+        // --- ĐĂNG NHẬP ---
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(string username, string password)
+        {
+            // Tìm user trong DB
+            var user = _context.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
+
+            if (user != null)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim("FullName", user.FullName ?? user.Username)
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.Error = "Sai tài khoản hoặc mật khẩu!";
+            return View();
+        }
+
+        // --- ĐĂNG XUẤT ---
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login");
+        }
     }
 }

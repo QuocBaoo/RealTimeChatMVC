@@ -1,15 +1,16 @@
+using Microsoft.AspNetCore.Authentication.Cookies; // [MỚI THÊM] Thư viện cookie
 using Microsoft.EntityFrameworkCore;
-using RealTimeChatMVC.Data;  
-using RealTimeChatMVC.Hubs;  
+using RealTimeChatMVC.Data;
+using RealTimeChatMVC.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- PHẦN 1: ĐĂNG KÝ DỊCH VỤ (Service Registration) ---
+// --- PHẦN 1: ĐĂNG KÝ DỊCH VỤ ---
 
-// 1. Đăng ký MVC (để chạy web)
+// 1. Đăng ký MVC
 builder.Services.AddControllersWithViews();
 
-// 2. Đăng ký SignalR (Quan trọng cho Chat)
+// 2. Đăng ký SignalR
 builder.Services.AddSignalR();
 
 // 3. Đăng ký Kết nối SQL Server
@@ -17,11 +18,18 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ChatDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+// 4. Đăng ký chế độ Đăng nhập (Authentication)
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login"; // Nếu chưa đăng nhập thì chuyển hướng về đây
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Đăng nhập giữ trong 60 phút
+    });
+
 // --- KẾT THÚC PHẦN ĐĂNG KÝ ---
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -29,18 +37,19 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Cho phép truy cập wwwroot (css, js, ảnh)
+app.UseStaticFiles();
 
 app.UseRouting();
 
+// 5. Kích hoạt chế độ Xác thực (Bắt buộc đặt trước Authorization)
+app.UseAuthentication(); 
+
 app.UseAuthorization();
 
-// Định tuyến cho MVC
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"); // Mặc định vào trang chủ, sau này mình sẽ sửa để vào Login trước
 
-// Định tuyến cho SignalR Hub (Của bạn đây)
 app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

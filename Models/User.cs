@@ -1,17 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace RealTimeChatMVC.Models
 {
     public class User
     {
-        [Key]
         public int Id { get; set; }
-
-        [Required]
-        public string UserName { get; set; }
-
-        public string Email { get; set; }
         
-        public string Password { get; set; } // Mật khẩu
+        public string Username { get; set; } // Bắt buộc
+        
+        public string Password { get; set; } // Bắt buộc
+        
+        public string FullName { get; set; } // Tùy chọn
+        
+        public string? Email { get; set; } 
     }
 }

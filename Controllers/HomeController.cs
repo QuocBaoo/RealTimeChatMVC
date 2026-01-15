@@ -1,24 +1,12 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using RealTimeChatMVC.Models;
 
-namespace RealTimeChatMVC.Controllers;
-
-public class HomeController : Controller
+namespace RealTimeChatMVC.Controllers
 {
-    public IActionResult Index()
+    public class HomeController : Controller
     {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public IActionResult Index()
+        {
+            return View(); // Chỉ trả về View, không cần logic Database gì cả
+        }
     }
 }

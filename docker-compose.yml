@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+  webapp:
+    image: realtimechatmvc
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Server=db (trỏ xuống dưới), Password khớp với bên dưới
+      - ConnectionStrings__DefaultConnection=Server=db;Database=ChatDB;User Id=sa;Password=Password123!;TrustServerCertificate=True;
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Password123! # Mật khẩu mạnh, khớp với bên trên
+    ports:
+      - "1433:1433"
