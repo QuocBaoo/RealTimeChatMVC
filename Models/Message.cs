@@ -16,5 +16,12 @@ namespace RealTimeChatMVC.Models
         public string Content { get; set; }    // Nội dung tin nhắn
 
         public DateTime Timestamp { get; set; } = DateTime.Now; // Thời gian gửi
+
+        // --- QUAN HỆ VỚI NHÓM CHAT ---
+        // ID của nhóm chat (Nullable: nếu null thì là chat chung/global)
+        public int? ChatGroupId { get; set; }
+
+        // Navigation property
+        public virtual ChatGroup ChatGroup { get; set; }
     }
 }

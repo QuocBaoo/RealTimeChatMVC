@@ -22,6 +22,7 @@ namespace RealTimeChatMVC.Controllers
         {
             
             var messages = await _context.Messages
+                                         .Where(m => m.ChatGroupId == null) // CHỈ LẤY TIN NHẮN CHUNG
                                          .OrderBy(m => m.Timestamp)
                                          .Take(50)
                                          .ToListAsync();

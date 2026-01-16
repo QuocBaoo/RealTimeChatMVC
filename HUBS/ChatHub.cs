@@ -20,7 +20,6 @@ namespace RealTimeChatMVC.Hubs
 
         // 2. Khai báo Bộ nhớ tạm (RAM) để quản lý danh sách Online và Nhóm
         private static readonly ConcurrentDictionary<string, string> Users = new();
-        private static readonly ConcurrentDictionary<string, ChatGroup> ChatGroups = new();
 
         // Inject Database vào Hub
         public ChatHub(ChatDbContext context)
@@ -41,6 +40,10 @@ namespace RealTimeChatMVC.Hubs
 
             // Báo cho mọi người biết
             await Clients.All.SendAsync("UserJoined", username);
+
+            // [MỚI] Cập nhật danh sách Online cho các nhóm mà user này tham gia
+            await UpdateGroupsForUser(username);
+
             await base.OnConnectedAsync();
         }
 
@@ -50,8 +53,36 @@ namespace RealTimeChatMVC.Hubs
             if (Users.TryRemove(Context.ConnectionId, out var username))
             {
                 await Clients.All.SendAsync("UserLeft", username);
+
+                // [MỚI] Cập nhật danh sách Online cho các nhóm mà user này vừa thoát
+                await UpdateGroupsForUser(username);
             }
             await base.OnDisconnectedAsync(exception);
+        }
+
+        // --- HÀM PHỤ TRỢ: Cập nhật trạng thái Online cho các nhóm ---
+        private async Task UpdateGroupsForUser(string username)
+        {
+            // 1. Tìm các nhóm mà user này là thành viên
+            var userGroups = await _context.ChatGroups
+                .Where(g => g.Members.Any(u => u.Username == username))
+                .Include(g => g.Members)
+                .ToListAsync();
+
+            // 2. Lấy danh sách user online hiện tại (Global)
+            var allOnlineUsernames = Users.Values.Distinct().ToList();
+
+            // 3. Gửi cập nhật cho từng nhóm
+            foreach (var group in userGroups)
+            {
+                var onlineMembers = group.Members
+                    .Where(u => allOnlineUsernames.Contains(u.Username))
+                    .Select(u => u.Username)
+                    .ToList();
+
+                // Gửi cho những người đang xem nhóm này
+                await Clients.Group(group.Name).SendAsync("UpdateGroupUsers", onlineMembers);
+            }
         }
 
         // -----------------------------------------------------------------------
@@ -67,7 +98,8 @@ namespace RealTimeChatMVC.Hubs
             {
                 SenderName = realUser,
                 Content = message,
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.Now,
+                ChatGroupId = null // Rõ ràng đây là chat chung
             };
 
             _context.Messages.Add(msgEntity);
@@ -75,7 +107,7 @@ namespace RealTimeChatMVC.Hubs
 
             // 2. Gửi ra cho mọi người (Kèm giờ giấc)
             // Format gửi về: User, Message, Time (Khớp với chat.js mới nhất)
-await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Timestamp.ToString("HH:mm"));
+            await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Timestamp.ToString("HH:mm"));
         }
 
         // -----------------------------------------------------------------------
@@ -93,7 +125,7 @@ await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Times
         public async Task SendPrivateMessage(string toUser, string message)
         {
             string fromUser = Context.User.Identity.Name;
-            
+
             // Tìm ConnectionId của người nhận
             var targetConn = Users.FirstOrDefault(u => u.Value == toUser).Key;
 
@@ -106,16 +138,30 @@ await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Times
             }
         }
 
-        // Tạo nhóm
-        public async Task CreateGroup(string groupName)
+        // --- TÍNH NĂNG ROOMS (MỚI) ---
+        public async Task JoinRoom(string groupName)
         {
-            string creator = Context.User.Identity.Name;
-            var newGroup = new ChatGroup { Name = groupName, CreatedBy = creator };
-            
-            if (ChatGroups.TryAdd(groupName, newGroup))
+            // Thêm ConnectionId hiện tại vào nhóm SignalR
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
+            // --- LOGIC MỚI: Lấy danh sách thành viên Online của nhóm ---
+            var group = await _context.ChatGroups
+                .Include(g => g.Members)
+                .FirstOrDefaultAsync(g => g.Name == groupName);
+
+            if (group != null)
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-                await Clients.All.SendAsync("GroupCreated", groupName);
+                // Lấy tất cả Username đang online trong hệ thống (từ biến Users static)
+                var allOnlineUsernames = Users.Values.Distinct().ToList();
+
+                // Lọc: Chỉ lấy những thành viên của nhóm mà đang có mặt trong danh sách Online
+                var onlineMembers = group.Members
+                    .Where(u => allOnlineUsernames.Contains(u.Username))
+                    .Select(u => u.Username)
+                    .ToList();
+
+                // [SỬA] Gửi cho TOÀN BỘ NHÓM để mọi người đều thấy thành viên mới vừa vào
+                await Clients.Group(groupName).SendAsync("UpdateGroupUsers", onlineMembers);
             }
         }
 
@@ -123,15 +169,24 @@ await Clients.All.SendAsync("ReceiveMessage", realUser, message, msgEntity.Times
         public async Task SendGroupMessage(string groupName, string message)
         {
             string user = Context.User.Identity.Name;
-            // Gửi tin nhắn vào nhóm cụ thể
-            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", user, groupName, message, DateTime.Now.ToString("HH:mm"));
-        }
 
-        // Vào nhóm
-        public async Task JoinGroup(string groupName)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("UserJoinedGroup", Context.User.Identity.Name, groupName);
+            // 1. Tìm nhóm để lấy ID và Lưu vào DB
+            var group = await _context.ChatGroups.FirstOrDefaultAsync(g => g.Name == groupName);
+            if (group != null)
+            {
+                var msgEntity = new Message
+                {
+                    SenderName = user,
+                    Content = message,
+                    Timestamp = DateTime.Now,
+                    ChatGroupId = group.Id // Lưu trực tiếp ID nhóm (An toàn hơn gán object)
+                };
+                _context.Messages.Add(msgEntity);
+                await _context.SaveChangesAsync();
+            }
+
+            // 2. Gửi tin nhắn realtime cho các thành viên trong nhóm
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", user, groupName, message, DateTime.Now.ToString("HH:mm"));
         }
     }
 }

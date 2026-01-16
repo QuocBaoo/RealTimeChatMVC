@@ -59,6 +59,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ChatDbContext>();
+        context.Database.EnsureDeleted(); // <--- Bỏ comment dòng này, chạy 1 lần để Reset DB
         context.Database.EnsureCreated(); // Tự động tạo bảng dựa trên code (không cần file Migration)
     }
     catch (Exception ex)

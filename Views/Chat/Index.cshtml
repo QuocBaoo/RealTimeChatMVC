@@ -10,15 +10,18 @@
     /* 1. KHUNG BAO NGOÀI (CĂN CHỈNH LẠI VỊ TRÍ) */
     .chat-wrapper {
         font-family: 'Quicksand', sans-serif;
-        height: 100vh; /* Chiều cao bằng đúng màn hình */
+        height: 90vh;
+        /* Chiều cao bằng đúng màn hình */
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
         /* QUAN TRỌNG: Đẩy xuống 90px để né thanh Menu (Navbar) */
-        padding-top: 90px; 
-        padding-bottom: 30px; /* Cách đáy một chút cho thoáng */
-        overflow: hidden; /* Chặn thanh cuộn ngoài */
+        padding-top: 60px;
+        padding-bottom: 30px;
+        /* Cách đáy một chút cho thoáng */
+        overflow: hidden;
+        /* Chặn thanh cuộn ngoài */
     }
 
     /* 2. THẺ CHAT (GLASS) */
@@ -28,8 +31,80 @@
         border-radius: 25px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         width: 100%;
-        max-width: 1000px; /* Rộng hơn xíu cho thoải mái */
-        height: 100%; /* Chiếm hết chiều cao cho phép trong wrapper */
+        max-width: 1200px;
+        /* Rộng hơn xíu cho thoải mái */
+        height: 100%;
+        /* Chiếm hết chiều cao cho phép trong wrapper */
+        display: flex;
+        flex-direction: row;
+        /* Đổi thành hàng ngang để chia cột */
+        overflow: hidden;
+    }
+
+    /* SIDEBAR (DANH SÁCH NHÓM) */
+    .sidebar {
+        width: 280px;
+        background: rgba(244, 247, 246, 0.8);
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        padding: 20px;
+        font-weight: 800;
+        color: #1A2980;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .group-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .group-item {
+        padding: 12px 15px;
+        margin-bottom: 5px;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 600;
+        color: #555;
+    }
+
+    .group-item:hover,
+    .group-item.active {
+        background: white;
+        color: #1A2980;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* RIGHT SIDEBAR (THÀNH VIÊN ONLINE) */
+    .user-sidebar {
+        width: 240px;
+        background: rgba(255, 255, 255, 0.9);
+        border-left: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+    }
+    .user-list { flex: 1; overflow-y: auto; padding: 10px; }
+    .user-item {
+        padding: 8px 10px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #555;
+    }
+    .status-dot {
+        width: 8px; height: 8px; background: #ccc; border-radius: 50%;
+    }
+    .status-dot.online {
+        background: #2ecc71; box-shadow: 0 0 5px #2ecc71;
+    }
+
+    /* MAIN CHAT AREA */
+    .main-chat-area {
+        flex: 1;
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -38,13 +113,15 @@
     /* 3. HEADER */
     .chat-header {
         padding: 15px 25px;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        background: rgba(255,255,255,0.8);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.8);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-shrink: 0; /* Không bị co lại */
+        flex-shrink: 0;
+        /* Không bị co lại */
     }
+
     .chat-title {
         color: #1A2980;
         font-weight: 800;
@@ -56,9 +133,11 @@
 
     /* 4. DANH SÁCH TIN NHẮN (Cuộn dọc) */
     .chat-box {
-        flex: 1; /* Tự động giãn để chiếm hết chỗ trống */
+        flex: 1;
+        /* Tự động giãn để chiếm hết chỗ trống */
         padding: 20px;
-        overflow-y: auto; /* Chỉ cuộn riêng phần tin nhắn */
+        overflow-y: auto;
+        /* Chỉ cuộn riêng phần tin nhắn */
         background: #f4f7f6;
         display: flex;
         flex-direction: column;
@@ -69,7 +148,8 @@
     .message-item {
         display: flex;
         flex-direction: column;
-        max-width: 75%; /* Tin nhắn dài hơn xíu */
+        max-width: 75%;
+        /* Tin nhắn dài hơn xíu */
     }
 
     .message-content {
@@ -79,7 +159,7 @@
         font-weight: 600;
         line-height: 1.5;
         word-wrap: break-word;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
 
     .message-info {
@@ -90,85 +170,164 @@
     }
 
     /* Tin người khác (Trái) */
-    .msg-left { align-self: flex-start; }
-    .msg-left .message-content {
-        background: white; color: #333; border: 1px solid #e1e8ed; border-bottom-left-radius: 2px;
+    .msg-left {
+        align-self: flex-start;
     }
-    .msg-left .message-info { margin-left: 10px; color: #555; }
+
+    .msg-left .message-content {
+        background: white;
+        color: #333;
+        border: 1px solid #e1e8ed;
+        border-bottom-left-radius: 2px;
+    }
+
+    .msg-left .message-info {
+        margin-left: 10px;
+        color: #555;
+    }
 
     /* Tin của mình (Phải) */
-    .msg-right { align-self: flex-end; }
+    .msg-right {
+        align-self: flex-end;
+    }
+
     .msg-right .message-content {
         background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
-        color: white; border-bottom-right-radius: 2px; box-shadow: 0 5px 15px rgba(38, 208, 206, 0.3);
+        color: white;
+        border-bottom-right-radius: 2px;
+        box-shadow: 0 5px 15px rgba(38, 208, 206, 0.3);
     }
-    .msg-right .message-info { margin-right: 10px; text-align: right; color: #1A2980; }
+
+    .msg-right .message-info {
+        margin-right: 10px;
+        text-align: right;
+        color: #1A2980;
+    }
 
     /* 5. KHUNG NHẬP LIỆU (Footer) */
     .chat-input-area {
         padding: 15px 25px;
         background: white;
-        border-top: 1px solid rgba(0,0,0,0.05);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
         display: flex;
         gap: 15px;
         align-items: center;
-        flex-shrink: 0; /* Không bị co lại */
+        flex-shrink: 0;
+        /* Không bị co lại */
     }
 
     .input-mess {
-        flex: 1; 
-        border-radius: 50px; 
-        padding: 14px 25px; 
-        border: 2px solid #eaeff2; 
-        background: #f9f9f9; 
-        font-weight: 600; 
+        flex: 1;
+        border-radius: 50px;
+        padding: 14px 25px;
+        border: 2px solid #eaeff2;
+        background: #f9f9f9;
+        font-weight: 600;
         font-size: 1rem;
-        outline: none; 
+        outline: none;
         transition: all 0.3s;
     }
-    .input-mess:focus { border-color: #26D0CE; background: white; box-shadow: 0 0 0 4px rgba(38, 208, 206, 0.1); }
+
+    .input-mess:focus {
+        border-color: #26D0CE;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(38, 208, 206, 0.1);
+    }
 
     .btn-send {
         background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%);
-        color: white; border: none; width: 55px; height: 55px; border-radius: 50%;
-        font-size: 1.4rem; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: center;
+        color: white;
+        border: none;
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         box-shadow: 0 5px 15px rgba(26, 41, 128, 0.3);
     }
-    .btn-send:hover { transform: scale(1.1) rotate(-10deg); }
+
+    .btn-send:hover {
+        transform: scale(1.1) rotate(-10deg);
+    }
 
     /* Thanh cuộn đẹp */
-    .chat-box::-webkit-scrollbar { width: 6px; }
-    .chat-box::-webkit-scrollbar-thumb { background: #bbb; border-radius: 10px; }
-    .chat-box::-webkit-scrollbar-track { background: transparent; }
+    .chat-box::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-box::-webkit-scrollbar-thumb {
+        background: #bbb;
+        border-radius: 10px;
+    }
+
+    .chat-box::-webkit-scrollbar-track {
+        background: transparent;
+    }
 </style>
 
 <div class="chat-wrapper">
     <div class="chat-card">
-        <div class="chat-header">
-            <h3 class="chat-title">💬  Chat</h3>
-            <div style="display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.1); padding: 5px 15px; border-radius: 20px;">
-                <span style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 5px #2ecc71;"></span>
-                <span style="font-weight: 800; font-size: 0.85rem; color: #2ecc71; text-transform: uppercase;">Online</span>
+
+        <!-- SIDEBAR TRÁI -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <span>DANH SÁCH NHÓM</span>
+                <button class="btn btn-sm btn-primary rounded-circle" onclick="createNewGroup()"
+                    title="Tạo nhóm mới">+</button>
+            </div>
+            <div class="group-list" id="groupList">
+                <!-- Danh sách nhóm sẽ load vào đây -->
+                <div class="text-center mt-3 text-muted small">Đang tải...</div>
             </div>
         </div>
 
-        <div class="chat-box" id="chatBox">
-            @if (Model != null)
-            {
-                foreach (var msg in Model)
+        <!-- KHUNG CHAT PHẢI -->
+        <div class="main-chat-area">
+            <div class="chat-header">
+                <h3 class="chat-title" id="currentRoomName">💬 Chat Chung</h3>
+                <div
+                    style="display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.1); padding: 5px 15px; border-radius: 20px;">
+                    <span
+                        style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 5px #2ecc71;"></span>
+                    <span
+                        style="font-weight: 800; font-size: 0.85rem; color: #2ecc71; text-transform: uppercase;">Online</span>
+                </div>
+            </div>
+
+            <div class="chat-box" id="chatBox">
+                @if (Model != null)
                 {
-                    bool isMine = msg.SenderName == User.Identity.Name;
-                    <div class="message-item @(isMine ? "msg-right" : "msg-left")">
-                        <div class="message-content">@msg.Content</div>
-                        <div class="message-info">@(isMine ? "Bạn" : msg.SenderName) • @msg.Timestamp.ToString("HH:mm")</div>
-                    </div>
+                    foreach (var msg in Model)
+                    {
+                        bool isMine = msg.SenderName == User.Identity.Name;
+                        <div class="message-item @(isMine ? "msg-right" : "msg-left")">
+                            <div class="message-content">@msg.Content</div>
+                            <div class="message-info">@(isMine ? "Bạn" : msg.SenderName) • @msg.Timestamp.ToString("HH:mm")
+                            </div>
+                        </div>
+                    }
                 }
-            }
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="messageInput" class="input-mess" placeholder="Nhập tin nhắn..."
+                    autocomplete="off">
+                <button id="sendButton" class="btn-send">➤</button>
+            </div>
         </div>
 
-        <div class="chat-input-area">
-            <input type="text" id="messageInput" class="input-mess" placeholder="Nhập tin nhắn..." autocomplete="off">
-            <button id="sendButton" class="btn-send">➤</button>
+        <!-- SIDEBAR PHẢI (ONLINE MEMBERS) -->
+        <div class="user-sidebar">
+            <div class="sidebar-header" style="font-size: 0.9rem;">
+                <span>THÀNH VIÊN ONLINE</span>
+            </div>
+            <div class="user-list" id="userList">
+                <!-- Danh sách user sẽ load vào đây -->
+            </div>
         </div>
     </div>
 </div>
@@ -177,8 +336,37 @@
 <script>
     var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
     var currentUser = "@User.Identity.Name";
+    var currentGroup = ""; // Mặc định là chat chung hoặc rỗng
+    var currentGroupId = 0;
 
+    // 1. NHẬN TIN NHẮN (Chung cho cả Group và Private)
     connection.on("ReceiveMessage", function (user, message, time) {
+        // TODO: Nếu muốn chia tin nhắn theo nhóm, cần kiểm tra thêm tham số groupName từ server gửi về
+        // Ở đây tạm thời hiển thị hết để test
+        if (!currentGroup) {
+            appendMessage(user, message, time);
+        }
+    });
+
+    // Nhận tin nhắn nhóm (Cần update ChatHub để dùng hàm này nếu muốn tách biệt)
+    connection.on("ReceiveGroupMessage", function (user, groupName, message, time) {
+        if (groupName !== currentGroup) return; // Chỉ hiện nếu đang ở đúng phòng
+        appendMessage(user, message, time);
+    });
+
+    // 2. NHẬN DANH SÁCH ONLINE (MỚI)
+    connection.on("UpdateGroupUsers", function (users) {
+        var listHtml = "";
+        users.forEach(u => {
+            // User hiện tại thì in đậm
+            var nameDisplay = (u === currentUser) ? `<b>${u} (Bạn)</b>` : u;
+            listHtml += `<div class="user-item"><span class="status-dot online"></span> ${nameDisplay}</div>`;
+        });
+        document.getElementById("userList").innerHTML = listHtml;
+    });
+
+    // Hàm phụ trợ để hiển thị tin nhắn lên giao diện
+    function appendMessage(user, message, time) {
         var chatBox = document.getElementById("chatBox");
         var isMine = (user === currentUser);
         var divItem = document.createElement("div");
@@ -186,25 +374,113 @@
         divItem.innerHTML = `<div class="message-content">${message}</div><div class="message-info">${isMine ? "Bạn" : user} • ${time}</div>`;
         chatBox.appendChild(divItem);
         chatBox.scrollTop = chatBox.scrollHeight;
-    });
+    }
 
     connection.start().catch(err => console.error(err.toString()));
 
     document.getElementById("sendButton").addEventListener("click", function (event) {
         var input = document.getElementById("messageInput");
-        if(input.value.trim() !== "") {
-            connection.invoke("SendMessage", "", input.value).catch(err => console.error(err.toString()));
+        if (input.value.trim() !== "") {
+            // Nếu có currentGroup thì gửi GroupMessage, không thì gửi chung
+            if (currentGroup) {
+                connection.invoke("SendGroupMessage", currentGroup, input.value).catch(err => console.error(err.toString()));
+            } else {
+                connection.invoke("SendMessage", "", input.value).catch(err => console.error(err.toString()));
+            }
             input.value = ""; input.focus();
         }
         event.preventDefault();
     });
 
-    document.getElementById("messageInput").addEventListener("keyup", function(event) {
+    document.getElementById("messageInput").addEventListener("keyup", function (event) {
         if (event.key === "Enter") document.getElementById("sendButton").click();
     });
 
-    window.onload = function() {
+    window.onload = function () {
+        loadGroups(); // Đổi tên hàm
         var chatBox = document.getElementById("chatBox");
         chatBox.scrollTop = chatBox.scrollHeight;
     };
+
+    // --- CÁC HÀM XỬ LÝ NHÓM ---
+
+    function loadGroups() {
+        // Gọi API lấy tất cả nhóm
+        fetch('/Group/GetAllGroups')
+            .then(response => response.json())
+            .then(data => {
+                var listHtml = "";
+                data.forEach(g => {
+                    // Nếu chưa tham gia thì hiện chữ nhạt hơn hoặc ghi chú
+                    var statusClass = g.isJoined ? "" : "text-muted fst-italic";
+                    var statusText = g.isJoined ? "" : " (Chưa tham gia)";
+                    
+                    // Truyền thêm biến isJoined vào hàm xử lý click
+                    listHtml += `<div class="group-item ${statusClass}" onclick="handleGroupClick(${g.id}, '${g.name}', ${g.isJoined})"># ${g.name}${statusText}</div>`;
+                });
+                document.getElementById("groupList").innerHTML = listHtml;
+            });
+    }
+
+    function handleGroupClick(groupId, groupName, isJoined) {
+        if (isJoined) {
+            joinRoom(groupId, groupName);
+        } else {
+            // Nếu chưa tham gia -> Gọi API JoinGroup trước
+            fetch('/Group/JoinGroup?groupId=' + groupId, { method: 'POST' })
+                .then(res => {
+                    if (res.ok) {
+                        // Tham gia thành công -> Load lại danh sách để cập nhật trạng thái -> Vào phòng
+                        loadGroups(); 
+                        joinRoom(groupId, groupName);
+                    } else {
+                        alert("Không thể tham gia nhóm này.");
+                    }
+                });
+        }
+    }
+
+    function joinRoom(groupId, groupName) {
+        currentGroup = groupName;
+        currentGroupId = groupId;
+        document.getElementById("currentRoomName").innerText = "💬 " + groupName;
+
+        // Xóa chat cũ (hoặc load lại từ API nếu có)
+        var chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML = '<div class="text-center text-muted mt-3">Đang tải tin nhắn...</div>';
+        document.getElementById("userList").innerHTML = '<div class="text-center text-muted small mt-2">Đang tải...</div>';
+
+        // Gọi API lấy lịch sử chat
+        fetch('/Group/GetGroupHistory?groupId=' + groupId)
+            .then(res => res.json())
+            .then(msgs => {
+                chatBox.innerHTML = ''; // Xóa loading
+                if (msgs.length === 0) chatBox.innerHTML = '<div class="text-center text-muted mt-3">Chưa có tin nhắn nào.</div>';
+                msgs.forEach(m => appendMessage(m.sender, m.content, m.timestamp));
+            });
+
+        // Gọi SignalR để join
+        connection.invoke("JoinRoom", groupName).catch(err => console.error(err.toString()));
+    }
+
+    function createNewGroup() {
+        var name = prompt("Nhập tên nhóm mới:");
+        if (name) {
+            fetch('/Group/CreateGroup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(name)
+            })
+                .then(async res => {
+                    if (res.ok) {
+                        loadGroups(); // Load lại danh sách
+                        alert("Tạo nhóm thành công!");
+                    } else {
+                        // Đọc nội dung lỗi chi tiết từ Backend gửi về
+                        var errorText = await res.text();
+                        alert("Lỗi tạo nhóm: " + errorText);
+                    }
+                });
+        }
+    }
 </script>
