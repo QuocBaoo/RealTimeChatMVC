@@ -17,16 +17,16 @@ namespace RealTimeChatMVC.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
-        {
-            
+        public async Task<IActionResult> Index() 
+            {
             var messages = await _context.Messages
-                                         .Where(m => m.ChatGroupId == null) // CHỈ LẤY TIN NHẮN CHUNG
-                                         .OrderBy(m => m.Timestamp)
-                                         .Take(50)
-                                         .ToListAsync();
-            return View();
-        }
+                                 .Where(m => m.ChatGroupId == null)
+                                 .OrderBy(m => m.Timestamp)
+                                 .Take(50)
+                                 .ToListAsync();
+            // Bạn nên truyền 'messages' vào View để hiển thị dữ liệu lịch sử
+            return View(messages); 
+            }
 
         [HttpGet]
         public async Task<IActionResult> GetHistory()
