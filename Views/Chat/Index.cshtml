@@ -1,4 +1,6 @@
-@model List<RealTimeChatMVC.Models.Message>
+@{
+    // Không cần Model nữa vì sẽ load bằng AJAX
+}
 
 @{
     ViewData["Title"] = "Phòng Chat";
@@ -318,6 +320,8 @@
                     autocomplete="off">
                 <button id="sendButton" class="btn-send">➤</button>
             </div>
+        <div class="chat-box" id="chatBox">
+            <!-- Tin nhắn sẽ được nạp vào đây bằng JavaScript -->
         </div>
 
         <!-- SIDEBAR PHẢI (ONLINE MEMBERS) -->
@@ -333,8 +337,8 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+<!-- Truyền biến currentUser sang file JS ngoài -->
 <script>
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
     var currentUser = "@User.Identity.Name";
     var currentGroup = ""; // Mặc định là chat chung hoặc rỗng
     var currentGroupId = 0;
@@ -484,3 +488,6 @@
         }
     }
 </script>
+</script>
+<script src="~/js/chat.js"></script>
+>>>>>>> ff5dd8f3d9daa7e85f286ef4f55d6e477995bd78
