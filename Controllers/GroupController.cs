@@ -32,6 +32,16 @@ namespace RealTimeChatMVC.Controllers
             return Json(groups);
         }
 
+        // [MỚI] Lấy danh sách tất cả user (Id, Username) để hiển thị ID ở frontend
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _context.Users
+                .Select(u => new { u.Id, u.Username })
+                .ToListAsync();
+            return Json(users);
+        }
+
         // [MỚI] Lấy tất cả nhóm để hiển thị cho người khác thấy
         [HttpGet]
         public async Task<IActionResult> GetAllGroups()
@@ -78,6 +88,32 @@ namespace RealTimeChatMVC.Controllers
                 // Trả về lỗi chi tiết kèm InnerException (nếu có) để dễ debug
                 return StatusCode(500, "Lỗi Server: " + ex.Message + (ex.InnerException != null ? " - " + ex.InnerException.Message : ""));
             }
+        }
+
+        // [MỚI] Tạo nhóm chat riêng (Private Chat)
+        [HttpPost]
+        public async Task<IActionResult> CreatePrivateChat([FromBody] string targetUsername)
+        {
+            var currentUsername = User.Identity.Name;
+            if (currentUsername == targetUsername) return BadRequest("Không thể chat với chính mình");
+
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
+            var targetUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == targetUsername);
+
+            if (targetUser == null) return NotFound("Người dùng không tồn tại");
+
+            var group = new ChatGroup
+            {
+                Name = $"{currentUsername} - {targetUsername}", // Tên nhóm tự động
+                IsPrivate = true,
+                CreatedBy = currentUsername,
+                Members = new List<User> { currentUser, targetUser }
+            };
+
+            _context.ChatGroups.Add(group);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { id = group.Id, name = group.Name });
         }
 
         // 3. Tham gia nhóm (Logic Database)

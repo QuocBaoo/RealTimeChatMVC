@@ -320,8 +320,6 @@
                     autocomplete="off">
                 <button id="sendButton" class="btn-send">➤</button>
             </div>
-        <div class="chat-box" id="chatBox">
-            <!-- Tin nhắn sẽ được nạp vào đây bằng JavaScript -->
         </div>
 
         <!-- SIDEBAR PHẢI (ONLINE MEMBERS) -->
@@ -333,7 +331,6 @@
                 <!-- Danh sách user sẽ load vào đây -->
             </div>
         </div>
-    </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
@@ -342,6 +339,7 @@
     var currentUser = "@User.Identity.Name";
     var currentGroup = ""; // Mặc định là chat chung hoặc rỗng
     var currentGroupId = 0;
+    var userMap = {}; // Lưu trữ map Username -> ID
 
     // 1. NHẬN TIN NHẮN (Chung cho cả Group và Private)
     connection.on("ReceiveMessage", function (user, message, time) {
@@ -363,8 +361,18 @@
         var listHtml = "";
         users.forEach(u => {
             // User hiện tại thì in đậm
-            var nameDisplay = (u === currentUser) ? `<b>${u} (Bạn)</b>` : u;
-            listHtml += `<div class="user-item"><span class="status-dot online"></span> ${nameDisplay}</div>`;
+            var isMe = (u === currentUser);
+            var nameDisplay = isMe ? `<b>${u} (Bạn)</b>` : u;
+            var userId = userMap[u] ? userMap[u] : "Loading..."; // Lấy ID từ map
+            
+            var buttons = "";
+            if (!isMe) {
+                // Nút Chat riêng và Tạo nhóm
+                buttons = `<button class="btn btn-sm btn-link p-0 ms-2" onclick="startPrivateChat('${u}')" title="Chat riêng">💬</button>
+                           <button class="btn btn-sm btn-link p-0 ms-1" onclick="createNewGroup()" title="Tạo nhóm mới">➕</button>`;
+            }
+
+            listHtml += `<div class="user-item" title="ID: ${userId}"><span class="status-dot online"></span> <span style="flex:1">${nameDisplay}</span> ${buttons}</div>`;
         });
         document.getElementById("userList").innerHTML = listHtml;
     });
@@ -401,6 +409,11 @@
     });
 
     window.onload = function () {
+        // Load danh sách tất cả user để lấy ID mapping
+        fetch('/Group/GetAllUsers').then(r => r.json()).then(data => {
+            data.forEach(u => userMap[u.username] = u.id);
+        });
+
         loadGroups(); // Đổi tên hàm
         var chatBox = document.getElementById("chatBox");
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -409,18 +422,14 @@
     // --- CÁC HÀM XỬ LÝ NHÓM ---
 
     function loadGroups() {
-        // Gọi API lấy tất cả nhóm
-        fetch('/Group/GetAllGroups')
+        // [SỬA] Gọi API lấy nhóm CỦA TÔI (GetMyGroups) thay vì GetAllGroups
+        fetch('/Group/GetMyGroups')
             .then(response => response.json())
             .then(data => {
                 var listHtml = "";
                 data.forEach(g => {
-                    // Nếu chưa tham gia thì hiện chữ nhạt hơn hoặc ghi chú
-                    var statusClass = g.isJoined ? "" : "text-muted fst-italic";
-                    var statusText = g.isJoined ? "" : " (Chưa tham gia)";
-                    
-                    // Truyền thêm biến isJoined vào hàm xử lý click
-                    listHtml += `<div class="group-item ${statusClass}" onclick="handleGroupClick(${g.id}, '${g.name}', ${g.isJoined})"># ${g.name}${statusText}</div>`;
+                    // Vì load GetMyGroups nên mặc định là đã tham gia (true)
+                    listHtml += `<div class="group-item" onclick="handleGroupClick(${g.id}, '${g.name}', true)"># ${g.name}</div>`;
                 });
                 document.getElementById("groupList").innerHTML = listHtml;
             });
@@ -488,6 +497,3 @@
         }
     }
 </script>
-</script>
-<script src="~/js/chat.js"></script>
->>>>>>> ff5dd8f3d9daa7e85f286ef4f55d6e477995bd78
