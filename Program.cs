@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies; // [MỚI THÊM] Thư viện cookie
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using RealTimeChatMVC.Data;
 using RealTimeChatMVC.Hubs;
@@ -7,11 +8,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 // --- PHẦN 1: ĐĂNG KÝ DỊCH VỤ ---
 
-// 1. Đăng ký MVC
+// 1. Đăng ký MVC Controllers
 builder.Services.AddControllersWithViews();
 
+// [THÊM] Cấu hình kích thước upload file
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB
+});
+
 // 2. Đăng ký SignalR
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(hubOptions =>
+{
+    // Tăng giới hạn kích thước message (mặc định 32KB, tăng lên 1MB)
+    hubOptions.MaximumReceiveMessageSize = 1024 * 1024;
+    
+    // Timeout cho long-running operations
+    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(15);
+});
 
 // 3. Đăng ký Kết nối SQL Server
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

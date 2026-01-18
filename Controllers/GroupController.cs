@@ -114,6 +114,7 @@ namespace RealTimeChatMVC.Controllers
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
             var targetUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == targetUsername);
 
+            if (currentUser == null) return Unauthorized("User không được tìm thấy");
             if (targetUser == null) return NotFound("Người dùng không tồn tại");
 
             // [FIX] Kiểm tra xem đã có nhóm chat riêng giữa 2 người này chưa

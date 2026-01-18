@@ -7,115 +7,165 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 document.getElementById("sendButton").disabled = true;
 
 // --- HÀM HỖ TRỢ: Thêm tin nhắn vào giao diện ---
-function appendMessage(user, message, time) {
-    var chatBox = document.getElementById("chatBox");
-    var isMine = (user === currentUser);
-    
-    var divItem = document.createElement("div");
-    divItem.className = isMine ? "message-item msg-right" : "message-item msg-left";
-    
-    // Fix bảo mật: Dùng textContent cho message để tránh XSS
-    divItem.innerHTML = `
-        <div class="message-content"></div>
-        <div class="message-info">${isMine ? "Bạn" : user} • ${time}</div>
-    `;
-    divItem.querySelector(".message-content").textContent = message;
+function appendMessage(user, message, time, type = "Text") {
+  var chatBox = document.getElementById("chatBox");
+  var isMine = user === currentUser;
 
-    chatBox.appendChild(divItem);
-    scrollToBottom();
+  // Debug: Kiểm tra type được truyền
+  console.log("appendMessage called with:", { user, message, time, type });
+
+  var divItem = document.createElement("div");
+  divItem.className = isMine
+    ? "message-item msg-right"
+    : "message-item msg-left";
+
+  var contentDiv = document.createElement("div");
+  contentDiv.className = "message-content";
+
+  // Xử lý hiển thị dựa trên loại tin nhắn
+  if (type === "File" || type === "Image") {
+    // Nếu là link file/ảnh
+    if (message.startsWith("/uploads/")) {
+      if (type === "Image") {
+        // Hiển thị ảnh
+        var img = document.createElement("img");
+        img.src = message;
+        img.style.maxWidth = "250px";
+        img.style.maxHeight = "250px";
+        img.style.borderRadius = "10px";
+        contentDiv.appendChild(img);
+      } else {
+        // Hiển thị link file
+        var fileName = message.split("/").pop();
+        var link = document.createElement("a");
+        link.href = message;
+        link.download = "";
+        link.textContent = "📎 " + fileName;
+        link.target = "_blank";
+        link.style.color = "#1A2980";
+        link.style.textDecoration = "underline";
+        contentDiv.appendChild(link);
+      }
+    } else {
+      // Fallback nếu không phải đường dẫn
+      contentDiv.textContent = message;
+    }
+  } else {
+    // Tin nhắn text thường
+    contentDiv.textContent = message;
+  }
+
+  divItem.appendChild(contentDiv);
+
+  // Thêm thông tin thời gian
+  var infoDiv = document.createElement("div");
+  infoDiv.className = "message-info";
+  infoDiv.textContent = (isMine ? "Bạn" : user) + " • " + time;
+  divItem.appendChild(infoDiv);
+
+  chatBox.appendChild(divItem);
+  scrollToBottom();
 }
 
 function scrollToBottom() {
-    var chatBox = document.getElementById("chatBox");
-    chatBox.scrollTop = chatBox.scrollHeight;
+  var chatBox = document.getElementById("chatBox");
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 // --- SIGNALR EVENTS ---
 
 // 2. Nhận tin nhắn từ Server (Real-time)
-connection.on("ReceiveMessage", function (user, message, time) {
-    appendMessage(user, message, time);
+connection.on("ReceiveMessage", function (user, message, time, type) {
+  appendMessage(user, message, time, type || "Text");
 });
 
 // 3. Bắt đầu kết nối
-connection.start().then(function () {
+connection
+  .start()
+  .then(function () {
     document.getElementById("sendButton").disabled = false;
     console.log("SignalR Connected!");
-}).catch(function (err) {
+  })
+  .catch(function (err) {
     return console.error(err.toString());
-});
+  });
 
 // ================= ONLINE USERS =================
 connection.on("OnlineUsersSnapshot", function (users) {
-    console.log("ONLINE SNAPSHOT:", users);
-    renderOnlineUsers(users);
+  console.log("ONLINE SNAPSHOT:", users);
+  renderOnlineUsers(users);
 });
 
 function renderOnlineUsers(users) {
-        var listHtml = "";
-        
-        // Loop qua danh sách user đang online
-        users.forEach(u => {
-            // Server trả về object có dạng { id, username }
-            var name = u.username || u.Username;
-            var id = u.id || u.Id;
+  var listHtml = "";
 
-            // Không hiển thị chính mình trong danh sách online
-            if (name === currentUser) return;
+  // Loop qua danh sách user đang online
+  users.forEach((u) => {
+    // Server trả về object có dạng { id, username }
+    var name = u.username || u.Username;
+    var id = u.id || u.Id;
 
-            // Tạo màu avatar nếu chưa có
-            if (!userColorMap[name]) {
-                userColorMap[name] = "#" + Math.floor(Math.random()*16777215).toString(16);
-            }
+    // Không hiển thị chính mình trong danh sách online
+    if (name === currentUser) return;
 
-            // [FIX] Gọi đúng hàm renderUserItem của bạn
-            listHtml += renderUserItem({ username: name, id: id });
-        });
-
-        // [QUAN TRỌNG] Sửa id="userList" thành id="onlineUsers" để khớp với HTML
-        var listElement = document.getElementById("onlineUsers");
-        if (listElement) {
-            listElement.innerHTML = listHtml;
-        } else {
-            console.error("Không tìm thấy thẻ có id='onlineUsers'");
-        }
+    // Tạo màu avatar nếu chưa có
+    if (!userColorMap[name]) {
+      userColorMap[name] =
+        "#" + Math.floor(Math.random() * 16777215).toString(16);
     }
+
+    // [FIX] Gọi đúng hàm renderUserItem của bạn
+    listHtml += renderUserItem({ username: name, id: id });
+  });
+
+  // [QUAN TRỌNG] Sửa id="userList" thành id="onlineUsers" để khớp với HTML
+  var listElement = document.getElementById("onlineUsers");
+  if (listElement) {
+    listElement.innerHTML = listHtml;
+  } else {
+    console.error("Không tìm thấy thẻ có id='onlineUsers'");
+  }
+}
 // --- DOM EVENTS ---
 
 // 4. Xử lý nút Gửi
-document.getElementById("sendButton").addEventListener("click", function (event) {
+document
+  .getElementById("sendButton")
+  .addEventListener("click", function (event) {
     var input = document.getElementById("messageInput");
     var message = input.value;
 
     if (message.trim() !== "") {
-        // Gọi hàm SendMessage bên Hub (Server)
-        // Tham số đầu tiên là user (để trống vì Server tự lấy từ Context), tham số 2 là message
-        connection.invoke("SendMessage", "", message).catch(function (err) {
-            return console.error(err.toString());
-        });
-        input.value = "";
-        input.focus();
+      // Gọi hàm SendMessage bên Hub (Server)
+      // Tham số đầu tiên là user (để trống vì Server tự lấy từ Context), tham số 2 là message
+      connection.invoke("SendMessage", "", message).catch(function (err) {
+        return console.error(err.toString());
+      });
+      input.value = "";
+      input.focus();
     }
     event.preventDefault(); // Chặn reload trang
-});
+  });
 
 // 5. Bấm Enter để gửi
-document.getElementById("messageInput").addEventListener("keyup", function(event) {
+document
+  .getElementById("messageInput")
+  .addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
-        document.getElementById("sendButton").click();
+      document.getElementById("sendButton").click();
     }
-});
+  });
 
 // --- API CALLS ---
 
 // 6. Load lịch sử tin nhắn khi trang vừa tải
-document.addEventListener("DOMContentLoaded", function() {
-    fetch('/Chat/GetHistory')
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(msg => {
-                appendMessage(msg.user, msg.message, msg.time);
-            });
-        })
-        .catch(error => console.error('Lỗi tải lịch sử:', error));
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("/Chat/GetHistory")
+    .then((response) => response.json())
+    .then((data) => {
+      data.forEach((msg) => {
+        appendMessage(msg.user, msg.message, msg.time, msg.type || "Text");
+      });
+    })
+    .catch((error) => console.error("Lỗi tải lịch sử:", error));
 });

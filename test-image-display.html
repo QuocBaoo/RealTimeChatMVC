@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test Image Display</title>
+    <style>
+      .message-content {
+        padding: 12px 18px;
+        border-radius: 20px;
+        background: white;
+        border: 1px solid #e1e8ed;
+      }
+
+      .message-content img {
+        max-width: 300px;
+        max-height: 300px;
+        border-radius: 10px;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block;
+      }
+
+      .message-item:has(img) .message-content {
+        padding: 5px !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+
+      .message-item {
+        margin: 10px 0;
+        max-width: 75%;
+      }
+
+      .msg-left {
+        text-align: left;
+      }
+
+      .msg-right {
+        text-align: right;
+        margin-left: auto;
+        width: fit-content;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Test Image Display</h2>
+
+    <div class="message-item msg-left">
+      <div class="message-content">
+        <img src="/uploads/test-image.jpg" alt="Test" />
+      </div>
+    </div>
+
+    <div class="message-item msg-right">
+      <div class="message-content">
+        <img src="/uploads/test-image.jpg" alt="Test" />
+      </div>
+    </div>
+
+    <script>
+      console.log("Image test loaded. Check if images display correctly.");
+    </script>
+  </body>
+</html>

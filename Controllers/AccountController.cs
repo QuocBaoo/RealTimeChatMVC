@@ -106,6 +106,7 @@ namespace RealTimeChatMVC.Controllers
             }
 
             ViewBag.Error = "Sai tài khoản hoặc mật khẩu!";
+            ViewBag.Error = "Tên đăng nhập hoặc mật khẩu không đúng";
             return View();
         }
 

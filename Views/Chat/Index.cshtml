@@ -232,8 +232,19 @@
     }
 
     .message-content img {
-        max-width: 200px;
+        max-width: 300px;
+        max-height: 300px;
         border-radius: 10px;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block;
+    }
+
+    .message-item:has(img) .message-content {
+        padding: 5px !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
     }
 
     .message-info {
@@ -581,22 +592,64 @@
             event.preventDefault();
         });
 
-        // --- IMAGE SENDING ---
+        // --- IMAGE SENDING (FIXED) ---
         function sendImage() {
             var file = document.getElementById('imgInput').files[0];
-            if (file) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    var base64 = e.target.result;
-                    if (currentGroup) {
-                        connection.invoke("SendGroupMessage", currentGroup, base64, "Image");
-                    } else {
-                        // [FIX] Truyền currentUser thay vì chuỗi rỗng ""
-                        connection.invoke("SendMessage", currentUser, base64, "Image");
-                    }
-                };
-                reader.readAsDataURL(file);
+            if (!file) return;
+
+            // Kiểm tra kích thước file (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert("❌ File quá lớn (tối đa 10MB)");
+                return;
             }
+
+            // Tạo FormData để upload file
+            var formData = new FormData();
+            formData.append('file', file);
+
+            // Hiển thị trạng thái đang upload
+            var sendBtn = document.getElementById("sendButton");
+            var originalText = sendBtn.innerText;
+            sendBtn.disabled = true;
+            sendBtn.innerText = "⏳ Đang gửi...";
+
+            // Upload file lên server
+            fetch('/Files/Upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Detect loại file dựa trên MIME type
+                    var messageType = "File";
+                    if (file.type.startsWith("image/")) {
+                        messageType = "Image";
+                    }
+                    
+                    // Gửi link file qua SignalR (không gửi file nhị phân)
+                    if (currentGroup) {
+                        connection.invoke("SendGroupMessage", currentGroup, data.url, messageType)
+                            .catch(err => console.error("Lỗi gửi file:", err));
+                    } else {
+                        connection.invoke("SendMessage", currentUser, data.url, messageType)
+                            .catch(err => console.error("Lỗi gửi file:", err));
+                    }
+                } else {
+                    alert("❌ " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi upload:", error);
+                alert("❌ Lỗi khi gửi file");
+            })
+            .finally(() => {
+                // Khôi phục trạng thái nút
+                sendBtn.disabled = false;
+                sendBtn.innerText = originalText;
+                // Reset input file
+                document.getElementById('imgInput').value = '';
+            });
         }
 
         function insertEmoji(emoji) {
@@ -621,9 +674,18 @@
                 .then(data => {
                     var listHtml = `<div class="group-item" onclick="joinGlobalChat()">💬 Chat Chung</div>`;
                     data.forEach(g => {
-                        listHtml += `<div class="group-item" onclick="joinRoom(${g.id}, '${g.name}')"># ${g.name}</div>`;
+                        listHtml += `<div class="group-item" id="group-${g.id}" onclick="joinRoom(${g.id}, '${g.name}')"># ${g.name}</div>`;
                     });
                     document.getElementById("groupList").innerHTML = listHtml;
+                    
+                    // Nếu đang ở trong group, highlight nó
+                    if (currentGroupId) {
+                        var activeGroup = document.getElementById(`group-${currentGroupId}`);
+                        if (activeGroup) {
+                            document.querySelectorAll(".group-item").forEach(el => el.classList.remove("active"));
+                            activeGroup.classList.add("active");
+                        }
+                    }
                 });
         }
 
@@ -642,6 +704,13 @@
             document.getElementById("currentRoomName").innerText = "🔒 " + groupName;
             document.getElementById("groupActions").style.display = "block";
 
+            // Highlight group item
+            document.querySelectorAll(".group-item").forEach(el => el.classList.remove("active"));
+            var activeGroup = document.getElementById(`group-${groupId}`);
+            if (activeGroup) {
+                activeGroup.classList.add("active");
+            }
+
             var chatBox = document.getElementById("chatBox");
             chatBox.innerHTML = '<div class="text-center text-muted mt-3">Đang tải tin nhắn...</div>';
 
@@ -657,17 +726,34 @@
 
         function showCreateGroup() {
             var name = prompt("Nhập tên nhóm mới:");
+            if (!name) return;
+            
             var inviteId = prompt("Nhập ID người muốn mời (Optional):");
-            if (name) {
-                fetch('/Group/CreateGroup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ groupName: name, invitedUserId: inviteId ? parseInt(inviteId) : 0 })
-                }).then(res => res.json()).then(data => {
-                    alert("Mã nhóm: " + data.code);
-                    loadGroups();
-                });
-            }
+            
+            fetch('/Group/CreateGroup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ groupName: name, invitedUserId: inviteId ? parseInt(inviteId) : 0 })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                alert("✅ Tạo nhóm thành công!\nMã nhóm: " + data.code);
+                loadGroups();
+                
+                // Tự động vào nhóm vừa tạo
+                setTimeout(() => {
+                    if (data.id && data.name) {
+                        joinRoom(data.id, data.name);
+                    }
+                }, 300);
+            })
+            .catch(err => {
+                console.error("Error creating group:", err);
+                alert("❌ Lỗi tạo nhóm: " + err.message);
+            });
         }
 
         function joinByCode() {
@@ -704,9 +790,14 @@
             fetch('/Friend/GetFriends').then(r => r.json()).then(data => {
                 var html = "";
                 data.forEach(f => {
-                    html += `<div class="user-item" onclick="startPrivateChat('${f.username}')">
-                            <div class="avatar" style="background:${f.avatarColor}">${f.username[0]}</div>
-                            <span style="margin-left:10px">${f.fullName}</span>
+                    // Fix: Dùng f.Username (chữ U hoa) thay vì f.username
+                    var username = f.Username || f.username;  // Fallback cho cả 2 case
+                    var fullName = f.FullName || f.fullName;
+                    var avatarColor = f.AvatarColor || f.avatarColor;
+                    
+                    html += `<div class="user-item" onclick="startPrivateChat('${username}')">
+                            <div class="avatar" style="background:${avatarColor}">${username[0]}</div>
+                            <span style="margin-left:10px">${fullName}</span>
                          </div>`;
                 });
                 document.getElementById("friendList").innerHTML = html;
@@ -757,13 +848,34 @@
         }
 
         function startPrivateChat(username) {
+            console.log("Starting private chat with:", username);
+            
+            if (!username) {
+                alert("❌ Username không hợp lệ");
+                return;
+            }
+
             fetch('/Group/CreatePrivateChat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ targetUsername: username })
-            }).then(res => res.json()).then(g => {
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(g => {
+                console.log("Private chat created:", g);
                 loadGroups();
-                joinRoom(g.id, g.name);
+                setTimeout(() => {
+                    joinRoom(g.id, g.name);
+                }, 200);  // Delay để loadGroups hoàn thành
+            })
+            .catch(err => {
+                console.error("Error creating private chat:", err);
+                alert("❌ Lỗi tạo chat riêng: " + err.message);
             });
         }
 
