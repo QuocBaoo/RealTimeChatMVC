@@ -664,6 +664,11 @@
             loadGroups();
             loadFriends();
             loadPendingRequests();
+            
+            // Tự động vào Chat Chung khi load trang
+            setTimeout(() => {
+                joinGlobalChat();
+            }, 300);
         };
 
         // --- CÁC HÀM XỬ LÝ NHÓM ---
@@ -690,12 +695,50 @@
         }
 
         function joinGlobalChat() {
+            console.log("Joining global chat...");
             currentGroup = "";
             currentGroupId = 0;
             document.getElementById("currentRoomName").innerText = "💬 Chat Chung";
             document.getElementById("groupActions").style.display = "none";
-            document.getElementById("chatBox").innerHTML = "";
-            // Load history chat chung (nếu có API)
+            
+            // Highlight Chat Chung
+            document.querySelectorAll(".group-item").forEach(el => el.classList.remove("active"));
+            var firstGroupItem = document.querySelector(".group-item");
+            if (firstGroupItem) {
+                firstGroupItem.classList.add("active");
+            }
+            
+            var chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML = '<div class="text-center text-muted mt-3">⏳ Đang tải tin nhắn...</div>';
+
+            // Load history chat chung
+            fetch('/Chat/GetHistory')
+                .then(response => {
+                    console.log("Response status:", response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Loaded messages:", data);
+                    chatBox.innerHTML = '';
+                    if (!data || data.length === 0) {
+                        chatBox.innerHTML = '<div class="text-center text-muted mt-3">Chưa có tin nhắn nào</div>';
+                        return;
+                    }
+                    data.forEach(msg => {
+                        console.log("Appending message:", msg);
+                        appendMessage(msg.user, msg.message, msg.time, msg.type || "Text");
+                    });
+                })
+                .catch(error => {
+                    console.error('Lỗi tải lịch sử:', error);
+                    chatBox.innerHTML = '<div class="text-center text-danger mt-3">❌ Lỗi tải tin nhắn: ' + error.message + '</div>';
+                });
+
+            // Join SignalR room cho Chat Chung
+            connection.invoke("JoinRoom", "").catch(err => console.error("Error joining room:", err.toString()));
         }
 
         function joinRoom(groupId, groupName) {

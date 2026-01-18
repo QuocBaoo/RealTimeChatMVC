@@ -158,14 +158,5 @@ document
 
 // --- API CALLS ---
 
-// 6. Load lịch sử tin nhắn khi trang vừa tải
-document.addEventListener("DOMContentLoaded", function () {
-  fetch("/Chat/GetHistory")
-    .then((response) => response.json())
-    .then((data) => {
-      data.forEach((msg) => {
-        appendMessage(msg.user, msg.message, msg.time, msg.type || "Text");
-      });
-    })
-    .catch((error) => console.error("Lỗi tải lịch sử:", error));
-});
+// 6. Load lịch sử tin nhắn - LOẠI BỎ vì joinGlobalChat() sẽ load
+// (Nếu cần load khi trang vừa mở, dùng joinGlobalChat() trong window.onload thay vì)
