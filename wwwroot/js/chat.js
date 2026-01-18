@@ -45,6 +45,29 @@ connection.start().then(function () {
     return console.error(err.toString());
 });
 
+// ================= ONLINE USERS =================
+connection.on("OnlineUsersSnapshot", function (users) {
+    console.log("ONLINE SNAPSHOT:", users);
+    renderOnlineUsers(users);
+});
+
+function renderOnlineUsers(users) {
+    const list = document.getElementById("onlineUsers");
+    if (!list) {
+        console.warn("Không tìm thấy element #onlineUsers");
+        return;
+    }
+
+    list.innerHTML = "";
+
+    users.forEach(u => {
+        const li = document.createElement("li");
+        li.textContent = u.username;
+        li.dataset.userid = u.id;
+        list.appendChild(li);
+    });
+}
+
 // --- DOM EVENTS ---
 
 // 4. Xử lý nút Gửi

@@ -28,6 +28,7 @@ namespace RealTimeChatMVC.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] // [FIX] Chống tấn công CSRF
         // SỬA LỖI: Dùng tên đầy đủ "RealTimeChatMVC.Models.User" để tránh nhầm lẫn
         public async Task<IActionResult> Register(RealTimeChatMVC.Models.User user)
         {
@@ -51,6 +52,10 @@ namespace RealTimeChatMVC.Controllers
                     ViewBag.Error = $"Tài khoản '{user.Username}' đã có người dùng!";
                     return View(user);
                 }
+
+                // Generate Random Fixed Color
+                var random = new Random();
+                user.AvatarColor = String.Format("#{0:X6}", random.Next(0x1000000));
 
                 // 3. Lưu vào Database
                 _context.Users.Add(user);
@@ -78,6 +83,7 @@ namespace RealTimeChatMVC.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] // [FIX] Chống tấn công CSRF
         public async Task<IActionResult> Login(string username, string password)
         {
             // Tìm user trong DB
@@ -88,7 +94,9 @@ namespace RealTimeChatMVC.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.Username),
-                    new Claim("FullName", user.FullName ?? user.Username)
+                    new Claim("FullName", user.FullName ?? user.Username),
+                    new Claim("UserId", user.Id.ToString()),
+                    new Claim("AvatarColor", user.AvatarColor ?? "#000")
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

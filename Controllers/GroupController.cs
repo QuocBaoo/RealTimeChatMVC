@@ -36,10 +36,14 @@ namespace RealTimeChatMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _context.Users
-                .Select(u => new { u.Id, u.Username })
+            var onlineUsers = await _context.OnlineUsers
+                .Join(_context.Users, 
+                      o => o.UserId, 
+                      u => u.Id, 
+                      (o, u) => new { u.Id, u.Username }) // Trả về đúng object
+                .Distinct() // Tránh trùng lặp nếu 1 user login nhiều nơi
                 .ToListAsync();
-            return Json(users);
+            return Json(onlineUsers);
         }
 
         // [MỚI] Lấy tất cả nhóm để hiển thị cho người khác thấy
@@ -60,11 +64,11 @@ namespace RealTimeChatMVC.Controllers
 
         // 2. Xử lý tạo nhóm mới
         [HttpPost]
-        public async Task<IActionResult> CreateGroup([FromBody] string groupName)
+        public async Task<IActionResult> CreateGroup([FromBody] CreateGroupRequest request)
         {
             try
             {
-                if (string.IsNullOrEmpty(groupName)) return BadRequest("Tên nhóm không hợp lệ");
+                if (string.IsNullOrEmpty(request.GroupName)) return BadRequest("Tên nhóm không hợp lệ");
 
                 var username = User.Identity.Name;
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
@@ -73,15 +77,24 @@ namespace RealTimeChatMVC.Controllers
 
                 var newGroup = new ChatGroup
                 {
-                    Name = groupName,
+                    Name = request.GroupName,
                     CreatedBy = username,
+                    OwnerId = user.Id,
+                    GroupCode = Guid.NewGuid().ToString().Substring(0, 6).ToUpper(), // Mã khóa ngẫu nhiên
                     Members = new List<User> { user } // Tự động thêm người tạo vào nhóm
                 };
+
+                // Nếu có mời thành viên ngay lúc tạo
+                if (request.InvitedUserId > 0)
+                {
+                    var invitedUser = await _context.Users.FindAsync(request.InvitedUserId);
+                    if (invitedUser != null) newGroup.Members.Add(invitedUser);
+                }
 
                 _context.ChatGroups.Add(newGroup);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { id = newGroup.Id, name = newGroup.Name });
+                return Ok(new { id = newGroup.Id, name = newGroup.Name, code = newGroup.GroupCode });
             }
             catch (Exception ex)
             {
@@ -92,8 +105,9 @@ namespace RealTimeChatMVC.Controllers
 
         // [MỚI] Tạo nhóm chat riêng (Private Chat)
         [HttpPost]
-        public async Task<IActionResult> CreatePrivateChat([FromBody] string targetUsername)
+        public async Task<IActionResult> CreatePrivateChat([FromBody] PrivateChatRequest request)
         {
+            var targetUsername = request.TargetUsername;
             var currentUsername = User.Identity.Name;
             if (currentUsername == targetUsername) return BadRequest("Không thể chat với chính mình");
 
@@ -101,6 +115,17 @@ namespace RealTimeChatMVC.Controllers
             var targetUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == targetUsername);
 
             if (targetUser == null) return NotFound("Người dùng không tồn tại");
+
+            // [FIX] Kiểm tra xem đã có nhóm chat riêng giữa 2 người này chưa
+            var existingGroup = await _context.ChatGroups
+                .Include(g => g.Members)
+                .Where(g => g.IsPrivate && g.Members.Any(m => m.Username == currentUsername) && g.Members.Any(m => m.Username == targetUsername))
+                .FirstOrDefaultAsync();
+
+            if (existingGroup != null)
+            {
+                return Ok(new { id = existingGroup.Id, name = existingGroup.Name });
+            }
 
             var group = new ChatGroup
             {
@@ -119,11 +144,11 @@ namespace RealTimeChatMVC.Controllers
         // 3. Tham gia nhóm (Logic Database)
         // Lưu ý: Logic này dùng để lưu vào DB. Việc join realtime sẽ do SignalR đảm nhận ở Client.
         [HttpPost]
-        public async Task<IActionResult> JoinGroup(int groupId)
+        public async Task<IActionResult> JoinGroup(string groupCode)
         {
             var username = User.Identity.Name;
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            var group = await _context.ChatGroups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
+            var group = await _context.ChatGroups.Include(g => g.Members).FirstOrDefaultAsync(g => g.GroupCode == groupCode);
 
             if (user != null && group != null)
             {
@@ -134,7 +159,7 @@ namespace RealTimeChatMVC.Controllers
                 }
                 return Ok(new { message = "Đã tham gia nhóm thành công" });
             }
-            return BadRequest("Không tìm thấy nhóm hoặc user");
+            return BadRequest("Mã nhóm không đúng hoặc lỗi hệ thống");
         }
 
         // 4. Lấy lịch sử tin nhắn của nhóm
@@ -148,11 +173,74 @@ namespace RealTimeChatMVC.Controllers
                 {
                     sender = m.SenderName,
                     content = m.Content,
-                    timestamp = m.Timestamp.ToString("HH:mm")
+                    timestamp = m.Timestamp.ToString("HH:mm"),
+                    type = m.Type
                 })
                 .ToListAsync();
 
             return Json(messages);
+        }
+
+        // 5. Mời thành viên ra khỏi nhóm (Kick)
+        [HttpPost]
+        public async Task<IActionResult> KickMember(int groupId, int userId)
+        {
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == User.Identity.Name);
+            var group = await _context.ChatGroups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
+
+            if (group == null || currentUser == null) return NotFound();
+
+            // Chỉ chủ nhóm mới được kick
+            if (group.OwnerId != currentUser.Id) return Forbid("Bạn không phải chủ nhóm");
+
+            var targetUser = group.Members.FirstOrDefault(m => m.Id == userId);
+            if (targetUser != null)
+            {
+                group.Members.Remove(targetUser);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            return NotFound("Thành viên không tồn tại");
+        }
+
+        // 6. Rời nhóm
+        [HttpPost]
+        public async Task<IActionResult> LeaveGroup(int groupId)
+        {
+            var username = User.Identity.Name;
+            var group = await _context.ChatGroups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
+            var user = group?.Members.FirstOrDefault(u => u.Username == username);
+
+            if (group != null && user != null)
+            {
+                group.Members.Remove(user);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        // 7. Thêm thành viên bằng ID
+        [HttpPost]
+        public async Task<IActionResult> AddMemberById(int groupId, int userId)
+        {
+             var group = await _context.ChatGroups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
+             var user = await _context.Users.FindAsync(userId);
+             if(group != null && user != null && !group.Members.Contains(user)) {
+                 group.Members.Add(user);
+                 await _context.SaveChangesAsync();
+                 return Ok();
+             }
+             return BadRequest("Không tìm thấy user hoặc nhóm");
+        }
+
+        public class CreateGroupRequest {
+            public string GroupName { get; set; }
+            public int InvitedUserId { get; set; }
+        }
+
+        public class PrivateChatRequest {
+            public string TargetUsername { get; set; }
         }
     }
 }

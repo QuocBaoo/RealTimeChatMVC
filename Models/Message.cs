@@ -9,19 +9,20 @@ namespace RealTimeChatMVC.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
         public string SenderName { get; set; } // Tên người gửi
 
         [Required]
-        public string Content { get; set; }    // Nội dung tin nhắn
+        public string Content { get; set; } // Nội dung tin nhắn
 
-        public DateTime Timestamp { get; set; } = DateTime.Now; // Thời gian gửi
+        public DateTime Timestamp { get; set; } = DateTime.Now;
 
-        // --- QUAN HỆ VỚI NHÓM CHAT ---
-        // ID của nhóm chat (Nullable: nếu null thì là chat chung/global)
-        public int? ChatGroupId { get; set; }
+        public string Type { get; set; } = "Text"; // Text, Image, File...
 
-        // Navigation property
+        public int? ChatGroupId { get; set; } // Null nếu là chat chung (Global)
+
+        [ForeignKey("ChatGroupId")]
         public virtual ChatGroup ChatGroup { get; set; }
+
+        public int? ToUserId { get; set; } // [MỚI] ID người nhận (nếu chat riêng)
     }
 }

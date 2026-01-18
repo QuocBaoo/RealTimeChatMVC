@@ -22,8 +22,12 @@ builder.Services.AddDbContext<ChatDbContext>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login"; // Nếu chưa đăng nhập thì chuyển hướng về đây
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Đăng nhập giữ trong 60 phút
+        options.LoginPath = "/Account/Login";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax; // [FIX] Để Lax an toàn hơn cho Dev/Prod cơ bản
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // [FIX] Tự động theo HTTP/HTTPS
     });
 
 // --- KẾT THÚC PHẦN ĐĂNG KÝ ---
@@ -59,7 +63,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ChatDbContext>();
-        // context.Database.EnsureDeleted(); // <--- Bỏ comment dòng này, chạy 1 lần để Reset DB
+        context.Database.EnsureDeleted(); // <--- Bỏ comment dòng này, chạy 1 lần để Reset DB
         context.Database.EnsureCreated(); // Tự động tạo bảng dựa trên code (không cần file Migration)
     }
     catch (Exception ex)

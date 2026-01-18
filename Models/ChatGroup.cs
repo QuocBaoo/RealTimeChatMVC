@@ -19,6 +19,10 @@ namespace RealTimeChatMVC.Models
 
         public string CreatedBy { get; set; } // Người tạo (Lưu Username)
 
+        public int? OwnerId { get; set; } // ID của chủ nhóm (để xử lý quyền kick/add)
+
+        public string? GroupCode { get; set; } // Mã khóa tham gia nhóm
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // --- CÁC TÍNH NĂNG BẢO MẬT ---
