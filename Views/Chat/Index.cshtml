@@ -40,8 +40,9 @@
         /* Rộng hơn xíu cho thoải mái */
         height: 100%;
         /* Chiếm hết chiều cao cho phép trong wrapper */
-        display: flex; 
-        flex-direction: column; /* Đổi thành dọc để chứa Taskbar */
+        display: flex;
+        flex-direction: column;
+        /* Đổi thành dọc để chứa Taskbar */
         overflow: hidden;
     }
 
@@ -57,7 +58,11 @@
         justify-content: space-between;
     }
 
-    .chat-body { display: flex; flex: 1; overflow: hidden; }
+    .chat-body {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
 
     /* SIDEBAR (DANH SÁCH NHÓM) */
     .sidebar {
@@ -109,29 +114,60 @@
         display: flex;
         flex-direction: column;
     }
-    .user-list { flex: 1; overflow-y: auto; padding: 10px; }
-    .user-item {
-        padding: 8px 10px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #555;
-        cursor: pointer; border-radius: 10px;
+
+    .user-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
     }
-    .user-item:hover { background: #f0f0f0; }
-    
+
+    .user-item {
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: #555;
+        cursor: pointer;
+        border-radius: 10px;
+    }
+
+    .user-item:hover {
+        background: #f0f0f0;
+    }
+
     .section-title {
-        font-size: 0.8rem; font-weight: 800; color: #999; padding: 10px 15px; text-transform: uppercase;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #999;
+        padding: 10px 15px;
+        text-transform: uppercase;
     }
 
     .status-dot {
-        width: 8px; height: 8px; background: #ccc; border-radius: 50%;
+        width: 8px;
+        height: 8px;
+        background: #ccc;
+        border-radius: 50%;
     }
+
     .status-dot.online {
-        background: #2ecc71; box-shadow: 0 0 5px #2ecc71;
+        background: #2ecc71;
+        box-shadow: 0 0 5px #2ecc71;
     }
 
     /* AVATAR */
     .avatar {
-        width: 35px; height: 35px; border-radius: 50%; color: white;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 0.9rem; flex-shrink: 0;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9rem;
+        flex-shrink: 0;
     }
 
     /* MAIN CHAT AREA */
@@ -195,7 +231,10 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
 
-    .message-content img { max-width: 200px; border-radius: 10px; }
+    .message-content img {
+        max-width: 200px;
+        border-radius: 10px;
+    }
 
     .message-info {
         font-size: 0.75rem;
@@ -280,9 +319,16 @@
     }
 
     .btn-icon {
-        background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #555;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #555;
     }
-    .btn-icon:hover { color: #1A2980; }
+
+    .btn-icon:hover {
+        color: #1A2980;
+    }
 
     /* Thanh cuộn đẹp */
     .chat-box::-webkit-scrollbar {
@@ -301,15 +347,33 @@
     /* USER ACTIONS POPUP */
     .user-actions {
         display: none;
-        background: white; border: 1px solid #eee; padding: 10px; border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        background: white;
+        border: 1px solid #eee;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         margin-top: 5px;
     }
-    .user-item.active .user-actions { display: block; }
-    .action-btn {
-        display: block; width: 100%; text-align: left; padding: 5px; border: none; background: none; cursor: pointer; font-size: 0.85rem;
+
+    .user-item.active .user-actions {
+        display: block;
     }
-    .action-btn:hover { background: #f4f7f6; color: #1A2980; }
+
+    .action-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 5px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .action-btn:hover {
+        background: #f4f7f6;
+        color: #1A2980;
+    }
 </style>
 
 <div class="chat-wrapper">
@@ -321,136 +385,139 @@
         </div>
 
         <div class="chat-body">
-        <!-- SIDEBAR TRÁI -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <span>DANH SÁCH NHÓM</span>
-                <div>
-                    <button class="btn btn-sm btn-primary rounded-circle" onclick="showCreateGroup()" title="Tạo nhóm">+</button>
-                    <button class="btn btn-sm btn-secondary rounded-circle" onclick="joinByCode()" title="Nhập mã">#</button>
+            <!-- SIDEBAR TRÁI -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <span>DANH SÁCH NHÓM</span>
+                    <div>
+                        <button class="btn btn-sm btn-primary rounded-circle" onclick="showCreateGroup()"
+                            title="Tạo nhóm">+</button>
+                        <button class="btn btn-sm btn-secondary rounded-circle" onclick="joinByCode()"
+                            title="Nhập mã">#</button>
+                    </div>
                 </div>
-            </div>
-            <div class="group-list" id="groupList">
-                <!-- Danh sách nhóm sẽ load vào đây -->
-                <div class="text-center mt-3 text-muted small">Đang tải...</div>
-            </div>
-        </div>
-
-        <!-- KHUNG CHAT PHẢI -->
-        <div class="main-chat-area">
-            <div class="chat-header">
-                <h3 class="chat-title" id="currentRoomName">💬 Chat Chung</h3>
-                <div
-                    style="display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.1); padding: 5px 15px; border-radius: 20px;">
-                    <span
-                        style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 5px #2ecc71;"></span>
-                    <span
-                        style="font-weight: 800; font-size: 0.85rem; color: #2ecc71; text-transform: uppercase;">Online</span>
-                </div>
-                <div id="groupActions" style="display:none; margin-left: 10px;">
-                    <button class="btn btn-sm btn-danger" onclick="leaveGroup()">Rời nhóm</button>
-                    <button class="btn btn-sm btn-info" onclick="addMember()">Thêm TV</button>
+                <div class="group-list" id="groupList">
+                    <!-- Danh sách nhóm sẽ load vào đây -->
+                    <div class="text-center mt-3 text-muted small">Đang tải...</div>
                 </div>
             </div>
 
-            <div class="chat-box" id="chatBox">
-                <!-- Messages loaded via JS -->
+            <!-- KHUNG CHAT PHẢI -->
+            <div class="main-chat-area">
+                <div class="chat-header">
+                    <h3 class="chat-title" id="currentRoomName">💬 Chat Chung</h3>
+                    <div
+                        style="display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.1); padding: 5px 15px; border-radius: 20px;">
+                        <span
+                            style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 5px #2ecc71;"></span>
+                        <span
+                            style="font-weight: 800; font-size: 0.85rem; color: #2ecc71; text-transform: uppercase;">Online</span>
+                    </div>
+                    <div id="groupActions" style="display:none; margin-left: 10px;">
+                        <button class="btn btn-sm btn-danger" onclick="leaveGroup()">Rời nhóm</button>
+                        <button class="btn btn-sm btn-info" onclick="addMember()">Thêm TV</button>
+                    </div>
+                </div>
+
+                <div class="chat-box" id="chatBox">
+                    <!-- Messages loaded via JS -->
+                </div>
+
+                <div class="chat-input-area">
+                    <button class="btn-icon" onclick="document.getElementById('imgInput').click()">📷</button>
+                    <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="sendImage()">
+                    <button class="btn-icon" onclick="insertEmoji('👍')">👍</button>
+                    <button class="btn-icon" onclick="insertEmoji('❤️')">❤️</button>
+                    <button class="btn-icon" onclick="insertEmoji('😂')">😂</button>
+
+                    <input type="text" id="messageInput" class="input-mess" placeholder="Nhập tin nhắn..."
+                        autocomplete="off">
+                    <button id="sendButton" class="btn-send">➤</button>
+                </div>
             </div>
 
-            <div class="chat-input-area">
-                <button class="btn-icon" onclick="document.getElementById('imgInput').click()">📷</button>
-                <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="sendImage()">
-                <button class="btn-icon" onclick="insertEmoji('👍')">👍</button>
-                <button class="btn-icon" onclick="insertEmoji('❤️')">❤️</button>
-                <button class="btn-icon" onclick="insertEmoji('😂')">😂</button>
+            <!-- SIDEBAR PHẢI (ONLINE MEMBERS) -->
+            <div class="user-sidebar">
+                <div style="padding: 10px;">
+                    <input type="text" id="searchUser" class="form-control form-control-sm"
+                        placeholder="Tìm ID người dùng..." onkeyup="filterUsers()">
+                </div>
 
-                <input type="text" id="messageInput" class="input-mess" placeholder="Nhập tin nhắn..."
-                    autocomplete="off">
-                <button id="sendButton" class="btn-send">➤</button>
+                <div class="sidebar-header" style="font-size: 0.9rem;">
+                    <span>THÀNH VIÊN ONLINE</span>
+                </div>
+                <ul class="user-list" id="onlineUsers"></ul>
+
+
+                <div class="section-title" id="reqTitle" style="display:none">LỜI MỜI KẾT BẠN</div>
+                <div class="user-list" id="requestList"
+                    style="border-bottom: 1px solid #eee; max-height: 150px; display:none"></div>
+
+                <div class="section-title">BẠN BÈ</div>
+                <div class="user-list" id="friendList" style="border-top: 1px solid #eee;">
+                    <!-- Danh sách bạn bè -->
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- SIDEBAR PHẢI (ONLINE MEMBERS) -->
-        <div class="user-sidebar">
-            <div style="padding: 10px;">
-                <input type="text" id="searchUser" class="form-control form-control-sm" placeholder="Tìm ID người dùng..." onkeyup="filterUsers()">
-            </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <!-- Truyền biến currentUser sang file JS ngoài -->
+    <script>
+        var currentUser = "@User.Identity.Name";
+        var myAvatarColor = "@myAvatarColor";
+        var currentGroup = ""; // Mặc định là chat chung hoặc rỗng
+        var currentGroupId = 0;
+        var userMap = {}; // Lưu trữ map Username -> ID
+        var userColorMap = {}; // Lưu trữ map Username -> Color
 
-            <div class="sidebar-header" style="font-size: 0.9rem;">
-                <span>THÀNH VIÊN ONLINE</span>
-            </div>
-            <ul class="user-list" id="onlineUsers"></ul>
+        // [FIX] Khởi tạo kết nối SignalR (Bổ sung dòng này)
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
+        // 1. NHẬN TIN NHẮN (Chung cho cả Group và Private)
+        connection.on("ReceiveMessage", function (user, message, time, type) {
+            if (!currentGroup) {
+                appendMessage(user, message, time, type);
+            }
+        });
 
-            <div class="section-title" id="reqTitle" style="display:none">LỜI MỜI KẾT BẠN</div>
-            <div class="user-list" id="requestList" style="border-bottom: 1px solid #eee; max-height: 150px; display:none"></div>
-
-            <div class="section-title">BẠN BÈ</div>
-            <div class="user-list" id="friendList" style="border-top: 1px solid #eee;">
-                <!-- Danh sách bạn bè -->
-            </div>
-        </div>
-        </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
-<!-- Truyền biến currentUser sang file JS ngoài -->
-<script>
-    var currentUser = "@User.Identity.Name";
-    var myAvatarColor = "@myAvatarColor";
-    var currentGroup = ""; // Mặc định là chat chung hoặc rỗng
-    var currentGroupId = 0;
-    var userMap = {}; // Lưu trữ map Username -> ID
-    var userColorMap = {}; // Lưu trữ map Username -> Color
-
-    // [FIX] Khởi tạo kết nối SignalR (Bổ sung dòng này)
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
-
-    // 1. NHẬN TIN NHẮN (Chung cho cả Group và Private)
-    connection.on("ReceiveMessage", function (user, message, time, type) {
-        if (!currentGroup) {
+        // Nhận tin nhắn nhóm (Cần update ChatHub để dùng hàm này nếu muốn tách biệt)
+        connection.on("ReceiveGroupMessage", function (user, groupName, message, time, type) {
+            if (groupName !== currentGroup) return; // Chỉ hiện nếu đang ở đúng phòng
             appendMessage(user, message, time, type);
-        }
-    });
+        });
 
-    // Nhận tin nhắn nhóm (Cần update ChatHub để dùng hàm này nếu muốn tách biệt)
-    connection.on("ReceiveGroupMessage", function (user, groupName, message, time, type) {
-        if (groupName !== currentGroup) return; // Chỉ hiện nếu đang ở đúng phòng
-        appendMessage(user, message, time, type);
-    });
+        // 2. NHẬN DANH SÁCH ONLINE (MỚI)
+        //connection.on("UserJoined", function(u, id) { loadOnlineUsers(); });
+        //connection.on("UserLeft", function(u) { loadOnlineUsers(); });
+        connection.on("OnlineUsersSnapshot", function (users) {
+            renderOnlineUsers(users);
+        });
 
-    // 2. NHẬN DANH SÁCH ONLINE (MỚI)
-    connection.on("UserJoined", function(u, id) { loadOnlineUsers(); });
-    connection.on("UserLeft", function(u) { loadOnlineUsers(); });
-
-    function loadOnlineUsers() {
-        fetch('/Group/GetAllUsers').then(r => r.json()).then(allUsers => {
-            // Map color
-            allUsers.forEach(u => {
+        function renderOnlineUsers(users) {
+            var listHtml = "";
+            users.forEach(u => {
                 var name = u.username || u.Username;
                 var id = u.id || u.Id;
-                userMap[name] = id;
-                // [FIX] Chỉ tạo màu nếu chưa có (tránh bị đổi màu liên tục khi reload)
-                if (!userColorMap[name]) {
-                    userColorMap[name] = "#" + Math.floor(Math.random()*16777215).toString(16);
-                }
-            });
-            
-            var listHtml = "";
-            allUsers.forEach(u => {
-                var name = u.username || u.Username;
-                if (name === currentUser) return;
-                listHtml += renderUserItem(u);
-            });
-            document.getElementById("userList").innerHTML = listHtml;
-        });
-    }
 
-    function renderUserItem(u) {
-        var name = u.username || u.Username;
-        var id = u.id || u.Id;
-        var avatar = `<div class="avatar" style="background:${userColorMap[name] || '#ccc'}">${name[0].toUpperCase()}</div>`;
-        return `
+                // Không hiển thị chính mình
+                if (name === currentUser) return;
+
+                // Tạo màu avatar nếu chưa có
+                if (!userColorMap[name]) {
+                    userColorMap[name] = "#" + Math.floor(Math.random() * 16777215).toString(16);
+                }
+
+                listHtml += renderUserItem({ username: name, id: id });
+            });
+            document.getElementById("onlineUsers").innerHTML = listHtml;
+        }
+
+        function renderUserItem(u) {
+            var name = u.username || u.Username;
+            var id = u.id || u.Id;
+            var avatar = `<div class="avatar" style="background:${userColorMap[name] || '#ccc'}">${name[0].toUpperCase()}</div>`;
+            return `
             <div class="user-item" onclick="toggleActions(this)">
                 ${avatar}
                 <div style="flex:1; margin-left:10px;">
@@ -464,205 +531,204 @@
                 </div>
             </div>
         `;
-    }
-
-    function toggleActions(el) {
-        document.querySelectorAll('.user-item').forEach(e => e.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    // Hàm phụ trợ để hiển thị tin nhắn lên giao diện
-    function appendMessage(user, message, time, type) {
-        var chatBox = document.getElementById("chatBox");
-        var isMine = (user === currentUser);
-        var divItem = document.createElement("div");
-        divItem.className = isMine ? "message-item msg-right" : "message-item msg-left";
-        
-        var contentHtml = message;
-        if (type === "Image") {
-            contentHtml = `<img src="${message}" />`;
         }
 
-        var avatarHtml = `<div class="avatar" style="background:${isMine ? myAvatarColor : (userColorMap[user] || '#ccc')}">${user[0].toUpperCase()}</div>`;
+        function toggleActions(el) {
+            document.querySelectorAll('.user-item').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+        }
 
-        divItem.innerHTML = `
+        // Hàm phụ trợ để hiển thị tin nhắn lên giao diện
+        function appendMessage(user, message, time, type) {
+            var chatBox = document.getElementById("chatBox");
+            var isMine = (user === currentUser);
+            var divItem = document.createElement("div");
+            divItem.className = isMine ? "message-item msg-right" : "message-item msg-left";
+
+            var contentHtml = message;
+            if (type === "Image") {
+                contentHtml = `<img src="${message}" />`;
+            }
+
+            var avatarHtml = `<div class="avatar" style="background:${isMine ? myAvatarColor : (userColorMap[user] || '#ccc')}">${user[0].toUpperCase()}</div>`;
+
+            divItem.innerHTML = `
             ${avatarHtml}
             <div>
                 <div class="message-content">${contentHtml}</div>
                 <div class="message-info">${isMine ? "Bạn" : user} • ${time}</div>
             </div>
         `;
-        chatBox.appendChild(divItem);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    connection.start().then(() => {
-        loadOnlineUsers();
-    }).catch(err => console.error(err.toString()));
-
-    document.getElementById("sendButton").addEventListener("click", function (event) {
-        var input = document.getElementById("messageInput");
-        if (input.value.trim() !== "") {
-            if (currentGroup) {
-                connection.invoke("SendGroupMessage", currentGroup, input.value, "Text").catch(err => console.error(err.toString()));
-            } else {
-                // [FIX] Truyền currentUser thay vì chuỗi rỗng ""
-                connection.invoke("SendMessage", currentUser, input.value, "Text").catch(err => console.error(err.toString()));
-            }
-            input.value = ""; input.focus();
+            chatBox.appendChild(divItem);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
-        event.preventDefault();
-    });
 
-    // --- IMAGE SENDING ---
-    function sendImage() {
-        var file = document.getElementById('imgInput').files[0];
-        if (file) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var base64 = e.target.result;
+        connection.start().then(() => {
+            console.log("SignalR Connected");
+        }).catch(err => console.error(err.toString()));
+
+        document.getElementById("sendButton").addEventListener("click", function (event) {
+            var input = document.getElementById("messageInput");
+            if (input.value.trim() !== "") {
                 if (currentGroup) {
-                    connection.invoke("SendGroupMessage", currentGroup, base64, "Image");
+                    connection.invoke("SendGroupMessage", currentGroup, input.value, "Text").catch(err => console.error(err.toString()));
                 } else {
                     // [FIX] Truyền currentUser thay vì chuỗi rỗng ""
-                    connection.invoke("SendMessage", currentUser, base64, "Image");
+                    connection.invoke("SendMessage", currentUser, input.value, "Text").catch(err => console.error(err.toString()));
                 }
-            };
-            reader.readAsDataURL(file);
+                input.value = ""; input.focus();
+            }
+            event.preventDefault();
+        });
+
+        // --- IMAGE SENDING ---
+        function sendImage() {
+            var file = document.getElementById('imgInput').files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var base64 = e.target.result;
+                    if (currentGroup) {
+                        connection.invoke("SendGroupMessage", currentGroup, base64, "Image");
+                    } else {
+                        // [FIX] Truyền currentUser thay vì chuỗi rỗng ""
+                        connection.invoke("SendMessage", currentUser, base64, "Image");
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
         }
-    }
 
-    function insertEmoji(emoji) {
-        document.getElementById("messageInput").value += emoji;
-    }
-
-    document.getElementById("messageInput").addEventListener("keyup", function (event) {
-        if (event.key === "Enter") document.getElementById("sendButton").click();
-    });
-
-    window.onload = function () {
-        loadGroups();
-        loadFriends();
-        loadOnlineUsers();
-        loadPendingRequests();
-    };
-
-    // --- CÁC HÀM XỬ LÝ NHÓM ---
-
-    function loadGroups() {
-        fetch('/Group/GetMyGroups')
-            .then(response => response.json())
-            .then(data => {
-                var listHtml = `<div class="group-item" onclick="joinGlobalChat()">💬 Chat Chung</div>`;
-                data.forEach(g => {
-                    listHtml += `<div class="group-item" onclick="joinRoom(${g.id}, '${g.name}')"># ${g.name}</div>`;
-                });
-                document.getElementById("groupList").innerHTML = listHtml;
-            });
-    }
-
-    function joinGlobalChat() {
-        currentGroup = "";
-        currentGroupId = 0;
-        document.getElementById("currentRoomName").innerText = "💬 Chat Chung";
-        document.getElementById("groupActions").style.display = "none";
-        document.getElementById("chatBox").innerHTML = "";
-        // Load history chat chung (nếu có API)
-    }
-
-    function joinRoom(groupId, groupName) {
-        currentGroup = groupName;
-        currentGroupId = groupId;
-        document.getElementById("currentRoomName").innerText = "🔒 " + groupName;
-        document.getElementById("groupActions").style.display = "block";
-
-        var chatBox = document.getElementById("chatBox");
-        chatBox.innerHTML = '<div class="text-center text-muted mt-3">Đang tải tin nhắn...</div>';
-
-        fetch('/Group/GetGroupHistory?groupId=' + groupId)
-            .then(res => res.json())
-            .then(msgs => {
-                chatBox.innerHTML = '';
-                msgs.forEach(m => appendMessage(m.sender, m.content, m.timestamp, m.type));
-            });
-
-        connection.invoke("JoinRoom", groupName).catch(err => console.error(err.toString()));
-    }
-
-    function showCreateGroup() {
-        var name = prompt("Nhập tên nhóm mới:");
-        var inviteId = prompt("Nhập ID người muốn mời (Optional):");
-        if (name) {
-            fetch('/Group/CreateGroup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ groupName: name, invitedUserId: inviteId ? parseInt(inviteId) : 0 })
-            }).then(res => res.json()).then(data => {
-                alert("Mã nhóm: " + data.code);
-                loadGroups();
-            });
+        function insertEmoji(emoji) {
+            document.getElementById("messageInput").value += emoji;
         }
-    }
 
-    function joinByCode() {
-        var code = prompt("Nhập mã nhóm:");
-        if (code) {
-            fetch('/Group/JoinGroup?groupCode=' + code, { method: 'POST' })
-                .then(res => {
-                    if (res.ok) { loadGroups(); alert("Đã tham gia!"); }
-                    else alert("Mã sai!");
+        document.getElementById("messageInput").addEventListener("keyup", function (event) {
+            if (event.key === "Enter") document.getElementById("sendButton").click();
+        });
+
+        window.onload = function () {
+            loadGroups();
+            loadFriends();
+            loadPendingRequests();
+        };
+
+        // --- CÁC HÀM XỬ LÝ NHÓM ---
+
+        function loadGroups() {
+            fetch('/Group/GetMyGroups')
+                .then(response => response.json())
+                .then(data => {
+                    var listHtml = `<div class="group-item" onclick="joinGlobalChat()">💬 Chat Chung</div>`;
+                    data.forEach(g => {
+                        listHtml += `<div class="group-item" onclick="joinRoom(${g.id}, '${g.name}')"># ${g.name}</div>`;
+                    });
+                    document.getElementById("groupList").innerHTML = listHtml;
                 });
         }
-    }
 
-    function leaveGroup() {
-        if(confirm("Rời nhóm?")) {
-            fetch('/Group/LeaveGroup?groupId=' + currentGroupId, { method: 'POST' })
-                .then(() => { loadGroups(); joinGlobalChat(); });
+        function joinGlobalChat() {
+            currentGroup = "";
+            currentGroupId = 0;
+            document.getElementById("currentRoomName").innerText = "💬 Chat Chung";
+            document.getElementById("groupActions").style.display = "none";
+            document.getElementById("chatBox").innerHTML = "";
+            // Load history chat chung (nếu có API)
         }
-    }
 
-    function addMember() {
-        var id = prompt("Nhập ID thành viên:");
-        if(id) {
-            fetch(`/Group/AddMemberById?groupId=${currentGroupId}&userId=${id}`, { method: 'POST' })
-                .then(res => {
-                    if(res.ok) alert("Đã thêm!");
-                    else alert("Lỗi!");
+        function joinRoom(groupId, groupName) {
+            currentGroup = groupName;
+            currentGroupId = groupId;
+            document.getElementById("currentRoomName").innerText = "🔒 " + groupName;
+            document.getElementById("groupActions").style.display = "block";
+
+            var chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML = '<div class="text-center text-muted mt-3">Đang tải tin nhắn...</div>';
+
+            fetch('/Group/GetGroupHistory?groupId=' + groupId)
+                .then(res => res.json())
+                .then(msgs => {
+                    chatBox.innerHTML = '';
+                    msgs.forEach(m => appendMessage(m.sender, m.content, m.timestamp, m.type));
                 });
-        }
-    }
 
-    // --- FRIENDS ---
-    function loadFriends() {
-        fetch('/Friend/GetFriends').then(r => r.json()).then(data => {
-            var html = "";
-            data.forEach(f => {
-                html += `<div class="user-item" onclick="startPrivateChat('${f.username}')">
+            connection.invoke("JoinRoom", groupName).catch(err => console.error(err.toString()));
+        }
+
+        function showCreateGroup() {
+            var name = prompt("Nhập tên nhóm mới:");
+            var inviteId = prompt("Nhập ID người muốn mời (Optional):");
+            if (name) {
+                fetch('/Group/CreateGroup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ groupName: name, invitedUserId: inviteId ? parseInt(inviteId) : 0 })
+                }).then(res => res.json()).then(data => {
+                    alert("Mã nhóm: " + data.code);
+                    loadGroups();
+                });
+            }
+        }
+
+        function joinByCode() {
+            var code = prompt("Nhập mã nhóm:");
+            if (code) {
+                fetch('/Group/JoinGroup?groupCode=' + code, { method: 'POST' })
+                    .then(res => {
+                        if (res.ok) { loadGroups(); alert("Đã tham gia!"); }
+                        else alert("Mã sai!");
+                    });
+            }
+        }
+
+        function leaveGroup() {
+            if (confirm("Rời nhóm?")) {
+                fetch('/Group/LeaveGroup?groupId=' + currentGroupId, { method: 'POST' })
+                    .then(() => { loadGroups(); joinGlobalChat(); });
+            }
+        }
+
+        function addMember() {
+            var id = prompt("Nhập ID thành viên:");
+            if (id) {
+                fetch(`/Group/AddMemberById?groupId=${currentGroupId}&userId=${id}`, { method: 'POST' })
+                    .then(res => {
+                        if (res.ok) alert("Đã thêm!");
+                        else alert("Lỗi!");
+                    });
+            }
+        }
+
+        // --- FRIENDS ---
+        function loadFriends() {
+            fetch('/Friend/GetFriends').then(r => r.json()).then(data => {
+                var html = "";
+                data.forEach(f => {
+                    html += `<div class="user-item" onclick="startPrivateChat('${f.username}')">
                             <div class="avatar" style="background:${f.avatarColor}">${f.username[0]}</div>
                             <span style="margin-left:10px">${f.fullName}</span>
                          </div>`;
+                });
+                document.getElementById("friendList").innerHTML = html;
             });
-            document.getElementById("friendList").innerHTML = html;
-        });
-    }
+        }
 
-    function addFriend(id) {
-        fetch('/Friend/AddFriend?targetId=' + id, { method: 'POST' })
-            .then(res => {
-                if(res.ok) alert("Đã gửi lời mời!");
-                else alert("Lỗi gửi lời mời");
-            });
-    }
+        function addFriend(id) {
+            fetch('/Friend/AddFriend?targetId=' + id, { method: 'POST' })
+                .then(res => {
+                    if (res.ok) alert("Đã gửi lời mời!");
+                    else alert("Lỗi gửi lời mời");
+                });
+        }
 
-    function loadPendingRequests() {
-        fetch('/Friend/GetPendingRequests').then(r => r.json()).then(data => {
-            if (data.length > 0) {
-                document.getElementById("reqTitle").style.display = "block";
-                document.getElementById("requestList").style.display = "block";
-                var html = "";
-                data.forEach(r => {
-                    html += `
+        function loadPendingRequests() {
+            fetch('/Friend/GetPendingRequests').then(r => r.json()).then(data => {
+                if (data.length > 0) {
+                    document.getElementById("reqTitle").style.display = "block";
+                    document.getElementById("requestList").style.display = "block";
+                    var html = "";
+                    data.forEach(r => {
+                        html += `
                         <div class="user-item" style="flex-direction:column; align-items:flex-start; cursor:default">
                             <div style="display:flex; align-items:center; width:100%">
                                 <div class="avatar" style="background:${r.requesterAvatar}">${r.requesterName[0]}</div>
@@ -673,40 +739,40 @@
                                 <button class="btn btn-sm btn-secondary" style="flex:1; font-size:0.7rem" onclick="respondRequest(${r.requestId}, false)">Xóa</button>
                             </div>
                         </div>`;
-                });
-                document.getElementById("requestList").innerHTML = html;
-            } else {
-                document.getElementById("reqTitle").style.display = "none";
-                document.getElementById("requestList").style.display = "none";
-            }
-        });
-    }
-
-    function respondRequest(id, isAccept) {
-        fetch(`/Friend/RespondFriendRequest?requestId=${id}&isAccept=${isAccept}`, { method: 'POST' })
-            .then(() => {
-                loadPendingRequests();
-                loadFriends();
+                    });
+                    document.getElementById("requestList").innerHTML = html;
+                } else {
+                    document.getElementById("reqTitle").style.display = "none";
+                    document.getElementById("requestList").style.display = "none";
+                }
             });
-    }
+        }
 
-    function startPrivateChat(username) {
-        fetch('/Group/CreatePrivateChat', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ targetUsername: username })
-        }).then(res => res.json()).then(g => {
-            loadGroups();
-            joinRoom(g.id, g.name);
-        });
-    }
+        function respondRequest(id, isAccept) {
+            fetch(`/Friend/RespondFriendRequest?requestId=${id}&isAccept=${isAccept}`, { method: 'POST' })
+                .then(() => {
+                    loadPendingRequests();
+                    loadFriends();
+                });
+        }
 
-    function filterUsers() {
-        var term = document.getElementById("searchUser").value.toLowerCase();
-        var items = document.querySelectorAll("#userList .user-item");
-        items.forEach(i => {
-            if(i.innerText.toLowerCase().includes(term)) i.style.display = "flex";
-            else i.style.display = "none";
-        });
-    }
-</script>
+        function startPrivateChat(username) {
+            fetch('/Group/CreatePrivateChat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ targetUsername: username })
+            }).then(res => res.json()).then(g => {
+                loadGroups();
+                joinRoom(g.id, g.name);
+            });
+        }
+
+        function filterUsers() {
+            var term = document.getElementById("searchUser").value.toLowerCase();
+            var items = document.querySelectorAll("#userList .user-item");
+            items.forEach(i => {
+                if (i.innerText.toLowerCase().includes(term)) i.style.display = "flex";
+                else i.style.display = "none";
+            });
+        }
+    </script>

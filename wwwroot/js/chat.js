@@ -52,22 +52,34 @@ connection.on("OnlineUsersSnapshot", function (users) {
 });
 
 function renderOnlineUsers(users) {
-    const list = document.getElementById("onlineUsers");
-    if (!list) {
-        console.warn("Không tìm thấy element #onlineUsers");
-        return;
+        var listHtml = "";
+        
+        // Loop qua danh sách user đang online
+        users.forEach(u => {
+            // Server trả về object có dạng { id, username }
+            var name = u.username || u.Username;
+            var id = u.id || u.Id;
+
+            // Không hiển thị chính mình trong danh sách online
+            if (name === currentUser) return;
+
+            // Tạo màu avatar nếu chưa có
+            if (!userColorMap[name]) {
+                userColorMap[name] = "#" + Math.floor(Math.random()*16777215).toString(16);
+            }
+
+            // [FIX] Gọi đúng hàm renderUserItem của bạn
+            listHtml += renderUserItem({ username: name, id: id });
+        });
+
+        // [QUAN TRỌNG] Sửa id="userList" thành id="onlineUsers" để khớp với HTML
+        var listElement = document.getElementById("onlineUsers");
+        if (listElement) {
+            listElement.innerHTML = listHtml;
+        } else {
+            console.error("Không tìm thấy thẻ có id='onlineUsers'");
+        }
     }
-
-    list.innerHTML = "";
-
-    users.forEach(u => {
-        const li = document.createElement("li");
-        li.textContent = u.username;
-        li.dataset.userid = u.id;
-        list.appendChild(li);
-    });
-}
-
 // --- DOM EVENTS ---
 
 // 4. Xử lý nút Gửi
