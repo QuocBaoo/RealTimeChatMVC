@@ -8,7 +8,7 @@ namespace RealTimeChatMVC.Controllers
     [Authorize]
     public class FilesController : Controller
     {
-        private const long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+        private const long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB (tăng từ 10MB)
         private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
 
         public FilesController()
@@ -29,7 +29,7 @@ namespace RealTimeChatMVC.Controllers
 
                 // Kiểm tra kích thước file
                 if (file.Length > MAX_FILE_SIZE)
-                    return BadRequest(new { success = false, message = "File quá lớn (tối đa 10MB)" });
+                    return BadRequest(new { success = false, message = "File quá lớn (tối đa 50MB)" });
 
                 // Tạo tên file an toàn
                 string filename = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";

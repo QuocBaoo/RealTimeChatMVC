@@ -435,8 +435,8 @@
                 </div>
 
                 <div class="chat-input-area">
-                    <button class="btn-icon" onclick="document.getElementById('imgInput').click()">📷</button>
-                    <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="sendImage()">
+                    <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Gửi ảnh hoặc file">📎</button>
+                    <input type="file" id="fileInput" style="display:none" onchange="sendFile()">
                     <button class="btn-icon" onclick="insertEmoji('👍')">👍</button>
                     <button class="btn-icon" onclick="insertEmoji('❤️')">❤️</button>
                     <button class="btn-icon" onclick="insertEmoji('😂')">😂</button>
@@ -469,6 +469,14 @@
                     <!-- Danh sách bạn bè -->
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- IMAGE LIGHTBOX MODAL -->
+    <div id="imageModal" style="display:none !important;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;">
+        <div style="position:relative;max-width:90%;max-height:90%;">
+            <img id="modalImage" src="" style="max-width:100%;max-height:90vh;border-radius:10px;" />
+            <button onclick="closeImageModal()" style="position:absolute;top:10px;right:10px;background:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
     </div>
 
@@ -558,7 +566,14 @@
 
             var contentHtml = message;
             if (type === "Image") {
-                contentHtml = `<img src="${message}" />`;
+                contentHtml = `<img src="${message}" style="max-width:250px;max-height:250px;border-radius:10px;cursor:pointer;" onclick="openImageModal('${message}')" />`;
+            } else if (type === "File") {
+                var fileName = message.split('/').pop();
+                var fileIcon = getFileIcon(fileName);
+                contentHtml = `<a href="${message}" target="_blank" download style="color:#1A2980;text-decoration:none;display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:1.5rem;">${fileIcon}</span>
+                    <span>${fileName}</span>
+                </a>`;
             }
 
             var avatarHtml = `<div class="avatar" style="background:${isMine ? myAvatarColor : (userColorMap[user] || '#ccc')}">${user[0].toUpperCase()}</div>`;
@@ -572,6 +587,58 @@
         `;
             chatBox.appendChild(divItem);
             chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Mở modal ảnh to
+        function openImageModal(imageSrc) {
+            var modal = document.getElementById("imageModal");
+            var modalImage = document.getElementById("modalImage");
+            modalImage.src = imageSrc;
+            modal.style.display = "flex";
+        }
+
+        // Đóng modal ảnh
+        function closeImageModal() {
+            var modal = document.getElementById("imageModal");
+            modal.style.display = "none";
+        }
+
+        // Đóng modal khi click ngoài ảnh hoặc ESC
+        window.addEventListener("DOMContentLoaded", function() {
+            var modal = document.getElementById("imageModal");
+            if (modal) {
+                modal.addEventListener("click", function(event) {
+                    if (event.target === modal) {
+                        closeImageModal();
+                    }
+                });
+            }
+        });
+
+        // Đóng modal khi nhấn ESC
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") {
+                closeImageModal();
+            }
+        });
+
+        // Lấy icon file dựa trên extension
+        function getFileIcon(fileName) {
+            var ext = fileName.split('.').pop().toLowerCase();
+            var iconMap = {
+                'pdf': '📄',
+                'doc': '📝', 'docx': '📝',
+                'xls': '📊', 'xlsx': '📊',
+                'ppt': '🎯', 'pptx': '🎯',
+                'zip': '📦', 'rar': '📦', '7z': '📦',
+                'mp3': '🎵', 'wav': '🎵', 'flac': '🎵',
+                'mp4': '🎬', 'avi': '🎬', 'mov': '🎬',
+                'txt': '📄',
+                'json': '⚙️',
+                'exe': '💾',
+                'apk': '📱'
+            };
+            return iconMap[ext] || '📎';
         }
 
         connection.start().then(() => {
@@ -592,9 +659,9 @@
             event.preventDefault();
         });
 
-        // --- IMAGE SENDING (FIXED) ---
-        function sendImage() {
-            var file = document.getElementById('imgInput').files[0];
+        // --- FILE SENDING (IMAGE + FILE) ---
+        function sendFile() {
+            var file = document.getElementById('fileInput').files[0];
             if (!file) return;
 
             // Kiểm tra kích thước file (10MB)
@@ -765,6 +832,37 @@
                 });
 
             connection.invoke("JoinRoom", groupName).catch(err => console.error(err.toString()));
+        }
+
+        function createGroupWith(userId) {
+            console.log("Creating group with user ID:", userId);
+            var name = prompt("Nhập tên nhóm mới:");
+            if (!name) return;
+            
+            fetch('/Group/CreateGroup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ groupName: name, invitedUserId: userId })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                alert("✅ Tạo nhóm thành công!\nMã nhóm: " + data.code);
+                loadGroups();
+                
+                // Tự động vào nhóm vừa tạo
+                setTimeout(() => {
+                    if (data.id && data.name) {
+                        joinRoom(data.id, data.name);
+                    }
+                }, 300);
+            })
+            .catch(err => {
+                console.error("Error creating group:", err);
+                alert("❌ Lỗi tạo nhóm: " + err.message);
+            });
         }
 
         function showCreateGroup() {
