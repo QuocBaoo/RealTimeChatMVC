@@ -1,136 +1,166 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 using RealTimeChatMVC.Data;
 using RealTimeChatMVC.Models;
-using System.Linq;
+using RealTimeChatMVC.Hubs;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RealTimeChatMVC.Controllers
 {
-    [Authorize] // Phải đăng nhập mới được vào đây
+    [Authorize]
     public class GroupController : Controller
     {
         private readonly ChatDbContext _context;
+        private readonly IHubContext<ChatHub> _hubContext;
 
-        public GroupController(ChatDbContext context)
+        public GroupController(ChatDbContext context, IHubContext<ChatHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
-        // 1. Lấy danh sách nhóm mà User hiện tại đã tham gia
+        // 1. Lấy danh sách nhóm của tôi
         [HttpGet]
         public async Task<IActionResult> GetMyGroups()
         {
             var username = User.Identity.Name;
+
             var groups = await _context.ChatGroups
+                .Include(g => g.Members)
                 .Where(g => g.Members.Any(u => u.Username == username))
-                .Select(g => new { g.Id, g.Name, g.IsPrivate })
+                .Select(g => new
+                {
+                    g.Id,
+                    g.Name,
+                    g.IsPrivate,
+                    g.GroupCode,
+                    Members = g.Members
+                })
                 .ToListAsync();
 
-            return Json(groups);
+            var result = groups.Select(g => new
+            {
+                g.Id,
+                GroupName = g.Name,
+                Name = g.IsPrivate
+                    ? g.Members.FirstOrDefault(m => m.Username != username)?.Username ?? "Unknown"
+                    : g.Name,
+                IsPrivate = g.IsPrivate,
+                AvatarColor = g.IsPrivate
+                    ? g.Members.FirstOrDefault(m => m.Username != username)?.AvatarColor
+                    : null,
+                g.GroupCode
+            });
+
+            return Json(result);
         }
 
-        // [MỚI] Lấy danh sách tất cả user (Id, Username) để hiển thị ID ở frontend
+        // 2. Lấy danh sách user online
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var onlineUsers = await _context.OnlineUsers
-                .Join(_context.Users, 
-                      o => o.UserId, 
-                      u => u.Id, 
-                      (o, u) => new { u.Id, u.Username }) // Trả về đúng object
-                .Distinct() // Tránh trùng lặp nếu 1 user login nhiều nơi
+            var users = await _context.OnlineUsers
+                .Join(_context.Users,
+                      o => o.UserId,
+                      u => u.Id,
+                      (o, u) => new { u.Id, u.Username, u.FullName })
+                .Distinct()
                 .ToListAsync();
-            return Json(onlineUsers);
+
+            return Json(users);
         }
 
-        // [MỚI] Lấy tất cả nhóm để hiển thị cho người khác thấy
+        // 3. Lấy tất cả nhóm
         [HttpGet]
         public async Task<IActionResult> GetAllGroups()
         {
             var username = User.Identity.Name;
+
             var groups = await _context.ChatGroups
-                .Select(g => new { 
-                    g.Id, 
-                    g.Name, 
-                    IsJoined = g.Members.Any(u => u.Username == username) // Kiểm tra xem user đã trong nhóm chưa
+                .Include(g => g.Members)
+                .Select(g => new
+                {
+                    g.Id,
+                    g.Name,
+                    IsJoined = g.Members.Any(m => m.Username == username)
                 })
                 .ToListAsync();
 
             return Json(groups);
         }
 
-        // 2. Xử lý tạo nhóm mới
+        // 4. Tạo nhóm thường
         [HttpPost]
         public async Task<IActionResult> CreateGroup([FromBody] CreateGroupRequest request)
         {
-            try
+            if (string.IsNullOrWhiteSpace(request.GroupName))
+                return BadRequest("Tên nhóm không hợp lệ");
+
+            var username = User.Identity.Name;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user == null) return Unauthorized();
+
+            var group = new ChatGroup
             {
-                if (string.IsNullOrEmpty(request.GroupName)) return BadRequest("Tên nhóm không hợp lệ");
+                Name = request.GroupName,
+                CreatedBy = username,
+                OwnerId = user.Id,
+                GroupCode = Guid.NewGuid().ToString("N")[..6].ToUpper(),
+                Members = new List<User> { user }
+            };
 
-                var username = User.Identity.Name;
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            _context.ChatGroups.Add(group);
+            await _context.SaveChangesAsync();
 
-                if (user == null) return Unauthorized();
-
-                var newGroup = new ChatGroup
-                {
-                    Name = request.GroupName,
-                    CreatedBy = username,
-                    OwnerId = user.Id,
-                    GroupCode = Guid.NewGuid().ToString().Substring(0, 6).ToUpper(), // Mã khóa ngẫu nhiên
-                    Members = new List<User> { user } // Tự động thêm người tạo vào nhóm
-                };
-
-                // Nếu có mời thành viên ngay lúc tạo
-                if (request.InvitedUserId > 0)
-                {
-                    var invitedUser = await _context.Users.FindAsync(request.InvitedUserId);
-                    if (invitedUser != null) newGroup.Members.Add(invitedUser);
-                }
-
-                _context.ChatGroups.Add(newGroup);
-                await _context.SaveChangesAsync();
-
-                return Ok(new { id = newGroup.Id, name = newGroup.Name, code = newGroup.GroupCode });
-            }
-            catch (Exception ex)
+            if (request.InvitedUserId > 0)
             {
-                // Trả về lỗi chi tiết kèm InnerException (nếu có) để dễ debug
-                return StatusCode(500, "Lỗi Server: " + ex.Message + (ex.InnerException != null ? " - " + ex.InnerException.Message : ""));
+                await InviteMemberInternal(group.Id, request.InvitedUserId, user.Id);
             }
+
+            return Ok(new { id = group.Id, name = group.Name, code = group.GroupCode });
         }
 
-        // [MỚI] Tạo nhóm chat riêng (Private Chat)
+        // 5. Tạo private chat (ĐÃ FIX HOÀN TOÀN)
         [HttpPost]
         public async Task<IActionResult> CreatePrivateChat([FromBody] PrivateChatRequest request)
         {
-            var targetUsername = request.TargetUsername;
             var currentUsername = User.Identity.Name;
-            if (currentUsername == targetUsername) return BadRequest("Không thể chat với chính mình");
+            var targetUsername = request.TargetUsername;
+
+            if (currentUsername == targetUsername)
+                return BadRequest("Không thể chat với chính mình");
 
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
             var targetUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == targetUsername);
 
-            if (currentUser == null) return Unauthorized("User không được tìm thấy");
+            if (currentUser == null) return Unauthorized();
             if (targetUser == null) return NotFound("Người dùng không tồn tại");
 
-            // [FIX] Kiểm tra xem đã có nhóm chat riêng giữa 2 người này chưa
             var existingGroup = await _context.ChatGroups
                 .Include(g => g.Members)
-                .Where(g => g.IsPrivate && g.Members.Any(m => m.Username == currentUsername) && g.Members.Any(m => m.Username == targetUsername))
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(g =>
+                    g.IsPrivate &&
+                    g.Members.Any(m => m.Id == currentUser.Id) &&
+                    g.Members.Any(m => m.Id == targetUser.Id));
 
             if (existingGroup != null)
             {
-                return Ok(new { id = existingGroup.Id, name = existingGroup.Name, isPrivate = true });
+                return Ok(new
+                {
+                    id = existingGroup.Id,
+                    name = existingGroup.Name,
+                    isPrivate = true
+                });
             }
 
             var group = new ChatGroup
             {
-                Name = $"{currentUsername} - {targetUsername}", // Tên nhóm tự động
+                Name = $"{currentUsername} - {targetUsername}",
                 IsPrivate = true,
                 CreatedBy = currentUsername,
                 Members = new List<User> { currentUser, targetUser }
@@ -139,108 +169,190 @@ namespace RealTimeChatMVC.Controllers
             _context.ChatGroups.Add(group);
             await _context.SaveChangesAsync();
 
-            return Ok(new { id = group.Id, name = group.Name, isPrivate = true });
+            // REAL-TIME
+            await _hubContext.Clients.User(targetUsername)
+                .SendAsync("ReceiveNewGroup", group.Id, group.Name, currentUsername);
+
+            await _hubContext.Clients.User(targetUser.Id.ToString())
+                .SendAsync("ReceiveNewGroup", group.Id, group.Name, currentUsername);
+
+            return Ok(new
+            {
+                id = group.Id,
+                name = group.Name,
+                isPrivate = true
+            });
         }
 
-        // 3. Tham gia nhóm (Logic Database)
-        // Lưu ý: Logic này dùng để lưu vào DB. Việc join realtime sẽ do SignalR đảm nhận ở Client.
+        // 6. Tham gia nhóm
         [HttpPost]
         public async Task<IActionResult> JoinGroup(string groupCode)
         {
             var username = User.Identity.Name;
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            var group = await _context.ChatGroups.Include(g => g.Members).FirstOrDefaultAsync(g => g.GroupCode == groupCode);
+            var group = await _context.ChatGroups.Include(g => g.Members)
+                .FirstOrDefaultAsync(g => g.GroupCode == groupCode);
 
-            if (user != null && group != null)
+            if (user == null || group == null)
+                return BadRequest("Mã nhóm không hợp lệ");
+
+            if (!group.Members.Any(m => m.Id == user.Id))
             {
-                if (!group.Members.Any(m => m.Id == user.Id))
-                {
-                    group.Members.Add(user);
-                    await _context.SaveChangesAsync();
-                }
-                return Ok(new { message = "Đã tham gia nhóm thành công" });
+                group.Members.Add(user);
+                await _context.SaveChangesAsync();
             }
-            return BadRequest("Mã nhóm không đúng hoặc lỗi hệ thống");
+
+            return Ok("Đã tham gia nhóm");
         }
 
-        // 4. Lấy lịch sử tin nhắn của nhóm
+        // 7. Lịch sử chat nhóm
         [HttpGet]
         public async Task<IActionResult> GetGroupHistory(int groupId)
         {
             var messages = await _context.Messages
-                .Where(m => m.ChatGroupId == groupId) // Dùng trực tiếp FK ChatGroupId
+                .Where(m => m.ChatGroupId == groupId)
                 .OrderBy(m => m.Timestamp)
-                .Select(m => new
-                {
-                    sender = m.SenderName,
-                    content = m.Content,
-                    timestamp = m.Timestamp.ToString("HH:mm"),
-                    type = m.Type
-                })
+                .Join(_context.Users,
+                      m => m.SenderName,
+                      u => u.Username,
+                      (m, u) => new
+                      {
+                          sender = m.SenderName,
+                          senderFullName = u.FullName,
+                          content = m.Content,
+                          timestamp = m.Timestamp.ToString("HH:mm"),
+                          type = m.Type
+                      })
                 .ToListAsync();
 
             return Json(messages);
         }
 
-        // 5. Mời thành viên ra khỏi nhóm (Kick)
+        // 8. Kick thành viên
         [HttpPost]
         public async Task<IActionResult> KickMember(int groupId, int userId)
         {
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == User.Identity.Name);
-            var group = await _context.ChatGroups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
+            var me = await _context.Users.FirstOrDefaultAsync(u => u.Username == User.Identity.Name);
+            var group = await _context.ChatGroups.Include(g => g.Members)
+                .FirstOrDefaultAsync(g => g.Id == groupId);
 
-            if (group == null || currentUser == null) return NotFound();
+            if (me == null || group == null) return NotFound();
+            if (group.OwnerId != me.Id) return Forbid();
 
-            // Chỉ chủ nhóm mới được kick
-            if (group.OwnerId != currentUser.Id) return Forbid("Bạn không phải chủ nhóm");
+            var target = group.Members.FirstOrDefault(m => m.Id == userId);
+            if (target == null) return NotFound();
 
-            var targetUser = group.Members.FirstOrDefault(m => m.Id == userId);
-            if (targetUser != null)
-            {
-                group.Members.Remove(targetUser);
-                await _context.SaveChangesAsync();
-                return Ok();
-            }
-            return NotFound("Thành viên không tồn tại");
+            group.Members.Remove(target);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
-        // 6. Rời nhóm
+        // 9. Rời nhóm
         [HttpPost]
         public async Task<IActionResult> LeaveGroup(int groupId)
         {
             var username = User.Identity.Name;
-            var group = await _context.ChatGroups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
+            var group = await _context.ChatGroups.Include(g => g.Members)
+                .FirstOrDefaultAsync(g => g.Id == groupId);
+
             var user = group?.Members.FirstOrDefault(u => u.Username == username);
+            if (user == null) return BadRequest();
 
-            if (group != null && user != null)
-            {
-                group.Members.Remove(user);
-                await _context.SaveChangesAsync();
-                return Ok();
-            }
-            return BadRequest();
+            group.Members.Remove(user);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
 
-        // 7. Thêm thành viên bằng ID
+        // 10. Mời thành viên
         [HttpPost]
-        public async Task<IActionResult> AddMemberById(int groupId, int userId)
+        public async Task<IActionResult> InviteMember(int groupId, int userId)
         {
-             var group = await _context.ChatGroups.Include(g => g.Members).FirstOrDefaultAsync(g => g.Id == groupId);
-             var user = await _context.Users.FindAsync(userId);
-             if(group != null && user != null && !group.Members.Contains(user)) {
-                 group.Members.Add(user);
-                 await _context.SaveChangesAsync();
-                 return Ok();
-             }
-             return BadRequest("Không tìm thấy user hoặc nhóm");
+            var me = await _context.Users.FirstOrDefaultAsync(u => u.Username == User.Identity.Name);
+            if (me == null) return Unauthorized();
+
+            var ok = await InviteMemberInternal(groupId, userId, me.Id);
+            return ok ? Ok() : BadRequest();
         }
 
-        public class CreateGroupRequest {
+        private async Task<bool> InviteMemberInternal(int groupId, int inviteeId, int inviterId)
+        {
+            var group = await _context.ChatGroups.Include(g => g.Members)
+                .FirstOrDefaultAsync(g => g.Id == groupId);
+            var invitee = await _context.Users.FindAsync(inviteeId);
+
+            if (group == null || invitee == null) return false;
+            if (group.Members.Any(m => m.Id == inviteeId)) return false;
+
+            var exists = await _context.GroupInvitations
+                .AnyAsync(i => i.GroupId == groupId && i.InviteeId == inviteeId);
+            if (exists) return false;
+
+            _context.GroupInvitations.Add(new GroupInvitation
+            {
+                GroupId = groupId,
+                InviteeId = inviteeId,
+                InviterId = inviterId
+            });
+
+            await _context.SaveChangesAsync();
+
+            await _hubContext.Clients.User(invitee.Username).SendAsync("ReceiveGroupInvitation");
+            await _hubContext.Clients.User(invitee.Id.ToString()).SendAsync("ReceiveGroupInvitation");
+
+            return true;
+        }
+
+        // 11. Lấy lời mời của tôi
+        [HttpGet]
+        public async Task<IActionResult> GetMyGroupInvitations()
+        {
+            var me = await _context.Users.FirstOrDefaultAsync(u => u.Username == User.Identity.Name);
+
+            var invites = await _context.GroupInvitations
+                .Where(i => i.InviteeId == me.Id)
+                .Join(_context.ChatGroups, i => i.GroupId, g => g.Id,
+                    (i, g) => new
+                    {
+                        InviteId = i.Id,
+                        GroupId = g.Id,
+                        GroupName = g.Name,
+                        MemberCount = g.Members.Count
+                    })
+                .ToListAsync();
+
+            return Json(invites);
+        }
+
+        // 12. Phản hồi lời mời
+        [HttpPost]
+        public async Task<IActionResult> RespondGroupInvite(int inviteId, bool accept)
+        {
+            var invite = await _context.GroupInvitations.FindAsync(inviteId);
+            if (invite == null) return NotFound();
+
+            if (accept)
+            {
+                var group = await _context.ChatGroups.Include(g => g.Members)
+                    .FirstOrDefaultAsync(g => g.Id == invite.GroupId);
+                var user = await _context.Users.FindAsync(invite.InviteeId);
+
+                if (group != null && user != null)
+                    group.Members.Add(user);
+            }
+
+            _context.GroupInvitations.Remove(invite);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        public class CreateGroupRequest
+        {
             public string GroupName { get; set; }
             public int InvitedUserId { get; set; }
         }
 
-        public class PrivateChatRequest {
+        public class PrivateChatRequest
+        {
             public string TargetUsername { get; set; }
         }
     }
