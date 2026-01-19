@@ -26,7 +26,7 @@ namespace RealTimeChatMVC.Controllers
             var username = User.Identity.Name;
             var groups = await _context.ChatGroups
                 .Where(g => g.Members.Any(u => u.Username == username))
-                .Select(g => new { g.Id, g.Name })
+                .Select(g => new { g.Id, g.Name, g.IsPrivate })
                 .ToListAsync();
 
             return Json(groups);
@@ -125,7 +125,7 @@ namespace RealTimeChatMVC.Controllers
 
             if (existingGroup != null)
             {
-                return Ok(new { id = existingGroup.Id, name = existingGroup.Name });
+                return Ok(new { id = existingGroup.Id, name = existingGroup.Name, isPrivate = true });
             }
 
             var group = new ChatGroup
@@ -139,7 +139,7 @@ namespace RealTimeChatMVC.Controllers
             _context.ChatGroups.Add(group);
             await _context.SaveChangesAsync();
 
-            return Ok(new { id = group.Id, name = group.Name });
+            return Ok(new { id = group.Id, name = group.Name, isPrivate = true });
         }
 
         // 3. Tham gia nhóm (Logic Database)

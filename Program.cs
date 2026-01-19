@@ -14,7 +14,7 @@ builder.Services.AddControllersWithViews();
 // [THÊM] Cấu hình kích thước upload file
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB (tăng từ 10MB)
+    options.MultipartBodyLengthLimit = 100 * 1024 * 1024; // 100MB (tăng từ 50MB)
 });
 
 // 2. Đăng ký SignalR

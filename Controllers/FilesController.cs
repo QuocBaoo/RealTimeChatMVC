@@ -8,7 +8,7 @@ namespace RealTimeChatMVC.Controllers
     [Authorize]
     public class FilesController : Controller
     {
-        private const long MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB (tăng từ 10MB)
+        private const long MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB (tăng từ 50MB)
         private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
 
         public FilesController()

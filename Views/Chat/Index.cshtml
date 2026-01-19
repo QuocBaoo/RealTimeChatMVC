@@ -480,6 +480,19 @@
         </div>
     </div>
 
+    <!-- VIDEO MODAL -->
+    <div id="videoModal" style="display:none !important;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;align-items:center;justify-content:center;">
+        <div style="position:relative;max-width:90%;max-height:90%;background:#000;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;">
+            <video id="modalVideo" controls style="width:100%;max-height:80vh;">
+                <source id="modalVideoSource" src="" type="video/mp4">
+            </video>
+            <div style="background:#1A2980;padding:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <a id="videoDownloadBtn" href="#" download style="color:#fff;text-decoration:none;padding:5px 15px;background:#007bff;border-radius:5px;flex:1;text-align:center;">📥 Tải xuống Video</a>
+                <button onclick="closeVideoModal()" style="background:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
     <!-- Truyền biến currentUser sang file JS ngoài -->
     <script>
@@ -487,6 +500,7 @@
         var myAvatarColor = "@myAvatarColor";
         var currentGroup = ""; // Mặc định là chat chung hoặc rỗng
         var currentGroupId = 0;
+        var currentGroupIsPrivate = false; // Track if current chat is private
         var userMap = {}; // Lưu trữ map Username -> ID
         var userColorMap = {}; // Lưu trữ map Username -> Color
 
@@ -569,11 +583,28 @@
                 contentHtml = `<img src="${message}" style="max-width:250px;max-height:250px;border-radius:10px;cursor:pointer;" onclick="openImageModal('${message}')" />`;
             } else if (type === "File") {
                 var fileName = message.split('/').pop();
+                var ext = fileName.split('.').pop().toLowerCase();
+                var isVideo = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv', 'm4v'].includes(ext);
                 var fileIcon = getFileIcon(fileName);
-                contentHtml = `<a href="${message}" target="_blank" download style="color:#1A2980;text-decoration:none;display:flex;align-items:center;gap:8px;">
-                    <span style="font-size:1.5rem;">${fileIcon}</span>
-                    <span>${fileName}</span>
-                </a>`;
+                
+                if (isVideo) {
+                    contentHtml = `
+                    <div style="background:#000;border-radius:10px;overflow:hidden;width:300px;cursor:pointer;" onclick="openVideoModal('${message}', '${ext}')">
+                        <video style="width:100%;height:auto;pointer-events:none;">
+                            <source src="${message}" type="video/${ext === 'mp4' ? 'mp4' : 'video/' + ext}">
+                            Trình duyệt của bạn không hỗ trợ video.
+                        </video>
+                        <div style="padding:8px;text-align:center;background:#1A2980;color:#fff;font-size:0.9rem;">🔍 Bấm vào để xem to</div>
+                    </div>`;
+                } else {
+                    contentHtml = `<div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:1.5rem;">${fileIcon}</span>
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <span style="color:#1A2980;font-weight:bold;">${fileName}</span>
+                            <a href="#" onclick="downloadFile('${message}', '${fileName}');return false;" style="color:#007bff;text-decoration:none;font-size:0.9rem;">📥 Tải xuống</a>
+                        </div>
+                    </div>`;
+                }
             }
 
             var avatarHtml = `<div class="avatar" style="background:${isMine ? myAvatarColor : (userColorMap[user] || '#ccc')}">${user[0].toUpperCase()}</div>`;
@@ -597,19 +628,55 @@
             modal.style.display = "flex";
         }
 
+        // Mở modal video to
+        function openVideoModal(videoSrc, ext) {
+            var modal = document.getElementById("videoModal");
+            var modalVideo = document.getElementById("modalVideo");
+            var modalVideoSource = document.getElementById("modalVideoSource");
+            var downloadBtn = document.getElementById("videoDownloadBtn");
+            var fileName = videoSrc.split('/').pop();
+            
+            modalVideoSource.src = videoSrc;
+            modalVideoSource.type = "video/" + (ext === 'mp4' ? 'mp4' : ext);
+            downloadBtn.href = videoSrc;
+            downloadBtn.download = fileName;
+            downloadBtn.innerText = "📥 Tải xuống " + fileName;
+            
+            modalVideo.load();
+            modal.style.display = "flex";
+        }
+
         // Đóng modal ảnh
         function closeImageModal() {
             var modal = document.getElementById("imageModal");
             modal.style.display = "none";
         }
 
+        // Đóng modal video
+        function closeVideoModal() {
+            var modal = document.getElementById("videoModal");
+            var modalVideo = document.getElementById("modalVideo");
+            modalVideo.pause();
+            modal.style.display = "none";
+        }
+
         // Đóng modal khi click ngoài ảnh hoặc ESC
         window.addEventListener("DOMContentLoaded", function() {
-            var modal = document.getElementById("imageModal");
-            if (modal) {
-                modal.addEventListener("click", function(event) {
-                    if (event.target === modal) {
+            var imageModal = document.getElementById("imageModal");
+            var videoModal = document.getElementById("videoModal");
+            
+            if (imageModal) {
+                imageModal.addEventListener("click", function(event) {
+                    if (event.target === imageModal) {
                         closeImageModal();
+                    }
+                });
+            }
+
+            if (videoModal) {
+                videoModal.addEventListener("click", function(event) {
+                    if (event.target === videoModal) {
+                        closeVideoModal();
                     }
                 });
             }
@@ -619,8 +686,26 @@
         document.addEventListener("keydown", function(event) {
             if (event.key === "Escape") {
                 closeImageModal();
+                closeVideoModal();
             }
         });
+
+        // Hàm tải file
+        function downloadFile(fileUrl, fileName) {
+            fetch(fileUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    var url = window.URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName || 'file';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                })
+                .catch(err => console.error('Lỗi tải file:', err));
+        }
 
         // Lấy icon file dựa trên extension
         function getFileIcon(fileName) {
@@ -632,7 +717,7 @@
                 'ppt': '🎯', 'pptx': '🎯',
                 'zip': '📦', 'rar': '📦', '7z': '📦',
                 'mp3': '🎵', 'wav': '🎵', 'flac': '🎵',
-                'mp4': '🎬', 'avi': '🎬', 'mov': '🎬',
+                'mp4': '🎬', 'avi': '🎬', 'mov': '🎬', 'mkv': '🎬', 'webm': '🎬', 'flv': '🎬', 'wmv': '🎬', 'm4v': '🎬',
                 'txt': '📄',
                 'json': '⚙️',
                 'exe': '💾',
@@ -664,9 +749,9 @@
             var file = document.getElementById('fileInput').files[0];
             if (!file) return;
 
-            // Kiểm tra kích thước file (10MB)
-            if (file.size > 10 * 1024 * 1024) {
-                alert("❌ File quá lớn (tối đa 10MB)");
+            // Kiểm tra kích thước file (100MB)
+            if (file.size > 100 * 1024 * 1024) {
+                alert("❌ File quá lớn (tối đa 100MB)");
                 return;
             }
 
@@ -746,7 +831,8 @@
                 .then(data => {
                     var listHtml = `<div class="group-item" onclick="joinGlobalChat()">💬 Chat Chung</div>`;
                     data.forEach(g => {
-                        listHtml += `<div class="group-item" id="group-${g.id}" onclick="joinRoom(${g.id}, '${g.name}')"># ${g.name}</div>`;
+                        const icon = g.isPrivate ? '👤' : '#';
+                        listHtml += `<div class="group-item" id="group-${g.id}" onclick="joinRoom(${g.id}, '${g.name}', ${g.isPrivate})">${icon} ${g.name}</div>`;
                     });
                     document.getElementById("groupList").innerHTML = listHtml;
                     
@@ -765,6 +851,7 @@
             console.log("Joining global chat...");
             currentGroup = "";
             currentGroupId = 0;
+            currentGroupIsPrivate = false;
             document.getElementById("currentRoomName").innerText = "💬 Chat Chung";
             document.getElementById("groupActions").style.display = "none";
             
@@ -808,11 +895,22 @@
             connection.invoke("JoinRoom", "").catch(err => console.error("Error joining room:", err.toString()));
         }
 
-        function joinRoom(groupId, groupName) {
+        function joinRoom(groupId, groupName, isPrivate = false) {
             currentGroup = groupName;
             currentGroupId = groupId;
-            document.getElementById("currentRoomName").innerText = "🔒 " + groupName;
-            document.getElementById("groupActions").style.display = "block";
+            currentGroupIsPrivate = isPrivate;
+            
+            // Show icon based on chat type
+            const icon = isPrivate ? '👤' : '🔒';
+            document.getElementById("currentRoomName").innerText = icon + " " + groupName;
+            
+            // Hide group action buttons for private chats
+            const groupActions = document.getElementById("groupActions");
+            if (isPrivate) {
+                groupActions.style.display = "none";
+            } else {
+                groupActions.style.display = "block";
+            }
 
             // Highlight group item
             document.querySelectorAll(".group-item").forEach(el => el.classList.remove("active"));
@@ -1011,7 +1109,7 @@
                 console.log("Private chat created:", g);
                 loadGroups();
                 setTimeout(() => {
-                    joinRoom(g.id, g.name);
+                    joinRoom(g.id, g.name, true);  // Truyền true cho isPrivate
                 }, 200);  // Delay để loadGroups hoàn thành
             })
             .catch(err => {
