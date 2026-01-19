@@ -28,7 +28,6 @@
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;800&display=swap" rel="stylesheet">
-<!-- Thêm SweetAlert2 để thông báo đẹp hơn -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
@@ -60,13 +59,12 @@
         margin: 0;
     }
 
-    /* 1. KHUNG BAO NGOÀI (CĂN CHỈNH LẠI VỊ TRÍ) */
+    /* 1. KHUNG BAO NGOÀI */
     .chat-wrapper {
         height: 100vh;
         width: 100%;
         display: flex;
         justify-content: center;
-        /* QUAN TRỌNG: Đẩy xuống 90px để né thanh Menu (Navbar) */
         padding-top: 60px;
         box-sizing: border-box;
         background: transparent;
@@ -77,7 +75,7 @@
         background: var(--bg-glass);
         backdrop-filter: blur(10px);
         width: 100%;
-        max-width: 1600px; /* Rộng hơn cho màn hình lớn */
+        max-width: 1600px;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -197,18 +195,6 @@
         text-transform: uppercase;
     }
 
-    .status-dot {
-        width: 8px;
-        height: 8px;
-        background: #ccc;
-        border-radius: 50%;
-    }
-
-    .status-dot.online {
-        background: #00cec9;
-        box-shadow: 0 0 5px #00cec9;
-    }
-
     /* NOTIFICATION BADGE */
     .badge-count {
         background: #e74c3c;
@@ -219,7 +205,6 @@
         margin-left: 5px;
     }
 
-    /* UNREAD BADGE CHO NHÓM */
     .unread-badge {
         background: #ff3b30;
         color: white;
@@ -227,8 +212,8 @@
         padding: 2px 8px;
         font-size: 0.75rem;
         font-weight: bold;
-        margin-left: auto; /* Đẩy sang phải */
-        display: none; /* Mặc định ẩn */
+        margin-left: auto;
+        display: none;
     }
 
     /* AVATAR & STATUS */
@@ -257,7 +242,7 @@
         right: 0;
         width: 11px;
         height: 11px;
-        background: #00cec9; /* Cyan status */
+        background: #00cec9;
         border: 2px solid #fff;
         border-radius: 50%;
     }
@@ -292,7 +277,7 @@
         margin: 0;
     }
 
-    /* 4. DANH SÁCH TIN NHẮN (Cuộn dọc) */
+    /* 4. DANH SÁCH TIN NHẮN */
     .chat-box {
         flex: 1;
         padding: 20px;
@@ -300,14 +285,13 @@
         background: transparent;
         display: flex;
         flex-direction: column;
-        gap: 2px; /* Khoảng cách tin nhắn gần hơn giống Messenger */
+        gap: 2px;
         scroll-behavior: smooth;
     }
 
-    /* BONG BÓNG CHAT */
     .message-item {
         display: flex;
-        align-items: flex-end; /* Avatar nằm dưới cùng */
+        align-items: flex-start; /* Căn avatar lên trên cùng ngang với tên */
         gap: 10px;
         max-width: 75%;
         margin-bottom: 8px;
@@ -315,22 +299,14 @@
     }
 
     .message-content {
-<<<<<<< HEAD
-        padding: 10px 16px;
-        border-radius: 18px;
-        font-size: 0.95rem;
-        font-weight: 500;
-        line-height: 1.5;
-        word-wrap: break-word;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-=======
         padding: 12px 16px;
         border-radius: 18px;
         font-size: 0.95rem;
+        font-weight: 500;
         line-height: 1.4;
         word-wrap: break-word;
         position: relative;
->>>>>>> eaf7935623241d2832aa6c4363ac8bc5c8a71a5e
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     }
 
     .message-content img {
@@ -350,11 +326,12 @@
     }
 
     .message-info {
-<<<<<<< HEAD
-        font-size: 0.75rem;
-        margin-top: 5px;
-        opacity: 0.6;
-        font-weight: 400;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        margin-top: 2px;
+        margin-left: 5px;
+        margin-right: 5px;
+        display: block;
     }
 
     .message-wrapper {
@@ -366,29 +343,9 @@
     .message-sender {
         font-size: 0.85rem;
         font-weight: 700;
-        opacity: 0.8;
-        margin-bottom: 2px;
-    }
-
-    .msg-left .message-sender {
-        color: #1A2980;
-    }
-
-    .msg-right .message-sender {
-        color: #ffffff;
-        text-align: right;
-=======
-        font-size: 0.7rem;
-        color: var(--text-gray);
-        margin-top: 2px;
-        margin-left: 5px;
-        margin-right: 5px;
-        display: none; /* Ẩn thời gian mặc định cho gọn */
-    }
-    
-    .message-item:hover .message-info {
-        display: block; /* Hiện khi hover */
->>>>>>> eaf7935623241d2832aa6c4363ac8bc5c8a71a5e
+        color: #c23616; /* Màu đỏ cam đậm giống Zalo */
+        margin-bottom: 4px;
+        display: block;
     }
 
     /* Tin người khác (Trái) */
@@ -416,7 +373,7 @@
         box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
     }
 
-    /* 5. KHUNG NHẬP LIỆU (Footer) */
+    /* 5. KHUNG NHẬP LIỆU */
     .chat-input-area {
         padding: 15px 20px;
         background: rgba(255,255,255,0.8);
@@ -427,7 +384,6 @@
         flex-shrink: 0;
     }
 
-    /* STICKER & GIF PANEL */
     .sticker-panel {
         background: white;
         border-top: 1px solid #e1e8ed;
@@ -446,31 +402,14 @@
         gap: 10px;
     }
 
-    .sticker-tabs {
-        display: flex;
-        gap: 10px;
-        flex: 1;
-    }
-
+    .sticker-tabs { display: flex; gap: 10px; flex: 1; }
     .sticker-tab {
-        background: none;
-        border: none;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-weight: 600;
-        color: #65676b;
-        border-bottom: 2px solid transparent;
-        transition: all 0.2s;
+        background: none; border: none; padding: 8px 12px;
+        cursor: pointer; font-weight: 600; color: #65676b;
+        border-bottom: 2px solid transparent; transition: all 0.2s;
     }
-
-    .sticker-tab:hover {
-        color: #1A2980;
-    }
-
-    .sticker-tab.active {
-        color: #0084ff;
-        border-bottom-color: #0084ff;
-    }
+    .sticker-tab:hover { color: #1A2980; }
+    .sticker-tab.active { color: #0084ff; border-bottom-color: #0084ff; }
 
     .sticker-content {
         display: grid;
@@ -479,52 +418,23 @@
     }
 
     .sticker-item {
-        width: 100%;
-        aspect-ratio: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        cursor: pointer;
-        border-radius: 8px;
-        background: #f5f5f5;
-        transition: all 0.2s;
+        width: 100%; aspect-ratio: 1; display: flex; align-items: center;
+        justify-content: center; font-size: 2rem; cursor: pointer;
+        border-radius: 8px; background: #f5f5f5; transition: all 0.2s;
         border: 1px solid transparent;
     }
-
-    .sticker-item:hover {
-        background: #e8e8e8;
-        transform: scale(1.1);
-        border-color: #1A2980;
-    }
+    .sticker-item:hover { background: #e8e8e8; transform: scale(1.1); border-color: #1A2980; }
 
     .gif-content {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 10px;
-        min-height: 150px;
+        display: grid; grid-template-columns: repeat(6, 1fr);
+        gap: 10px; min-height: 150px;
     }
-
     .gif-item {
-        width: 100%;
-        aspect-ratio: 1;
-        border-radius: 8px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: all 0.2s;
-        background: #f5f5f5;
+        width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden;
+        cursor: pointer; transition: all 0.2s; background: #f5f5f5;
     }
-
-    .gif-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .gif-item:hover {
-        transform: scale(1.05);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
+    .gif-item img { width: 100%; height: 100%; object-fit: cover; }
+    .gif-item:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
 
     .input-mess {
         flex: 1;
@@ -538,195 +448,99 @@
         color: var(--text-dark);
         box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
     }
-
-    .input-mess:focus {
-        background: white;
-        box-shadow: 0 0 0 2px var(--primary-color);
-    }
+    .input-mess:focus { background: white; box-shadow: 0 0 0 2px var(--primary-color); }
 
     .btn-send {
-        background: none;
-        color: var(--primary-color);
-        border: none;
-        width: auto;
-        height: auto;
-        font-size: 1.4rem;
-        cursor: pointer;
-        transition: transform 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        padding: 0 10px;
+        background: none; color: var(--primary-color); border: none;
+        width: auto; height: auto; font-size: 1.4rem; cursor: pointer;
+        transition: transform 0.2s; display: flex; align-items: center;
+        justify-content: center; padding: 0 10px;
     }
-
-    .btn-send:hover {
-        transform: scale(1.1);
-    }
+    .btn-send:hover { transform: scale(1.1); }
 
     .btn-icon {
-<<<<<<< HEAD
-        background: white;
-        border: 2px solid #ddd;
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        font-size: 1.4rem;
-        cursor: pointer;
-        color: #555;
+        background: white; border: 2px solid #ddd; width: 45px; height: 45px;
+        border-radius: 50%; font-size: 1.4rem; cursor: pointer; color: #555;
+        display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .btn-icon:hover { border-color: #26D0CE; background: #f0fffe; transform: scale(1.1); }
+
+    /* Style riêng cho nút đính kèm */
+    .btn-attach {
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s;
-    }
-
-    .btn-icon:hover {
-        border-color: #26D0CE;
-        background: #f0fffe;
-    }
-
-    .emoji-btn {
-        border-color: white;
-        background: transparent;
-        border-width: 2.5px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .emoji-btn:hover {
-        border-color: white;
-        background: rgba(255, 255, 255, 0.1);
-        transform: scale(1.08);
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Reset style mặc định của button */
-    .btn-sticker {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        color: #65676b; /* Màu xám giống hình */
         transition: all 0.2s ease;
-        color: #65676b;
-        width: 45px;
-        height: 45px;
     }
 
-    /* Kích thước của icon SVG bên trong */
-    .btn-sticker svg {
-        width: 32px;
-        height: 32px;
+    /* Định dạng SVG */
+    .btn-attach svg {
+        width: 24px;   /* Kích thước icon */
+        height: 24px;
+        transform: rotate(-45deg); 
     }
 
-    /* Hiệu ứng khi di chuột vào */
-    .btn-sticker:hover {
-        background-color: #f0f2f5;
-        color: #0084ff;
+    /* Hiệu ứng khi di chuột vào (Hover) */
+    .btn-attach:hover {
+        background-color: #f0f2f5; /* Nền xám nhạt */
+        color: #1A2980; /* Đổi màu icon sang xanh tím than khi hover */
+        transform: scale(1.1); /* Phóng to nhẹ */
+        border-color: #1A2980;
     }
 
-    /* Hiệu ứng khi bấm giữ chuột */
-    .btn-sticker:active {
-        background-color: #e4e6eb;
+    /* Hiệu ứng khi bấm (Active) */
+    .btn-attach:active {
         transform: scale(0.95);
+        background-color: #e4e6eb;
     }
 
-    /* Class này dùng khi menu sticker đang mở */
-    .btn-sticker.active {
-        color: #0084ff;
-        background-color: #e7f3ff;
-=======
-        background: none;
-        border: none;
-        font-size: 1.2rem;
-        cursor: pointer;
-        color: var(--primary-color);
-        transition: background 0.2s;
-        padding: 10px;
-        border-radius: 50%;
+    /* Button Sticker SVG */
+    .btn-sticker {
+        background: transparent; border: none; cursor: pointer; padding: 8px;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s ease; color: #65676b; width: 45px; height: 45px;
     }
+    .btn-sticker svg { width: 28px; height: 28px; }
+    .btn-sticker:hover { background-color: #f0f2f5; color: #0084ff; }
+    .btn-sticker:active { background-color: #e4e6eb; transform: scale(0.95); }
+    .btn-sticker.active { color: #0084ff; background-color: #e7f3ff; }
 
-    .btn-icon:hover {
-        background: var(--hover-bg);
-        transform: scale(1.1);
-    }
+    /* MOBILE TOGGLE */
+    .mobile-toggle { display: none; margin-left: 10px; }
 
-    /* MOBILE TOGGLE BUTTON */
-    .mobile-toggle {
-        display: none;
-        margin-left: 10px;
->>>>>>> eaf7935623241d2832aa6c4363ac8bc5c8a71a5e
-    }
-
-    /* Thanh cuộn đẹp */
-    .chat-box::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .chat-box::-webkit-scrollbar-thumb {
-        background: #bcc0c4;
-        border-radius: 4px;
-    }
-
-    .chat-box::-webkit-scrollbar-track {
-        background: transparent;
-    }
+    /* SCROLLBAR */
+    .chat-box::-webkit-scrollbar { width: 8px; }
+    .chat-box::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 4px; }
+    .chat-box::-webkit-scrollbar-track { background: transparent; }
 
     /* USER ACTIONS POPUP */
     .user-actions {
-        display: none;
-        background: white;
-        border: 1px solid #eee;
-        padding: 10px;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        margin-top: 5px;
-        animation: fadeIn 0.2s ease;
+        display: none; background: white; border: 1px solid #eee;
+        padding: 10px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        margin-top: 5px; animation: fadeIn 0.2s ease;
     }
-
-    .user-item.active .user-actions {
-        display: block;
-    }
+    .user-item.active .user-actions { display: block; }
 
     .action-btn {
-        display: block;
-        width: 100%;
-        text-align: left;
-        padding: 5px;
-        border: none;
-        background: none;
-        cursor: pointer;
-        font-size: 0.85rem;
-        color: var(--text-dark);
-        border-radius: 5px;
+        display: block; width: 100%; text-align: left; padding: 5px;
+        border: none; background: none; cursor: pointer; font-size: 0.85rem;
+        color: var(--text-dark); border-radius: 5px;
     }
-
-    .action-btn:hover {
-        background: #f0f2f5;
-        color: var(--primary-color);
-    }
+    .action-btn:hover { background: #f0f2f5; color: var(--primary-color); }
 
     /* RESPONSIVE */
     @@media (max-width: 900px) {
         .user-sidebar {
-            position: absolute;
-            right: 0;
-            top: 60px;
-            bottom: 0;
-            background: white;
-            z-index: 100;
+            position: absolute; right: 0; top: 60px; bottom: 0;
+            background: white; z-index: 100;
             box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-            transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             width: 280px;
         }
         .user-sidebar.show { transform: translateX(0); }
-        .sidebar {
-            width: 80px; /* Thu nhỏ sidebar trái */
-        }
-        .sidebar-header span, .group-name { display: none; } /* Ẩn text sidebar trái */
+        .sidebar { width: 80px; }
+        .sidebar-header span, .group-name { display: none; }
         .sidebar-header { justify-content: center; padding: 10px 5px; }
         .group-item { justify-content: center; padding: 10px; }
         .mobile-toggle { display: block; }
@@ -735,7 +549,6 @@
 
 <div class="chat-wrapper">
     <div class="chat-card">
-        <!-- 1.1 TASKBAR -->
         <div class="taskbar">
             <span>Xin chào, @fullName</span>
             <div style="display:flex; align-items:center; gap:15px">
@@ -745,9 +558,7 @@
         </div>
 
         <div class="chat-body">
-            <!-- SIDEBAR TRÁI -->
             <div class="sidebar">
-                <!-- 1. KÊNH CHUNG -->
                 <div class="sidebar-header" style="padding-bottom: 5px;">
                     <span>KÊNH CHUNG</span>
                 </div>
@@ -758,7 +569,6 @@
                      </div>
                 </div>
 
-                <!-- 2. DANH SÁCH NHÓM -->
                 <div class="sidebar-header" style="border-top: 1px solid var(--border-color);">
                     <span>NHÓM CHAT</span>
                     <div>
@@ -767,37 +577,29 @@
                     </div>
                 </div>
                 
-                <!-- KHU VỰC LỜI MỜI VÀO NHÓM -->
                 <div id="groupInvitesArea" style="display:none; background: #fff3cd; padding: 10px; border-bottom: 1px solid #eee;">
                     <div style="font-size: 0.75rem; font-weight:bold; color:#856404; margin-bottom:5px">📩 LỜI MỜI VÀO NHÓM</div>
                     <div id="groupInviteList"></div>
                 </div>
 
                 <div class="group-list" id="groupList" style="flex: 1; min-height: 100px;">
-                    <!-- Danh sách nhóm sẽ load vào đây -->
                     <div class="text-center mt-3 text-muted small">Đang tải...</div>
                 </div>
 
-                <!-- 3. DANH SÁCH CHAT RIÊNG -->
                 <div class="sidebar-header" style="border-top: 1px solid var(--border-color);">
                     <span>TIN NHẮN RIÊNG</span>
                 </div>
                 <div class="group-list" id="privateList" style="flex: 1; min-height: 100px;">
-                    <!-- Danh sách chat riêng sẽ load vào đây -->
                 </div>
             </div>
 
-            <!-- KHUNG CHAT PHẢI -->
             <div class="main-chat-area">
                 <div class="chat-header">
                     <button id="btnBackToGlobal" class="btn btn-sm btn-primary" style="display:none; margin-right:10px; font-weight:bold" onclick="joinGlobalChat()">🏠 Chat Chung</button>
                     <h3 class="chat-title" id="currentRoomName">💬 Chat Chung</h3>
-                    <div
-                        style="display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.1); padding: 5px 15px; border-radius: 20px;">
-                        <span
-                            style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 5px #2ecc71;"></span>
-                        <span
-                            style="font-weight: 800; font-size: 0.85rem; color: #2ecc71; text-transform: uppercase;">Online</span>
+                    <div style="display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.1); padding: 5px 15px; border-radius: 20px;">
+                        <span style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 5px #2ecc71;"></span>
+                        <span style="font-weight: 800; font-size: 0.85rem; color: #2ecc71; text-transform: uppercase;">Online</span>
                     </div>
                     <div id="groupActions" style="display:none; margin-left: 10px;">
                         <button class="btn btn-sm btn-danger" onclick="leaveGroup()">Rời nhóm</button>
@@ -807,11 +609,15 @@
                 </div>
 
                 <div class="chat-box" id="chatBox">
-                    <!-- Messages loaded via JS -->
-                </div>
+                    </div>
 
                 <div class="chat-input-area">
-                    <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Gửi ảnh hoặc file">📎</button>
+                    <button class="btn-icon btn-attach" onclick="document.getElementById('fileInput').click()" title="Gửi ảnh hoặc file">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21.44 11.05L12.25 20.24C9.91 22.58 6.11 22.58 3.77 20.24C1.43 17.9 1.43 14.1 3.77 11.76L12.96 2.57C14.52 1.01 17.05 1.01 18.61 2.57C20.17 4.13 20.17 6.66 18.61 8.22L9.42 17.41C8.64 18.19 7.37 18.19 6.59 17.41C5.81 16.63 5.81 15.36 6.59 14.58L14.36 6.81" 
+                                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
                     <input type="file" id="fileInput" style="display:none" onchange="sendFile()">
                     <button class="btn-sticker" id="stickerBtn" onclick="toggleStickerPanel()" aria-label="Gửi sticker">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -822,13 +628,11 @@
                         </svg>
                     </button>
 
-                    <input type="text" id="messageInput" class="input-mess" placeholder="Nhập tin nhắn..."
-                        autocomplete="off">
+                    <input type="text" id="messageInput" class="input-mess" placeholder="Nhập tin nhắn..." autocomplete="off">
                     <button class="btn-icon" onclick="insertEmoji('❤️')" title="Yêu thích">❤️</button>
                     <button id="sendButton" class="btn-send">➤</button>
                 </div>
 
-                <!-- STICKER & GIF PANEL -->
                 <div id="stickerPanel" class="sticker-panel" style="display:none;">
                     <div class="sticker-header">
                         <div class="sticker-tabs">
@@ -857,7 +661,6 @@
                 </div>
             </div>
 
-            <!-- SIDEBAR PHẢI (ONLINE MEMBERS) -->
             <div class="user-sidebar" id="userSidebar">
                 <div style="padding: 10px;">
                     <input type="text" id="searchUser" class="form-control form-control-sm"
@@ -876,17 +679,14 @@
                         🔔 <span id="friendReqCount" class="badge-count" style="display:none">0</span>
                     </button>
                 </div>
-                <!-- Danh sách lời mời kết bạn (Ẩn mặc định) -->
                 <div class="user-list" id="requestList" style="border-bottom: 1px solid #eee; max-height: 200px; display:none; background:#fffdf0"></div>
 
                 <div class="user-list" id="friendList" style="border-top: 1px solid #eee;">
-                    <!-- Danh sách bạn bè -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- IMAGE LIGHTBOX MODAL -->
     <div id="imageModal" style="display:none !important;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;">
         <div style="position:relative;max-width:90%;max-height:90%;">
             <img id="modalImage" src="" style="max-width:100%;max-height:90vh;border-radius:10px;" />
@@ -894,7 +694,6 @@
         </div>
     </div>
 
-    <!-- VIDEO MODAL -->
     <div id="videoModal" style="display:none !important;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;align-items:center;justify-content:center;">
         <div style="position:relative;max-width:90%;max-height:90%;background:#000;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;">
             <video id="modalVideo" controls style="width:100%;max-height:80vh;">
@@ -908,7 +707,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
-    <!-- Truyền biến currentUser sang file JS ngoài -->
     <script>
         var currentUser = "@User.Identity.Name";
         var myAvatarColor = "@myAvatarColor";
@@ -917,29 +715,23 @@
         var currentGroupIsPrivate = false; // Track if current chat is private
         var userMap = {}; // Lưu trữ map Username -> ID
         var userColorMap = {}; // Lưu trữ map Username -> Color
-        var friendIds = new Set(); // [MỚI] Lưu danh sách ID bạn bè để kiểm tra nhanh
-        var lastOnlineUsers = []; // [MỚI] Lưu danh sách online gần nhất để render lại
-        var userDetailsMap = {}; // [MỚI] Lưu thông tin chi tiết (FullName)
+        var friendIds = new Set(); // Lưu danh sách ID bạn bè
+        var lastOnlineUsers = []; // Lưu danh sách online gần nhất
+        var userDetailsMap = {}; // Lưu thông tin chi tiết (FullName)
 
-        // [FIX] Khởi tạo kết nối SignalR (Bổ sung dòng này)
         var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-        // 1. NHẬN TIN NHẮN (Chung cho cả Group và Private)
+        // 1. NHẬN TIN NHẮN
         connection.on("ReceiveMessage", function (user, message, time, type) {
             if (!currentGroup) {
                 appendMessage(user, message, time, type);
             }
         });
 
-        // Nhận tin nhắn nhóm (Cần update ChatHub để dùng hàm này nếu muốn tách biệt)
         connection.on("ReceiveGroupMessage", function (user, groupName, message, time, type) {
-            // 1. Nếu đang ở đúng nhóm này -> Hiện tin nhắn luôn
             if (groupName === currentGroup) {
                 appendMessage(user, message, time, type);
-            } 
-            // 2. Nếu đang ở nhóm khác -> Hiện thông báo (Badge)
-            else {
-                // Tìm phần tử DOM của nhóm dựa trên data-groupname
+            } else {
                 var groupItem = document.querySelector(`.group-item[data-groupname='${groupName}']`);
                 if (groupItem) {
                     var badge = groupItem.querySelector(".unread-badge");
@@ -947,33 +739,19 @@
                         var currentCount = parseInt(badge.innerText) || 0;
                         badge.innerText = currentCount + 1;
                         badge.style.display = "inline-block";
-                        
-                        // Hiệu ứng rung nhẹ hoặc đổi màu để gây chú ý
                         groupItem.style.fontWeight = "bold";
                         groupItem.style.color = "#000";
                     }
                 } else {
-                    // Trường hợp nhóm chưa có trong list (ví dụ chat riêng mới), reload lại list
                     loadGroups();
                 }
             }
         });
 
-        // [REAL-TIME] Lắng nghe sự kiện mời vào nhóm
-        connection.on("ReceiveGroupInvitation", function() {
-            loadGroupInvites(); // Tải lại danh sách lời mời ngay lập tức
-            // Có thể thêm âm thanh hoặc toast thông báo ở đây
-        });
-
-        // [REAL-TIME] Lắng nghe sự kiện có nhóm mới (được thêm vào hoặc chat riêng)
-        connection.on("ReceiveNewGroup", function(groupId, groupName, inviter) {
-            loadGroups(); // Tải lại danh sách nhóm ngay lập tức
-        });
-
-        // [REAL-TIME] Lắng nghe lời mời kết bạn (Nếu FriendController được cài đặt để gửi)
+        connection.on("ReceiveGroupInvitation", function() { loadGroupInvites(); });
+        connection.on("ReceiveNewGroup", function(groupId, groupName, inviter) { loadGroups(); });
         connection.on("ReceiveFriendRequest", function() {
             loadPendingRequests();
-            // Hiển thị thông báo nhỏ
             const Toast = Swal.mixin({
                 toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
                 didOpen: (toast) => { toast.addEventListener('mouseenter', Swal.stopTimer); toast.addEventListener('mouseleave', Swal.resumeTimer); }
@@ -981,44 +759,30 @@
             Toast.fire({ icon: 'info', title: 'Bạn có lời mời kết bạn mới' });
         });
 
-        // 2. NHẬN DANH SÁCH ONLINE (MỚI)
-        //connection.on("UserJoined", function(u, id) { loadOnlineUsers(); });
-        //connection.on("UserLeft", function(u) { loadOnlineUsers(); });
-        connection.on("OnlineUsersSnapshot", function (users) {
-            // Khi nhận snapshot, ta cần merge với thông tin chi tiết (FullName)
-            // Gọi API lấy chi tiết nếu chưa có, hoặc render tạm
-            fetchAndRenderOnlineUsers(users);
-        });
+        connection.on("OnlineUsersSnapshot", function (users) { fetchAndRenderOnlineUsers(users); });
 
         function fetchAndRenderOnlineUsers(users) {
-            // Gọi API lấy tất cả user để có FullName
             fetch('/Group/GetAllUsers')
                 .then(r => r.json())
                 .then(allUsers => {
-                    // Tạo map để tra cứu nhanh
-                    allUsers.forEach(u => {
-                        userDetailsMap[u.username] = u.fullName;
-                    });
+                    allUsers.forEach(u => { userDetailsMap[u.username] = u.fullName; });
                     renderOnlineUsers(users);
+                    loadGroups(); // Cập nhật lại danh sách nhóm để hiển thị tên đầy đủ
                 });
         }
 
         function renderOnlineUsers(users) {
-            lastOnlineUsers = users; // Lưu lại để dùng khi update trạng thái bạn bè
+            lastOnlineUsers = users;
             var listHtml = "";
             users.forEach(u => {
                 var name = u.username || u.Username;
                 var id = u.id || u.Id;
-                var fullName = userDetailsMap[name] || name; // Lấy FullName từ map, fallback là username
-
-                // Không hiển thị chính mình
+                var fullName = userDetailsMap[name] || name;
                 if (name === currentUser) return;
 
-                // Tạo màu avatar nếu chưa có
                 if (!userColorMap[name]) {
                     userColorMap[name] = "#" + Math.floor(Math.random() * 16777215).toString(16);
                 }
-
                 listHtml += renderUserItem({ username: name, id: id, fullName: fullName });
             });
             document.getElementById("onlineUsers").innerHTML = listHtml;
@@ -1027,69 +791,30 @@
         function renderUserItem(u) {
             var name = u.username || u.Username;
             var id = u.id || u.Id;
-            var fullName = u.fullName || u.FullName || name; // [FIX] Ưu tiên hiển thị FullName
-
-            var avatar = `
-            <div class="avatar-container">
-                <div class="avatar" style="background:${userColorMap[name] || '#ccc'}">${name[0].toUpperCase()}</div>
-                <div class="avatar-status"></div>
-            </div>`;
-            
-            // [MỚI] Kiểm tra trạng thái bạn bè
+            var fullName = u.fullName || u.FullName || name;
+            var avatar = `<div class="avatar-container"><div class="avatar" style="background:${userColorMap[name] || '#ccc'}">${name[0].toUpperCase()}</div><div class="avatar-status"></div></div>`;
             var isFriend = friendIds.has(id);
             var friendBadge = isFriend ? `<span style="color:#2ecc71; font-size:0.7rem; border:1px solid #2ecc71; padding:1px 4px; border-radius:4px; margin-left:5px">Đã kết bạn</span>` : '';
+            var actionButtons = isFriend ? 
+                `<button class="action-btn" onclick="createGroupWith(${id}, '${name}')">👥 Tạo nhóm</button><button class="action-btn" onclick="startPrivateChat('${name}', '${fullName}')">💬 Chat riêng</button>` : 
+                `<button class="action-btn" onclick="addFriend(${id})">➕ Kết bạn</button><button class="action-btn" onclick="createGroupWith(${id}, '${name}')">👥 Tạo nhóm</button><button class="action-btn" onclick="startPrivateChat('${name}', '${fullName}')">💬 Chat riêng</button>`;
 
-            // [MỚI] Render nút bấm tùy theo quan hệ
-            var actionButtons = '';
-            if (isFriend) {
-                actionButtons = `
-                    <button class="action-btn" onclick="createGroupWith(${id}, '${name}')">👥 Tạo nhóm</button>
-                    <button class="action-btn" onclick="startPrivateChat('${name}')">💬 Chat riêng</button>`;
-            } else {
-                actionButtons = `
-                    <button class="action-btn" onclick="addFriend(${id})">➕ Kết bạn</button>
-                    <button class="action-btn" onclick="createGroupWith(${id}, '${name}')">👥 Tạo nhóm</button>
-                    <button class="action-btn" onclick="startPrivateChat('${name}')">💬 Chat riêng</button>`;
-            }
-
-            return `
-            <div class="user-item" onclick="toggleActions(this, event)">
-                ${avatar}
-                <div style="flex:1; margin-left:10px;">
-                    <div style="font-weight:bold">${fullName} ${friendBadge}</div>
-                    <div style="font-size:0.7rem">ID: ${id}</div>
-                </div>
-                <div class="user-actions">
-                    ${actionButtons}
-                </div>
-            </div>
-        `;
+            return `<div class="user-item" onclick="toggleActions(this, event)">${avatar}<div style="flex:1; margin-left:10px;"><div style="font-weight:bold">${fullName} ${friendBadge}</div><div style="font-size:0.7rem">ID: ${id}</div></div><div class="user-actions">${actionButtons}</div></div>`;
         }
 
         function toggleActions(el, event) {
-            // Ngăn không cho sự kiện click lan ra ngoài (để không bị document bắt được và đóng ngay lập tức)
             if(event) event.stopPropagation();
-
-            // Đóng tất cả các menu khác
             var isActive = el.classList.contains('active');
             document.querySelectorAll('.user-item').forEach(e => e.classList.remove('active'));
-            
-            // Nếu chưa active thì mở, nếu đang active rồi thì thôi (toggle)
-            if (!isActive) {
-                el.classList.add('active');
-            }
+            if (!isActive) el.classList.add('active');
         }
 
-        // Hàm phụ trợ để hiển thị tin nhắn lên giao diện
         function appendMessage(user, message, time, type, senderFullName) {
             var chatBox = document.getElementById("chatBox");
             var isMine = (user === currentUser);
             var divItem = document.createElement("div");
             divItem.className = isMine ? "message-item msg-right" : "message-item msg-left";
-
-            // [FIX] Lấy tên hiển thị: Ưu tiên senderFullName truyền vào -> Tra map -> Username
             var displayName = senderFullName || userDetailsMap[user] || user;
-            // [FIX] Avatar lấy chữ cái đầu của Tên hiển thị (Họ tên)
             var avatarChar = displayName ? displayName.charAt(0).toUpperCase() : "?";
 
             var contentHtml = message;
@@ -1100,835 +825,309 @@
                 var ext = fileName.split('.').pop().toLowerCase();
                 var isVideo = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv', 'm4v'].includes(ext);
                 var fileIcon = getFileIcon(fileName);
-                
                 if (isVideo) {
-                    contentHtml = `
-                    <div style="background:#000;border-radius:10px;overflow:hidden;width:300px;cursor:pointer;" onclick="openVideoModal('${message}', '${ext}')">
-                        <video style="width:100%;height:auto;pointer-events:none;">
-                            <source src="${message}" type="video/${ext === 'mp4' ? 'mp4' : 'video/' + ext}">
-                            Trình duyệt của bạn không hỗ trợ video.
-                        </video>
-                        <div style="padding:8px;text-align:center;background:#1A2980;color:#fff;font-size:0.9rem;">🔍 Bấm vào để xem to</div>
-                    </div>`;
+                    contentHtml = `<div style="background:#000;border-radius:10px;overflow:hidden;width:300px;cursor:pointer;" onclick="openVideoModal('${message}', '${ext}')"><video style="width:100%;height:auto;pointer-events:none;"><source src="${message}" type="video/${ext === 'mp4' ? 'mp4' : 'video/' + ext}"></video><div style="padding:8px;text-align:center;background:#1A2980;color:#fff;font-size:0.9rem;">🔍 Bấm vào để xem to</div></div>`;
                 } else {
-                    contentHtml = `<div style="display:flex;align-items:center;gap:8px;">
-                        <span style="font-size:1.5rem;">${fileIcon}</span>
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <span style="color:#1A2980;font-weight:bold;">${fileName}</span>
-                            <a href="#" onclick="downloadFile('${message}', '${fileName}');return false;" style="color:#007bff;text-decoration:none;font-size:0.9rem;">📥 Tải xuống</a>
-                        </div>
-                    </div>`;
+                    contentHtml = `<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.5rem;">${fileIcon}</span><div style="display:flex;flex-direction:column;gap:4px;"><span style="color:#1A2980;font-weight:bold;">${fileName}</span><a href="#" onclick="downloadFile('${message}', '${fileName}');return false;" style="color:#007bff;text-decoration:none;font-size:0.9rem;">📥 Tải xuống</a></div></div>`;
                 }
             }
-
             var avatarHtml = `<div class="avatar" style="background:${isMine ? myAvatarColor : (userColorMap[user] || '#ccc')}">${avatarChar}</div>`;
-
-            divItem.innerHTML = `
-            ${avatarHtml}
-<<<<<<< HEAD
-            <div class="message-wrapper">
-                <div class="message-sender">${isMine ? "Bạn" : user}</div>
-=======
-            <div class="message-body">
-                <div class="message-meta" style="font-size:0.75rem; color:#666; margin-bottom:2px; ${isMine ? 'text-align:right' : ''}">
-                    <span style="font-weight:bold">${displayName}</span>
-                </div>
->>>>>>> eaf7935623241d2832aa6c4363ac8bc5c8a71a5e
-                <div class="message-content">${contentHtml}</div>
-                <div class="message-info">${time}</div>
-            </div>
-        `;
+            
+            // Đưa tên người gửi vào trong khung tin nhắn (chỉ hiển thị với người khác)
+            var senderHtml = isMine ? "" : `<div class="message-sender">${displayName}</div>`;
+            divItem.innerHTML = `${avatarHtml}<div class="message-wrapper"><div class="message-content">${senderHtml}${contentHtml}</div><div class="message-info">${time}</div></div>`;
+            
             chatBox.appendChild(divItem);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Mở modal ảnh to
-        function openImageModal(imageSrc) {
-            var modal = document.getElementById("imageModal");
-            var modalImage = document.getElementById("modalImage");
-            modalImage.src = imageSrc;
-            modal.style.display = "flex";
+        // --- MODAL & FILE UTILS ---
+        function openImageModal(imageSrc) { document.getElementById("modalImage").src = imageSrc; document.getElementById("imageModal").style.display = "flex"; }
+        function openVideoModal(videoSrc, ext) { 
+            var v = document.getElementById("modalVideoSource"); v.src = videoSrc; v.type = "video/" + (ext==='mp4'?'mp4':ext); 
+            var d = document.getElementById("videoDownloadBtn"); d.href = videoSrc; d.download = videoSrc.split('/').pop();
+            document.getElementById("modalVideo").load(); document.getElementById("videoModal").style.display = "flex"; 
         }
-
-        // Mở modal video to
-        function openVideoModal(videoSrc, ext) {
-            var modal = document.getElementById("videoModal");
-            var modalVideo = document.getElementById("modalVideo");
-            var modalVideoSource = document.getElementById("modalVideoSource");
-            var downloadBtn = document.getElementById("videoDownloadBtn");
-            var fileName = videoSrc.split('/').pop();
-            
-            modalVideoSource.src = videoSrc;
-            modalVideoSource.type = "video/" + (ext === 'mp4' ? 'mp4' : ext);
-            downloadBtn.href = videoSrc;
-            downloadBtn.download = fileName;
-            downloadBtn.innerText = "📥 Tải xuống " + fileName;
-            
-            modalVideo.load();
-            modal.style.display = "flex";
-        }
-
-        // Đóng modal ảnh
-        function closeImageModal() {
-            var modal = document.getElementById("imageModal");
-            modal.style.display = "none";
-        }
-
-        // Đóng modal video
-        function closeVideoModal() {
-            var modal = document.getElementById("videoModal");
-            var modalVideo = document.getElementById("modalVideo");
-            modalVideo.pause();
-            modal.style.display = "none";
-        }
-
-        // Đóng modal khi click ngoài ảnh hoặc ESC
+        function closeImageModal() { document.getElementById("imageModal").style.display = "none"; }
+        function closeVideoModal() { document.getElementById("modalVideo").pause(); document.getElementById("videoModal").style.display = "none"; }
+        
         window.addEventListener("DOMContentLoaded", function() {
-            var imageModal = document.getElementById("imageModal");
-            var videoModal = document.getElementById("videoModal");
-            
-            if (imageModal) {
-                imageModal.addEventListener("click", function(event) {
-                    if (event.target === imageModal) {
-                        closeImageModal();
-                    }
-                });
-            }
-
-            if (videoModal) {
-                videoModal.addEventListener("click", function(event) {
-                    if (event.target === videoModal) {
-                        closeVideoModal();
-                    }
-                });
-            }
+            var im = document.getElementById("imageModal"), vm = document.getElementById("videoModal");
+            if(im) im.addEventListener("click", e => { if(e.target===im) closeImageModal(); });
+            if(vm) vm.addEventListener("click", e => { if(e.target===vm) closeVideoModal(); });
         });
+        document.addEventListener("keydown", e => { if(e.key==="Escape") { closeImageModal(); closeVideoModal(); } });
 
-        // Đóng modal khi nhấn ESC
-        document.addEventListener("keydown", function(event) {
-            if (event.key === "Escape") {
-                closeImageModal();
-                closeVideoModal();
-            }
-        });
-
-        // Hàm tải file
-        function downloadFile(fileUrl, fileName) {
-            fetch(fileUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    var url = window.URL.createObjectURL(blob);
-                    var a = document.createElement('a');
-                    a.href = url;
-                    a.download = fileName || 'file';
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                })
-                .catch(err => console.error('Lỗi tải file:', err));
+        function downloadFile(url, name) {
+            fetch(url).then(r=>r.blob()).then(blob=>{
+                var u = window.URL.createObjectURL(blob), a = document.createElement('a');
+                a.href = u; a.download = name||'file'; document.body.appendChild(a); a.click();
+                window.URL.revokeObjectURL(u); document.body.removeChild(a);
+            }).catch(e=>console.error(e));
         }
 
-        // Lấy icon file dựa trên extension
-        function getFileIcon(fileName) {
-            var ext = fileName.split('.').pop().toLowerCase();
-            var iconMap = {
-                'pdf': '📄',
-                'doc': '📝', 'docx': '📝',
-                'xls': '📊', 'xlsx': '📊',
-                'ppt': '🎯', 'pptx': '🎯',
-                'zip': '📦', 'rar': '📦', '7z': '📦',
-                'mp3': '🎵', 'wav': '🎵', 'flac': '🎵',
-                'mp4': '🎬', 'avi': '🎬', 'mov': '🎬', 'mkv': '🎬', 'webm': '🎬', 'flv': '🎬', 'wmv': '🎬', 'm4v': '🎬',
-                'txt': '📄',
-                'json': '⚙️',
-                'exe': '💾',
-                'apk': '📱'
-            };
-            return iconMap[ext] || '📎';
+        function getFileIcon(f) {
+            var ext = f.split('.').pop().toLowerCase();
+            var map = {'pdf':'📄','doc':'📝','docx':'📝','xls':'📊','xlsx':'📊','ppt':'🎯','pptx':'🎯','zip':'📦','rar':'📦','mp3':'🎵','mp4':'🎬','txt':'📄'};
+            return map[ext] || '📎';
         }
 
-        connection.start().then(() => {
-            console.log("SignalR Connected");
-        }).catch(err => console.error(err.toString()));
+        connection.start().then(() => console.log("SignalR Connected")).catch(err => console.error(err));
 
         document.getElementById("sendButton").addEventListener("click", function (event) {
             var input = document.getElementById("messageInput");
             if (input.value.trim() !== "") {
-                if (currentGroup) {
-                    connection.invoke("SendGroupMessage", currentGroup, input.value, "Text").catch(err => console.error(err.toString()));
-                } else {
-                    // [FIX] Truyền currentUser thay vì chuỗi rỗng ""
-                    connection.invoke("SendMessage", currentUser, input.value, "Text").catch(err => console.error(err.toString()));
-                }
+                if (currentGroup) connection.invoke("SendGroupMessage", currentGroup, input.value, "Text").catch(err => console.error(err));
+                else connection.invoke("SendMessage", currentUser, input.value, "Text").catch(err => console.error(err));
                 input.value = ""; input.focus();
             }
             event.preventDefault();
         });
 
-        // --- FILE SENDING (IMAGE + FILE) ---
+        // --- FILE SENDING ---
         function sendFile() {
             var file = document.getElementById('fileInput').files[0];
             if (!file) return;
+            // Cho phép 100MB nhưng dùng SweetAlert đẹp
+            if (file.size > 100 * 1024 * 1024) { Swal.fire("Lỗi", "File quá lớn (tối đa 100MB)", "error"); return; }
 
-<<<<<<< HEAD
-            // Kiểm tra kích thước file (100MB)
-            if (file.size > 100 * 1024 * 1024) {
-                alert("❌ File quá lớn (tối đa 100MB)");
-=======
-            // Kiểm tra kích thước file (10MB)
-            if (file.size > 10 * 1024 * 1024) {
-                Swal.fire("Lỗi", "File quá lớn (tối đa 10MB)", "error");
->>>>>>> afac22c (Nâng cấp giao diện chat, hoàn thiện chức năng nhóm, bạn bè và lời mời tham gia nhóm)
-                return;
-            }
+            var formData = new FormData(); formData.append('file', file);
+            var sendBtn = document.getElementById("sendButton"); var txt = sendBtn.innerText;
+            sendBtn.disabled = true; sendBtn.innerText = "⏳...";
 
-            // Tạo FormData để upload file
-            var formData = new FormData();
-            formData.append('file', file);
-
-            // Hiển thị trạng thái đang upload
-            var sendBtn = document.getElementById("sendButton");
-            var originalText = sendBtn.innerText;
-            sendBtn.disabled = true;
-            sendBtn.innerText = "⏳ Đang gửi...";
-
-            // Upload file lên server
-            fetch('/Files/Upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
+            fetch('/Files/Upload', { method: 'POST', body: formData })
+            .then(r => r.json()).then(data => {
                 if (data.success) {
-                    // Detect loại file dựa trên MIME type
-                    var messageType = "File";
-                    if (file.type.startsWith("image/")) {
-                        messageType = "Image";
-                    }
-                    
-                    // Gửi link file qua SignalR (không gửi file nhị phân)
-                    if (currentGroup) {
-                        connection.invoke("SendGroupMessage", currentGroup, data.url, messageType)
-                            .catch(err => console.error("Lỗi gửi file:", err));
-                    } else {
-                        connection.invoke("SendMessage", currentUser, data.url, messageType)
-                            .catch(err => console.error("Lỗi gửi file:", err));
-                    }
-                } else {
-                    Swal.fire("Lỗi", data.message, "error");
-                }
+                    var type = "File"; if (file.type.startsWith("image/")) type = "Image";
+                    if (currentGroup) connection.invoke("SendGroupMessage", currentGroup, data.url, type);
+                    else connection.invoke("SendMessage", currentUser, data.url, type);
+                } else Swal.fire("Lỗi", data.message, "error");
             })
-            .catch(error => {
-                console.error("Lỗi upload:", error);
-                Swal.fire("Lỗi", "Có lỗi xảy ra khi gửi file", "error");
-            })
-            .finally(() => {
-                // Khôi phục trạng thái nút
-                sendBtn.disabled = false;
-                sendBtn.innerText = originalText;
-                // Reset input file
-                document.getElementById('imgInput').value = '';
-            });
+            .catch(() => Swal.fire("Lỗi", "Có lỗi gửi file", "error"))
+            .finally(() => { sendBtn.disabled = false; sendBtn.innerText = txt; document.getElementById('fileInput').value = ''; });
         }
 
-        function insertEmoji(emoji) {
-            document.getElementById("messageInput").value += emoji;
-            document.getElementById("messageInput").focus();
-        }
-
+        function insertEmoji(emoji) { var i=document.getElementById("messageInput"); i.value+=emoji; i.focus(); }
         function switchStickerTab(tab) {
-            var stickerContent = document.getElementById("stickerContent");
-            var gifContent = document.getElementById("gifContent");
-            var tabs = document.querySelectorAll(".sticker-tab");
-            
-            tabs.forEach(t => t.classList.remove("active"));
-            
-            if (tab === 'stickers') {
-                stickerContent.style.display = "grid";
-                gifContent.style.display = "none";
-                tabs[0].classList.add("active");
-            } else if (tab === 'gifs') {
-                stickerContent.style.display = "none";
-                gifContent.style.display = "grid";
-                tabs[1].classList.add("active");
-                loadGifs();
-            }
+            var s=document.getElementById("stickerContent"), g=document.getElementById("gifContent"), tabs=document.querySelectorAll(".sticker-tab");
+            tabs.forEach(t=>t.classList.remove("active"));
+            if(tab==='stickers') { s.style.display="grid"; g.style.display="none"; tabs[0].classList.add("active"); }
+            else { s.style.display="none"; g.style.display="grid"; tabs[1].classList.add("active"); loadGifs(); }
         }
-
         function toggleStickerPanel() {
-            var panel = document.getElementById("stickerPanel");
-            var btn = document.getElementById("stickerBtn");
-            if (panel.style.display === "none") {
-                panel.style.display = "block";
-                btn.classList.add("active");
-            } else {
-                panel.style.display = "none";
-                btn.classList.remove("active");
-            }
+            var p=document.getElementById("stickerPanel"), b=document.getElementById("stickerBtn");
+            if(p.style.display==="none") { p.style.display="block"; b.classList.add("active"); } else { p.style.display="none"; b.classList.remove("active"); }
         }
 
-        // --- GIF LOGIC ---
         var gifsLoaded = false;
         function loadGifs() {
             if (gifsLoaded) return;
-            
-            var gifContainer = document.getElementById("gifContent");
-            gifContainer.innerHTML = "";
-            gifContainer.style.padding = "0";
-            
-            // Lấy danh sách GIF từ biến C# gifList đã tạo ở đầu file
+            var c = document.getElementById("gifContent"); c.innerHTML = ""; c.style.padding = "0";
             var gifs = @Json.Serialize(gifList);
-
             if (gifs && gifs.length > 0) {
                 gifs.forEach(url => {
-                    var div = document.createElement("div");
-                    div.className = "gif-item";
-                    div.onclick = function() { sendGif(url); };
-                    
-                    var img = document.createElement("img");
-                    img.src = url;
-                    
-                    div.appendChild(img);
-                    gifContainer.appendChild(div);
+                    var d=document.createElement("div"); d.className="gif-item"; d.onclick=function(){ sendGif(url); };
+                    var i=document.createElement("img"); i.src=url; d.appendChild(i); c.appendChild(d);
                 });
-            } else {
-                gifContainer.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;">Chưa có file GIF nào trong thư mục wwwroot/gifs</div>';
-            }
-            
+            } else c.innerHTML = '<div style="grid-column:1/-1;text-align:center;">Không có GIF</div>';
             gifsLoaded = true;
         }
 
         function sendGif(url) {
-            if (currentGroup) {
-                connection.invoke("SendGroupMessage", currentGroup, url, "Image").catch(err => console.error(err.toString()));
-            } else {
-                connection.invoke("SendMessage", currentUser, url, "Image").catch(err => console.error(err.toString()));
-            }
+            if (currentGroup) connection.invoke("SendGroupMessage", currentGroup, url, "Image");
+            else connection.invoke("SendMessage", currentUser, url, "Image");
             toggleStickerPanel();
         }
 
-        document.getElementById("messageInput").addEventListener("keyup", function (event) {
-            if (event.key === "Enter") document.getElementById("sendButton").click();
-        });
+        document.getElementById("messageInput").addEventListener("keyup", function (event) { if (event.key === "Enter") document.getElementById("sendButton").click(); });
 
         window.onload = function () {
-            loadGroups();
-            loadFriends();
-            loadPendingRequests();
-            loadGroupInvites(); // Load lời mời nhóm
-            
-            // Tự động vào Chat Chung khi load trang
-            setTimeout(() => {
-                joinGlobalChat();
-            }, 300);
-
-            // [MỚI] Sự kiện click ra ngoài để đóng menu user
+            loadGroups(); loadFriends(); loadPendingRequests(); loadGroupInvites();
+            setTimeout(() => joinGlobalChat(), 300);
             document.addEventListener('click', function(e) {
-                // Nếu click không trúng vào .user-item nào thì đóng hết
-                if (!e.target.closest('.user-item')) {
-                    document.querySelectorAll('.user-item.active').forEach(el => el.classList.remove('active'));
-                }
-
-                // [MỚI] Đóng danh sách lời mời kết bạn nếu click ra ngoài
-                var reqList = document.getElementById("requestList");
-                var btnReq = document.getElementById("btnFriendReq");
-                if (reqList && reqList.style.display === "block" && 
-                    !reqList.contains(e.target) && 
-                    (!btnReq || !btnReq.contains(e.target))) {
-                    reqList.style.display = "none";
-                }
+                if (!e.target.closest('.user-item')) document.querySelectorAll('.user-item.active').forEach(el => el.classList.remove('active'));
+                var rl = document.getElementById("requestList"), btn = document.getElementById("btnFriendReq");
+                if (rl && rl.style.display === "block" && !rl.contains(e.target) && (!btn || !btn.contains(e.target))) rl.style.display = "none";
             });
         };
 
-        // --- CÁC HÀM XỬ LÝ NHÓM ---
-
+        // --- GROUP FUNCTIONS ---
         function loadGroups() {
-            fetch('/Group/GetMyGroups')
-                .then(response => response.json())
-                .then(data => {
-                    var groupHtml = "";
-                    var privateHtml = "";
+            fetch('/Group/GetMyGroups').then(r => r.json()).then(data => {
+                var groupHtml = "", privateHtml = "";
+                data.forEach(g => {
+                    var icon = g.isPrivate ? "🔒" : "#";
+                    var displayName = g.name; 
+                    // Nếu là chat riêng, ưu tiên hiển thị FullName từ map
+                    if (g.isPrivate && userDetailsMap[g.name]) displayName = userDetailsMap[g.name];
 
-                    data.forEach(g => {
-<<<<<<< HEAD
-                        const icon = g.isPrivate ? '👤' : '#';
-                        listHtml += `<div class="group-item" id="group-${g.id}" onclick="joinRoom(${g.id}, '${g.name}', ${g.isPrivate})">${icon} ${g.name}</div>`;
-=======
-                        // Logic hiển thị icon và tên
-                        var icon = g.isPrivate ? "🔒" : "#";
-                        // Nếu là private chat, dùng tên người kia (đã xử lý ở server)
-                        var displayName = g.name; 
-                        var realGroupName = g.groupName; // [FIX] Lấy tên gốc để join room
-                        var groupCode = g.groupCode || "";
-                        
-                        var itemHtml = `<div class="group-item" id="group-${g.id}" data-groupname="${realGroupName}" onclick="joinRoom(${g.id}, '${realGroupName}', '${displayName}', '${groupCode}')">
-                                        <span style="font-size:1.2rem">${icon}</span>
-                                        <span class="group-name">${displayName}</span>
-                                        <span class="unread-badge">0</span>
-                                     </div>`;
-                        
-                        if (g.isPrivate) {
-                            privateHtml += itemHtml;
-                        } else {
-                            groupHtml += itemHtml;
-                        }
->>>>>>> afac22c (Nâng cấp giao diện chat, hoàn thiện chức năng nhóm, bạn bè và lời mời tham gia nhóm)
-                    });
-
-                    document.getElementById("groupList").innerHTML = groupHtml || '<div class="text-center mt-2 text-muted small">Chưa có nhóm</div>';
-                    document.getElementById("privateList").innerHTML = privateHtml || '<div class="text-center mt-2 text-muted small">Chưa có tin nhắn</div>';
-                    
-                    // Nếu đang ở trong group, highlight nó
-                    if (currentGroupId) {
-                        document.querySelectorAll(".group-item").forEach(el => el.classList.remove("active"));
-                        var activeGroup = document.getElementById(`group-${currentGroupId}`);
-                        if (activeGroup) {
-                            activeGroup.classList.add("active");
-                        }
-                    }
+                    var realGroupName = g.groupName; 
+                    var groupCode = g.groupCode || "";
+                    var itemHtml = `<div class="group-item" id="group-${g.id}" data-groupname="${realGroupName}" onclick="joinRoom(${g.id}, '${realGroupName}', '${displayName}', '${groupCode}', ${g.isPrivate})"><span style="font-size:1.2rem">${icon}</span><span class="group-name">${displayName}</span><span class="unread-badge">0</span></div>`;
+                    if (g.isPrivate) privateHtml += itemHtml; else groupHtml += itemHtml;
                 });
+                document.getElementById("groupList").innerHTML = groupHtml || '<div class="text-center mt-2 text-muted small">Chưa có nhóm</div>';
+                document.getElementById("privateList").innerHTML = privateHtml || '<div class="text-center mt-2 text-muted small">Chưa có tin nhắn</div>';
+                if (currentGroupId) {
+                    var ag = document.getElementById(`group-${currentGroupId}`);
+                    if (ag) ag.classList.add("active");
+                }
+            });
         }
 
         function joinGlobalChat() {
-            console.log("Joining global chat...");
-            currentGroup = "";
-            currentGroupId = 0;
-            currentGroupIsPrivate = false;
+            currentGroup = ""; currentGroupId = 0; currentGroupIsPrivate = false;
             document.getElementById("currentRoomName").innerText = "💬 Chat Chung";
             document.getElementById("groupActions").style.display = "none";
-            document.getElementById("btnBackToGlobal").style.display = "none"; // Ẩn nút về chat chung
-            
-            // Highlight Chat Chung
+            document.getElementById("btnBackToGlobal").style.display = "none";
             document.querySelectorAll(".group-item").forEach(el => el.classList.remove("active"));
-            var globalBtn = document.getElementById("globalChatBtn");
-            if (globalBtn) globalBtn.classList.add("active");
+            var gb = document.getElementById("globalChatBtn"); if (gb) gb.classList.add("active");
+            var cb = document.getElementById("chatBox"); cb.innerHTML = '<div class="text-center text-muted mt-3">⏳ Đang tải tin nhắn...</div>';
             
-            var chatBox = document.getElementById("chatBox");
-            chatBox.innerHTML = '<div class="text-center text-muted mt-3">⏳ Đang tải tin nhắn...</div>';
-
-            // Load history chat chung
-            fetch('/Chat/GetHistory')
-                .then(response => {
-                    console.log("Response status:", response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Loaded messages:", data);
-                    chatBox.innerHTML = '';
-                    if (!data || data.length === 0) {
-                        chatBox.innerHTML = '<div class="text-center text-muted mt-3">Chưa có tin nhắn nào</div>';
-                        return;
-                    }
-                    data.forEach(msg => {
-                        console.log("Appending message:", msg);
-                        appendMessage(msg.user, msg.message, msg.time, msg.type || "Text", msg.fullName); // msg.fullName từ API history chat chung (nếu có)
-                    });
-                })
-                .catch(error => {
-                    console.error('Lỗi tải lịch sử:', error);
-                    chatBox.innerHTML = '<div class="text-center text-danger mt-3">❌ Lỗi tải tin nhắn: ' + error.message + '</div>';
-                });
-
-            // Join SignalR room cho Chat Chung
-            connection.invoke("JoinRoom", "").catch(err => console.error("Error joining room:", err.toString()));
+            fetch('/Chat/GetHistory').then(r => r.json()).then(data => {
+                cb.innerHTML = '';
+                if (!data || data.length === 0) cb.innerHTML = '<div class="text-center text-muted mt-3">Chưa có tin nhắn nào</div>';
+                data.forEach(msg => appendMessage(msg.user, msg.message, msg.time, msg.type || "Text", msg.fullName));
+            }).catch(e => cb.innerHTML = '<div class="text-center text-danger mt-3">❌ Lỗi tải tin nhắn</div>');
+            connection.invoke("JoinRoom", "");
         }
-        function joinRoom(groupId, groupName, displayName, groupCode) {
 
-<<<<<<< HEAD
-        function joinRoom(groupId, groupName, isPrivate = false) {
-            currentGroup = groupName;
+        // [FIXED] Hàm joinRoom chuẩn
+        function joinRoom(groupId, groupName, displayName, groupCode, isPrivate) {
+            currentGroup = groupName; // Tên gốc dùng cho SignalR
             currentGroupId = groupId;
             currentGroupIsPrivate = isPrivate;
+
+            // Xử lý giao diện: Chat riêng dùng icon Người, Nhóm dùng icon Nhóm
+            var icon = isPrivate ? "👤" : "👥";
+            var titleHtml = `${icon} ` + (displayName || groupName);
             
-            // Show icon based on chat type
-            const icon = isPrivate ? '👤' : '🔒';
-            document.getElementById("currentRoomName").innerText = icon + " " + groupName;
-            
-            // Hide group action buttons for private chats
-            const groupActions = document.getElementById("groupActions");
-            if (isPrivate) {
-                groupActions.style.display = "none";
-            } else {
-                groupActions.style.display = "block";
-            }
-=======
-            currentGroupId = groupId;
-            // [FIX] Hiển thị tên đẹp (displayName) nhưng logic dùng tên gốc (groupName)
-            var titleHtml = "🔒 " + (displayName || groupName);
-            if (groupCode) {
-                titleHtml += ` <span style="font-size:0.9rem; color:#666; font-weight:normal; margin-left:10px; background:#eee; padding:2px 8px; border-radius:4px">Mã: ${groupCode}</span>`;
-            }
+            if (groupCode) titleHtml += ` <span style="font-size:0.9rem; color:#666; font-weight:normal; margin-left:10px; background:#eee; padding:2px 8px; border-radius:4px">Mã: ${groupCode}</span>`;
             document.getElementById("currentRoomName").innerHTML = titleHtml;
-            document.getElementById("groupActions").style.display = "block";
-            document.getElementById("btnBackToGlobal").style.display = "block"; // Hiện nút về chat chung
->>>>>>> afac22c (Nâng cấp giao diện chat, hoàn thiện chức năng nhóm, bạn bè và lời mời tham gia nhóm)
+            
+            // Ẩn nút "Rời nhóm/Thêm TV" nếu là chat riêng
+            document.getElementById("groupActions").style.display = isPrivate ? "none" : "block";
+            document.getElementById("btnBackToGlobal").style.display = "block";
 
-            // Highlight group item
             document.querySelectorAll(".group-item").forEach(el => el.classList.remove("active"));
-            var activeGroup = document.getElementById(`group-${groupId}`);
-            if (activeGroup) {
-                activeGroup.classList.add("active");
-                
-                // [MỚI] Xóa badge tin nhắn chưa đọc khi click vào nhóm
-                var badge = activeGroup.querySelector(".unread-badge");
-                if(badge) {
-                    badge.innerText = "0";
-                    badge.style.display = "none";
-                    activeGroup.style.fontWeight = "500"; // Reset font weight
-                }
+            var ag = document.getElementById(`group-${groupId}`);
+            if (ag) {
+                ag.classList.add("active");
+                var b = ag.querySelector(".unread-badge");
+                if(b) { b.innerText = "0"; b.style.display = "none"; ag.style.fontWeight = "500"; }
             }
 
-            var chatBox = document.getElementById("chatBox");
-            chatBox.innerHTML = '<div class="text-center text-muted mt-3">Đang tải tin nhắn...</div>';
-
-            fetch('/Group/GetGroupHistory?groupId=' + groupId)
-                .then(res => res.json())
-                .then(msgs => {
-                    chatBox.innerHTML = '';
-                    msgs.forEach(m => appendMessage(m.sender, m.content, m.timestamp, m.type, m.senderFullName));
-                });
-
-            connection.invoke("JoinRoom", groupName).catch(err => console.error(err.toString()));
-        }
-
-        function createGroupWith(userId) {
-            console.log("Creating group with user ID:", userId);
-            var name = prompt("Nhập tên nhóm mới:");
-            if (!name) return;
-            
-            fetch('/Group/CreateGroup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ groupName: name, invitedUserId: userId })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                return res.json();
-            })
-            .then(data => {
-                alert("✅ Tạo nhóm thành công!\nMã nhóm: " + data.code);
-                loadGroups();
-                
-                // Tự động vào nhóm vừa tạo
-                setTimeout(() => {
-                    if (data.id && data.name) {
-                        joinRoom(data.id, data.name);
-                    }
-                }, 300);
-            })
-            .catch(err => {
-                console.error("Error creating group:", err);
-                alert("❌ Lỗi tạo nhóm: " + err.message);
+            var cb = document.getElementById("chatBox"); cb.innerHTML = '<div class="text-center text-muted mt-3">Đang tải tin nhắn...</div>';
+            fetch('/Group/GetGroupHistory?groupId=' + groupId).then(r => r.json()).then(msgs => {
+                cb.innerHTML = '';
+                msgs.forEach(m => appendMessage(m.sender, m.content, m.timestamp, m.type, m.senderFullName));
             });
+            connection.invoke("JoinRoom", groupName);
         }
 
-        function showCreateGroup() {
-            var name = prompt("Nhập tên nhóm mới:");
+        function createGroupWith(userId, userName) {
+            var name = prompt(userName ? "Nhập tên nhóm muốn tạo với " + userName + ":" : "Nhập tên nhóm mới:");
             if (!name) return;
-            
-            var inviteId = prompt("Nhập ID người muốn mời (Optional):");
-            
             fetch('/Group/CreateGroup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ groupName: name, invitedUserId: inviteId ? parseInt(inviteId) : 0 })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                return res.json();
-            })
-            .then(data => {
-                alert("✅ Tạo nhóm thành công!\nMã nhóm: " + data.code);
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ groupName: name, invitedUserId: userId ? parseInt(userId) : 0 })
+            }).then(r => r.json()).then(data => {
+                Swal.fire("Thành công", "Tạo nhóm thành công! Mã: " + data.code, "success");
                 loadGroups();
-                
-                // Tự động vào nhóm vừa tạo
-                setTimeout(() => {
-                    if (data.id && data.name) {
-                        joinRoom(data.id, data.name, data.name, data.code);
-                    }
-                }, 300);
-            })
-            .catch(err => {
-                console.error("Error creating group:", err);
-                Swal.fire("Lỗi", "Lỗi tạo nhóm: " + err.message, "error");
-            });
+                setTimeout(() => { if (data.id) joinRoom(data.id, data.name, data.name, data.code, false); }, 300);
+            }).catch(e => Swal.fire("Lỗi", "Lỗi tạo nhóm", "error"));
         }
+
+        function showCreateGroup() { createGroupWith(0, ""); }
 
         function joinByCode() {
-            Swal.fire({
-                title: 'Tham gia nhóm',
-                input: 'text',
-                inputLabel: 'Nhập mã nhóm',
-                showCancelButton: true
-            }).then((result) => {
-                if (result.isConfirmed && result.value) {
-                    fetch('/Group/JoinGroup?groupCode=' + result.value, { method: 'POST' })
-                        .then(res => {
-                            if (res.ok) { loadGroups(); Swal.fire("Thành công", "Đã tham gia nhóm!", "success"); }
-                            else Swal.fire("Thất bại", "Mã nhóm không đúng!", "error");
-                        });
+            Swal.fire({ title: 'Tham gia nhóm', input: 'text', inputLabel: 'Nhập mã nhóm', showCancelButton: true })
+            .then((res) => {
+                if (res.isConfirmed && res.value) {
+                    fetch('/Group/JoinGroup?groupCode=' + res.value, { method: 'POST' }).then(r => {
+                        if (r.ok) { loadGroups(); Swal.fire("Thành công", "Đã tham gia nhóm!", "success"); }
+                        else Swal.fire("Thất bại", "Mã nhóm không đúng!", "error");
+                    });
                 }
             });
         }
 
         function leaveGroup() {
-            Swal.fire({
-                title: 'Rời nhóm?',
-                text: "Bạn có chắc chắn muốn rời nhóm này?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Rời nhóm'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('/Group/LeaveGroup?groupId=' + currentGroupId, { method: 'POST' })
-                        .then(() => { loadGroups(); joinGlobalChat(); Swal.fire("Đã rời nhóm", "", "success"); });
-                }
-            });
+            Swal.fire({ title: 'Rời nhóm?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Rời nhóm' })
+            .then((r) => { if (r.isConfirmed) fetch('/Group/LeaveGroup?groupId=' + currentGroupId, { method: 'POST' }).then(() => { loadGroups(); joinGlobalChat(); Swal.fire("Đã rời nhóm", "", "success"); }); });
         }
 
         function addMember() {
-            Swal.fire({
-                title: 'Mời thành viên',
-                input: 'text',
-                inputLabel: 'Nhập ID người dùng',
-                showCancelButton: true
-            }).then((result) => {
-                if (result.isConfirmed && result.value) {
-                    fetch(`/Group/InviteMember?groupId=${currentGroupId}&userId=${result.value}`, { method: 'POST' })
-                        .then(async res => {
-                            if (res.ok) Swal.fire("Đã gửi lời mời", "Người dùng sẽ nhận được thông báo", "success");
-                            else Swal.fire("Lỗi", await res.text(), "error");
-                        });
+            Swal.fire({ title: 'Mời thành viên', input: 'text', inputLabel: 'Nhập ID người dùng', showCancelButton: true })
+            .then((r) => {
+                if (r.isConfirmed && r.value) {
+                    fetch(`/Group/InviteMember?groupId=${currentGroupId}&userId=${r.value}`, { method: 'POST' })
+                    .then(async res => { if (res.ok) Swal.fire("Đã gửi lời mời", "", "success"); else Swal.fire("Lỗi", await res.text(), "error"); });
                 }
             });
         }
 
-        // --- GROUP INVITES ---
         function loadGroupInvites() {
-            fetch('/Group/GetMyGroupInvitations')
-                .then(r => r.json())
-                .then(data => {
-                    var area = document.getElementById("groupInvitesArea");
-                    var list = document.getElementById("groupInviteList");
-                    if (data.length > 0) {
-                        area.style.display = "block";
-                        var html = "";
-                        data.forEach(i => {
-                            html += `
-                            <div style="background:white; padding:8px; border-radius:5px; margin-bottom:5px; box-shadow:0 2px 5px rgba(0,0,0,0.05)">
-                                <div style="font-weight:bold; font-size:0.9rem">${i.groupName}</div>
-                                <div style="font-size:0.75rem; color:#666">${i.memberCount} thành viên</div>
-                                <div style="margin-top:5px; display:flex; gap:5px">
-                                    <button class="btn btn-sm btn-success" style="font-size:0.7rem; padding:2px 8px" onclick="respondGroupInvite(${i.inviteId}, true)">Vào</button>
-                                    <button class="btn btn-sm btn-secondary" style="font-size:0.7rem; padding:2px 8px" onclick="respondGroupInvite(${i.inviteId}, false)">Xóa</button>
-                                </div>
-                            </div>`;
-                        });
-                        list.innerHTML = html;
-                    } else {
-                        area.style.display = "none";
-                    }
-                });
+            fetch('/Group/GetMyGroupInvitations').then(r => r.json()).then(data => {
+                var a = document.getElementById("groupInvitesArea"), l = document.getElementById("groupInviteList");
+                if (data.length > 0) {
+                    a.style.display = "block"; var h = "";
+                    data.forEach(i => { h += `<div style="background:white; padding:8px; border-radius:5px; margin-bottom:5px; box-shadow:0 2px 5px rgba(0,0,0,0.05)"><div style="font-weight:bold; font-size:0.9rem">${i.groupName}</div><div style="font-size:0.75rem; color:#666">${i.memberCount} thành viên</div><div style="margin-top:5px; display:flex; gap:5px"><button class="btn btn-sm btn-success" style="font-size:0.7rem; padding:2px 8px" onclick="respondGroupInvite(${i.inviteId}, true)">Vào</button><button class="btn btn-sm btn-secondary" style="font-size:0.7rem; padding:2px 8px" onclick="respondGroupInvite(${i.inviteId}, false)">Xóa</button></div></div>`; });
+                    l.innerHTML = h;
+                } else a.style.display = "none";
+            });
         }
 
         function respondGroupInvite(id, accept) {
             fetch(`/Group/RespondGroupInvite?inviteId=${id}&accept=${accept}`, { method: 'POST' })
-                .then(() => {
-                    loadGroupInvites();
-                    if(accept) {
-                        loadGroups();
-                        Swal.fire("Thành công", "Đã tham gia nhóm", "success");
-                    }
-                });
+            .then(() => { loadGroupInvites(); if(accept) { loadGroups(); Swal.fire("Thành công", "Đã tham gia nhóm", "success"); } });
         }
 
         // --- FRIENDS ---
         function loadFriends() {
             fetch('/Friend/GetFriends').then(r => r.json()).then(data => {
-                // [MỚI] Cập nhật Set friendIds để renderOnlineUsers dùng
-                friendIds.clear();
-                data.forEach(f => friendIds.add(f.Id || f.id));
-                if(lastOnlineUsers.length > 0) renderOnlineUsers(lastOnlineUsers); // Re-render để cập nhật badge
-
+                friendIds.clear(); data.forEach(f => friendIds.add(f.Id || f.id));
+                if(lastOnlineUsers.length > 0) renderOnlineUsers(lastOnlineUsers);
                 var html = "";
                 data.forEach(f => {
-                    // Fix: Dùng f.Username (chữ U hoa) thay vì f.username
-                    var username = f.Username || f.username;  // Fallback cho cả 2 case
-                    var fullName = f.FullName || f.fullName;
-                    var avatarColor = f.AvatarColor || f.avatarColor;
-                    var avatarChar = fullName ? fullName.charAt(0).toUpperCase() : username.charAt(0).toUpperCase();
-                    
-                    html += `<div class="user-item" onclick="startPrivateChat('${username}')">
-                            <div class="avatar-container">
-                                <div class="avatar" style="background:${avatarColor}">${avatarChar}</div>
-                            </div>
-                            <span style="margin-left:10px; flex:1">${fullName}</span>
-                            <button class="btn btn-sm btn-outline-danger" style="padding: 2px 8px; font-size: 0.7rem;" onclick="event.stopPropagation(); removeFriend(${f.Id || f.id})" title="Xóa bạn">❌</button>
-                         </div>`;
+                    var u = f.Username || f.username, n = f.FullName || f.fullName || u, c = f.AvatarColor || f.avatarColor, ac = n?n[0]:u[0];
+                    html += `<div class="user-item" onclick="startPrivateChat('${u}', '${n}')"><div class="avatar-container"><div class="avatar" style="background:${c}">${ac.toUpperCase()}</div></div><span style="margin-left:10px; flex:1">${n}</span><button class="btn btn-sm btn-outline-danger" style="padding: 2px 8px; font-size: 0.7rem;" onclick="event.stopPropagation(); removeFriend(${f.Id || f.id})" title="Xóa bạn">❌</button></div>`;
                 });
                 document.getElementById("friendList").innerHTML = html;
             });
         }
 
-        function addFriend(id) {
-            fetch('/Friend/AddFriend?targetId=' + id, { method: 'POST' })
-                .then(res => {
-                    if (res.ok) Swal.fire("Đã gửi", "Đã gửi lời mời kết bạn!", "success");
-                    else Swal.fire("Lỗi", "Không thể gửi lời mời (đã là bạn hoặc đã gửi rồi)", "error");
-                });
-        }
-
-        // [MỚI] Chức năng xóa bạn bè
-        function removeFriend(id) {
-            Swal.fire({
-                title: 'Xóa bạn?',
-                text: "Bạn có chắc muốn xóa người này khỏi danh sách bạn bè?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Xóa'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('/Friend/RemoveFriend?friendId=' + id, { method: 'POST' })
-                        .then(res => {
-                            if(res.ok) { Swal.fire("Đã xóa", "", "success"); loadFriends(); }
-                            else Swal.fire("Lỗi", "Không thể xóa bạn (API có thể chưa được cài đặt)", "error");
-                        });
-                }
-            });
-        }
-
-        function toggleFriendRequests(event) {
-            if (event) event.stopPropagation();
-            var el = document.getElementById("requestList");
-            el.style.display = (el.style.display === "none") ? "block" : "none";
-        }
-
+        function addFriend(id) { fetch('/Friend/AddFriend?targetId=' + id, { method: 'POST' }).then(r => { if (r.ok) Swal.fire("Đã gửi", "", "success"); else Swal.fire("Lỗi", "Không thể gửi lời mời", "error"); }); }
+        function removeFriend(id) { Swal.fire({ title: 'Xóa bạn?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Xóa' }).then((r) => { if (r.isConfirmed) fetch('/Friend/RemoveFriend?friendId=' + id, { method: 'POST' }).then(res => { if(res.ok) { Swal.fire("Đã xóa", "", "success"); loadFriends(); } }); }); }
+        function toggleFriendRequests(e) { if (e) e.stopPropagation(); var el = document.getElementById("requestList"); el.style.display = (el.style.display === "none") ? "block" : "none"; }
         function loadPendingRequests() {
             fetch('/Friend/GetPendingRequests').then(r => r.json()).then(data => {
-                var badge = document.getElementById("friendReqCount");
+                var b = document.getElementById("friendReqCount");
                 if (data.length > 0) {
-                    badge.style.display = "inline-block";
-                    badge.innerText = data.length;
-                    var html = "";
-                    data.forEach(r => {
-                        var reqName = r.requesterFullName || r.requesterName;
-                        var reqChar = reqName.charAt(0).toUpperCase();
-                        html += `
-                        <div class="user-item" style="flex-direction:column; align-items:flex-start; cursor:default; background:white; margin:5px; border-radius:8px; border:1px solid #eee">
-                            <div style="display:flex; align-items:center; width:100%">
-                                <div class="avatar" style="background:${r.requesterAvatar}">${reqChar}</div>
-                                <span style="margin-left:10px; font-weight:bold">${reqName}</span>
-                            </div>
-                            <div style="margin-top:5px; display:flex; gap:5px; width:100%">
-                                <button class="btn btn-sm btn-success" style="flex:1; font-size:0.7rem" onclick="respondRequest(${r.requestId}, true)">Đồng ý</button>
-                                <button class="btn btn-sm btn-secondary" style="flex:1; font-size:0.7rem" onclick="respondRequest(${r.requestId}, false)">Xóa</button>
-                            </div>
-                        </div>`;
-                    });
-                    document.getElementById("requestList").innerHTML = html;
-                } else {
-                    badge.style.display = "none";
-                    document.getElementById("requestList").innerHTML = "<div style='padding:10px; text-align:center; font-size:0.8rem; color:#999'>Không có lời mời nào</div>";
-                }
+                    b.style.display = "inline-block"; b.innerText = data.length; var h = "";
+                    data.forEach(r => { var n = r.requesterFullName || r.requesterName; h += `<div class="user-item" style="flex-direction:column; align-items:flex-start; cursor:default; background:white; margin:5px; border-radius:8px; border:1px solid #eee"><div style="display:flex; align-items:center; width:100%"><div class="avatar" style="background:${r.requesterAvatar}">${n[0]}</div><span style="margin-left:10px; font-weight:bold">${n}</span></div><div style="margin-top:5px; display:flex; gap:5px; width:100%"><button class="btn btn-sm btn-success" style="flex:1; font-size:0.7rem" onclick="respondRequest(${r.requestId}, true)">Đồng ý</button><button class="btn btn-sm btn-secondary" style="flex:1; font-size:0.7rem" onclick="respondRequest(${r.requestId}, false)">Xóa</button></div></div>`; });
+                    document.getElementById("requestList").innerHTML = h;
+                } else { b.style.display = "none"; document.getElementById("requestList").innerHTML = "<div style='padding:10px; text-align:center; font-size:0.8rem; color:#999'>Không có lời mời nào</div>"; }
             });
         }
+        function respondRequest(id, isAccept) { fetch(`/Friend/RespondFriendRequest?requestId=${id}&isAccept=${isAccept}`, { method: 'POST' }).then(() => { loadPendingRequests(); loadFriends(); }); }
 
-        function respondRequest(id, isAccept) {
-            fetch(`/Friend/RespondFriendRequest?requestId=${id}&isAccept=${isAccept}`, { method: 'POST' })
-                .then(() => {
-                    loadPendingRequests();
-                    loadFriends();
-                });
-        }
-
-        // [FIX] Thêm hàm tạo nhóm với người dùng online
-        function createGroupWith(userId, userName) {
-            var name = prompt("Nhập tên nhóm muốn tạo với " + userName + ":");
-            if (!name) return;
-
-            fetch('/Group/CreateGroup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ groupName: name, invitedUserId: userId })
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert("✅ Tạo nhóm thành công!");
-                loadGroups();
-                setTimeout(() => joinRoom(data.id, data.name, data.name, data.code), 300);
-            });
-        }
-        function startPrivateChat(username) {
-            console.log("Starting private chat with:", username);
-            
-            if (!username) {
-                Swal.fire("Lỗi", "Username không hợp lệ", "error");
-                return;
-            }
-
-            fetch('/Group/CreatePrivateChat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ targetUsername: username })
-            })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-                return res.json();
-            })
-            .then(g => {
-                console.log("Private chat created:", g);
-                loadGroups();
-                setTimeout(() => {
-<<<<<<< HEAD
-                    joinRoom(g.id, g.name, true);  // Truyền true cho isPrivate
-=======
-                    joinRoom(g.id, g.name, username); // [FIX] Truyền username để hiển thị tên người kia
->>>>>>> afac22c (Nâng cấp giao diện chat, hoàn thiện chức năng nhóm, bạn bè và lời mời tham gia nhóm)
-                }, 200);  // Delay để loadGroups hoàn thành
-            })
-            .catch(err => {
-                console.error("Error creating private chat:", err);
-                Swal.fire("Lỗi", "Lỗi tạo chat riêng: " + err.message, "error");
-            });
+        function startPrivateChat(username, fullName) {
+            if (!username) return;
+            var display = fullName || userDetailsMap[username] || username;
+            fetch('/Group/CreatePrivateChat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ targetUsername: username }) })
+            .then(r => r.json()).then(g => { loadGroups(); setTimeout(() => joinRoom(g.id, g.name, display, "", true), 200); })
+            .catch(e => Swal.fire("Lỗi", "Lỗi tạo chat riêng", "error"));
         }
 
         function filterUsers() {
-            var term = document.getElementById("searchUser").value.toLowerCase();
-            var items = document.querySelectorAll("#userList .user-item");
-            items.forEach(i => {
-                if (i.innerText.toLowerCase().includes(term)) i.style.display = "flex";
-                else i.style.display = "none";
-            });
+            var t = document.getElementById("searchUser").value.toLowerCase();
+            document.querySelectorAll("#userList .user-item").forEach(i => { i.style.display = i.innerText.toLowerCase().includes(t) ? "flex" : "none"; });
         }
 
         function confirmLogout() {
-            Swal.fire({
-                title: 'Đăng xuất?',
-                text: "Bạn có chắc chắn muốn đăng xuất?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Đăng xuất',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Giả sử bạn dùng Cookie Auth, chuyển hướng về trang Logout
-                    // Nếu chưa có Action Logout, bạn có thể dùng window.location.href = '/Account/Logout'
-                    // Ở đây tôi sẽ redirect về trang chủ hoặc trang login
-                    window.location.href = '/Account/Logout'; // Cần đảm bảo route này tồn tại
-                }
-            });
+            Swal.fire({ title: 'Đăng xuất?', icon: 'question', showCancelButton: true, confirmButtonText: 'Đăng xuất' }).then((r) => { if (r.isConfirmed) window.location.href = '/Account/Logout'; });
         }
-
-        function toggleUserSidebar() {
-            var sb = document.getElementById("userSidebar");
-            sb.classList.toggle("show");
-        }
+        function toggleUserSidebar() { document.getElementById("userSidebar").classList.toggle("show"); }
     </script>
+</div>
