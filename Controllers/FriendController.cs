@@ -6,6 +6,8 @@ using RealTimeChatMVC.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.SignalR;
+using RealTimeChatMVC.Hubs;
 
 namespace RealTimeChatMVC.Controllers
 {
@@ -13,10 +15,12 @@ namespace RealTimeChatMVC.Controllers
     public class FriendController : Controller
     {
         private readonly ChatDbContext _context;
+        private readonly IHubContext<ChatHub> _hubContext;
 
-        public FriendController(ChatDbContext context)
+        public FriendController(ChatDbContext context, IHubContext<ChatHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -58,6 +62,14 @@ namespace RealTimeChatMVC.Controllers
             _context.Friends.Add(friendRequest);
             await _context.SaveChangesAsync();
 
+            // [REAL-TIME] Gửi thông báo đến người nhận
+            var targetUser = await _context.Users.FindAsync(targetId);
+            if (targetUser != null) 
+            {
+                await _hubContext.Clients.User(targetUser.Username).SendAsync("ReceiveFriendRequest");
+                await _hubContext.Clients.User(targetUser.Id.ToString()).SendAsync("ReceiveFriendRequest"); // [FIX] Gửi thêm theo ID
+            }
+
             return Ok("Đã gửi lời mời kết bạn");
         }
 
@@ -74,7 +86,8 @@ namespace RealTimeChatMVC.Controllers
                     RequestId = f.Id,
                     RequesterId = u.Id,
                     RequesterName = u.Username,
-                    RequesterAvatar = u.AvatarColor
+                    RequesterAvatar = u.AvatarColor,
+                    RequesterFullName = u.FullName // [MỚI] Thêm FullName để hiển thị Avatar đúng
                 })
                 .ToListAsync();
 

@@ -12,6 +12,7 @@ namespace RealTimeChatMVC.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Friend> Friends { get; set; }
         public DbSet<OnlineUser> OnlineUsers { get; set; }
+        public DbSet<GroupInvitation> GroupInvitations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

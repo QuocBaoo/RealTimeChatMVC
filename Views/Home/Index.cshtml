@@ -1,4 +1,4 @@
-﻿@{
+﻿﻿@{
     ViewData["Title"] = "Trang Chủ";
 }
 
@@ -8,12 +8,20 @@
     
     body {
         /* Phủ màu nền cho toàn bộ Body */
-        background: linear-gradient(135deg, #1A2980 0%, #26D0CE 100%); /* Xanh biển sâu sang Xanh ngọc */
-        /* Hoặc dùng màu Tím mộng mơ này nếu thích: */
-        /* background: linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%); */
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
         background-attachment: fixed; /* Giữ nền đứng im khi cuộn */
         color: white;
         overflow-x: hidden;
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    @@keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 
     /* Ẩn bớt padding mặc định của Layout cũ để nó rộng ra */
@@ -29,20 +37,23 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        font-family: 'Montserrat', sans-serif;
     }
 
     /* 3. Tên Web Hiệu ứng Neon */
     .main-title {
-        font-size: 5rem;
+        font-size: 6rem;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: 3px;
-        background: -webkit-linear-gradient(#fff, #b3e5fc); /* Chữ màu trắng pha xanh nhạt */
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0px 0px 30px rgba(255, 255, 255, 0.3);
+        color: white;
+        text-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.3), 0 0 30px rgba(255,255,255,0.2);
         margin-bottom: 20px;
+        animation: fadeInDown 1s ease-out;
+    }
+
+    @@keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-50px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .sub-title {
@@ -52,28 +63,33 @@
         color: rgba(255, 255, 255, 0.9);
         max-width: 700px;
         line-height: 1.6;
+        animation: fadeInUp 1s ease-out 0.5s backwards;
+    }
+
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     /* 4. Nút bấm hiệu ứng Kính mờ (Glassmorphism) */
     .btn-glass {
-        background: rgba(255, 255, 255, 0.2); /* Màu trắng trong suốt */
-        backdrop-filter: blur(10px); /* Làm mờ nền sau nút */
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        color: white;
+        background: white;
+        color: #e73c7e;
+        border: none;
         padding: 15px 40px;
         font-size: 1.2rem;
         border-radius: 50px;
         font-weight: 700;
         transition: all 0.3s ease;
         text-decoration: none;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        animation: fadeInUp 1s ease-out 0.8s backwards;
     }
 
     .btn-glass:hover {
-        background: white;
-        color: #1A2980; /* Đổi chữ thành màu xanh khi di chuột */
-        transform: scale(1.05);
-        box-shadow: 0 10px 40px rgba(255, 255, 255, 0.5);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        color: #23a6d5;
     }
 
     /* Icon chat bay bay */
