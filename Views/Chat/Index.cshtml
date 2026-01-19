@@ -1,8 +1,26 @@
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostingEnvironment
 @{
     // Không cần Model nữa vì sẽ load bằng AJAX
     var fullName = User.Claims.FirstOrDefault(c => c.Type == "FullName")?.Value ?? User.Identity.Name;
     var myAvatarColor = User.Claims.FirstOrDefault(c => c.Type == "AvatarColor")?.Value ?? "#1A2980";
     var myId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+    // Lấy danh sách GIF từ thư mục wwwroot/gifs
+    var gifList = new List<string>();
+    try
+    {
+        var webRoot = HostingEnvironment.WebRootPath;
+        var gifPath = System.IO.Path.Combine(webRoot, "gifs");
+        if (System.IO.Directory.Exists(gifPath))
+        {
+            var files = System.IO.Directory.GetFiles(gifPath, "*.gif");
+            foreach (var file in files)
+            {
+                gifList.Add("/gifs/" + System.IO.Path.GetFileName(file));
+            }
+        }
+    }
+    catch { }
 }
 
 @{
@@ -222,13 +240,13 @@
     }
 
     .message-content {
-        padding: 12px 18px;
-        border-radius: 20px;
-        font-size: 1rem;
-        font-weight: 600;
+        padding: 10px 16px;
+        border-radius: 18px;
+        font-size: 0.95rem;
+        font-weight: 500;
         line-height: 1.5;
         word-wrap: break-word;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     }
 
     .message-content img {
@@ -250,8 +268,30 @@
     .message-info {
         font-size: 0.75rem;
         margin-top: 5px;
-        opacity: 0.7;
+        opacity: 0.6;
+        font-weight: 400;
+    }
+
+    .message-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .message-sender {
+        font-size: 0.85rem;
         font-weight: 700;
+        opacity: 0.8;
+        margin-bottom: 2px;
+    }
+
+    .msg-left .message-sender {
+        color: #1A2980;
+    }
+
+    .msg-right .message-sender {
+        color: #ffffff;
+        text-align: right;
     }
 
     /* Tin người khác (Trái) */
@@ -289,6 +329,105 @@
         align-items: center;
         flex-shrink: 0;
         /* Không bị co lại */
+    }
+
+    /* STICKER & GIF PANEL */
+    .sticker-panel {
+        background: white;
+        border-top: 1px solid #e1e8ed;
+        padding: 15px;
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .sticker-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e1e8ed;
+        margin-bottom: 10px;
+        gap: 10px;
+    }
+
+    .sticker-tabs {
+        display: flex;
+        gap: 10px;
+        flex: 1;
+    }
+
+    .sticker-tab {
+        background: none;
+        border: none;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #65676b;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .sticker-tab:hover {
+        color: #1A2980;
+    }
+
+    .sticker-tab.active {
+        color: #0084ff;
+        border-bottom-color: #0084ff;
+    }
+
+    .sticker-content {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+    }
+
+    .sticker-item {
+        width: 100%;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        cursor: pointer;
+        border-radius: 8px;
+        background: #f5f5f5;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+
+    .sticker-item:hover {
+        background: #e8e8e8;
+        transform: scale(1.1);
+        border-color: #1A2980;
+    }
+
+    .gif-content {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        min-height: 150px;
+    }
+
+    .gif-item {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #f5f5f5;
+    }
+
+    .gif-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gif-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
     .input-mess {
@@ -330,15 +469,77 @@
     }
 
     .btn-icon {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
+        background: white;
+        border: 2px solid #ddd;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        font-size: 1.4rem;
         cursor: pointer;
         color: #555;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
     }
 
     .btn-icon:hover {
-        color: #1A2980;
+        border-color: #26D0CE;
+        background: #f0fffe;
+    }
+
+    .emoji-btn {
+        border-color: white;
+        background: transparent;
+        border-width: 2.5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .emoji-btn:hover {
+        border-color: white;
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.08);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Reset style mặc định của button */
+    .btn-sticker {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        color: #65676b;
+        width: 45px;
+        height: 45px;
+    }
+
+    /* Kích thước của icon SVG bên trong */
+    .btn-sticker svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* Hiệu ứng khi di chuột vào */
+    .btn-sticker:hover {
+        background-color: #f0f2f5;
+        color: #0084ff;
+    }
+
+    /* Hiệu ứng khi bấm giữ chuột */
+    .btn-sticker:active {
+        background-color: #e4e6eb;
+        transform: scale(0.95);
+    }
+
+    /* Class này dùng khi menu sticker đang mở */
+    .btn-sticker.active {
+        color: #0084ff;
+        background-color: #e7f3ff;
     }
 
     /* Thanh cuộn đẹp */
@@ -437,13 +638,47 @@
                 <div class="chat-input-area">
                     <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Gửi ảnh hoặc file">📎</button>
                     <input type="file" id="fileInput" style="display:none" onchange="sendFile()">
-                    <button class="btn-icon" onclick="insertEmoji('👍')">👍</button>
-                    <button class="btn-icon" onclick="insertEmoji('❤️')">❤️</button>
-                    <button class="btn-icon" onclick="insertEmoji('😂')">😂</button>
+                    <button class="btn-sticker" id="stickerBtn" onclick="toggleStickerPanel()" aria-label="Gửi sticker">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9 9H9.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M15 9H15.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
 
                     <input type="text" id="messageInput" class="input-mess" placeholder="Nhập tin nhắn..."
                         autocomplete="off">
+                    <button class="btn-icon" onclick="insertEmoji('❤️')" title="Yêu thích">❤️</button>
                     <button id="sendButton" class="btn-send">➤</button>
+                </div>
+
+                <!-- STICKER & GIF PANEL -->
+                <div id="stickerPanel" class="sticker-panel" style="display:none;">
+                    <div class="sticker-header">
+                        <div class="sticker-tabs">
+                            <button class="sticker-tab active" onclick="switchStickerTab('stickers')">😊 Sticker</button>
+                            <button class="sticker-tab" onclick="switchStickerTab('gifs')">🎉 GIF</button>
+                        </div>
+                        <button onclick="toggleStickerPanel()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;">✕</button>
+                    </div>
+                    <div class="sticker-content" id="stickerContent">
+                        <div class="sticker-item" onclick="insertEmoji('😀')">😀</div>
+                        <div class="sticker-item" onclick="insertEmoji('😁')">😁</div>
+                        <div class="sticker-item" onclick="insertEmoji('😂')">😂</div>
+                        <div class="sticker-item" onclick="insertEmoji('😃')">😃</div>
+                        <div class="sticker-item" onclick="insertEmoji('😄')">😄</div>
+                        <div class="sticker-item" onclick="insertEmoji('😅')">😅</div>
+                        <div class="sticker-item" onclick="insertEmoji('👍')">👍</div>
+                        <div class="sticker-item" onclick="insertEmoji('👎')">👎</div>
+                        <div class="sticker-item" onclick="insertEmoji('👏')">👏</div>
+                        <div class="sticker-item" onclick="insertEmoji('😍')">😍</div>
+                        <div class="sticker-item" onclick="insertEmoji('😭')">😭</div>
+                        <div class="sticker-item" onclick="insertEmoji('😲')">😲</div>
+                    </div>
+                    <div class="gif-content" id="gifContent" style="display:none; padding:20px; text-align:center; color:#999;">
+                        ⏳ Chờ GIF tải lên...
+                    </div>
                 </div>
             </div>
 
@@ -611,9 +846,10 @@
 
             divItem.innerHTML = `
             ${avatarHtml}
-            <div>
+            <div class="message-wrapper">
+                <div class="message-sender">${isMine ? "Bạn" : user}</div>
                 <div class="message-content">${contentHtml}</div>
-                <div class="message-info">${isMine ? "Bạn" : user} • ${time}</div>
+                <div class="message-info">${time}</div>
             </div>
         `;
             chatBox.appendChild(divItem);
@@ -806,6 +1042,78 @@
 
         function insertEmoji(emoji) {
             document.getElementById("messageInput").value += emoji;
+            document.getElementById("messageInput").focus();
+        }
+
+        function switchStickerTab(tab) {
+            var stickerContent = document.getElementById("stickerContent");
+            var gifContent = document.getElementById("gifContent");
+            var tabs = document.querySelectorAll(".sticker-tab");
+            
+            tabs.forEach(t => t.classList.remove("active"));
+            
+            if (tab === 'stickers') {
+                stickerContent.style.display = "grid";
+                gifContent.style.display = "none";
+                tabs[0].classList.add("active");
+            } else if (tab === 'gifs') {
+                stickerContent.style.display = "none";
+                gifContent.style.display = "grid";
+                tabs[1].classList.add("active");
+                loadGifs();
+            }
+        }
+
+        function toggleStickerPanel() {
+            var panel = document.getElementById("stickerPanel");
+            var btn = document.getElementById("stickerBtn");
+            if (panel.style.display === "none") {
+                panel.style.display = "block";
+                btn.classList.add("active");
+            } else {
+                panel.style.display = "none";
+                btn.classList.remove("active");
+            }
+        }
+
+        // --- GIF LOGIC ---
+        var gifsLoaded = false;
+        function loadGifs() {
+            if (gifsLoaded) return;
+            
+            var gifContainer = document.getElementById("gifContent");
+            gifContainer.innerHTML = "";
+            gifContainer.style.padding = "0";
+            
+            // Lấy danh sách GIF từ biến C# gifList đã tạo ở đầu file
+            var gifs = @Json.Serialize(gifList);
+
+            if (gifs && gifs.length > 0) {
+                gifs.forEach(url => {
+                    var div = document.createElement("div");
+                    div.className = "gif-item";
+                    div.onclick = function() { sendGif(url); };
+                    
+                    var img = document.createElement("img");
+                    img.src = url;
+                    
+                    div.appendChild(img);
+                    gifContainer.appendChild(div);
+                });
+            } else {
+                gifContainer.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;">Chưa có file GIF nào trong thư mục wwwroot/gifs</div>';
+            }
+            
+            gifsLoaded = true;
+        }
+
+        function sendGif(url) {
+            if (currentGroup) {
+                connection.invoke("SendGroupMessage", currentGroup, url, "Image").catch(err => console.error(err.toString()));
+            } else {
+                connection.invoke("SendMessage", currentUser, url, "Image").catch(err => console.error(err.toString()));
+            }
+            toggleStickerPanel();
         }
 
         document.getElementById("messageInput").addEventListener("keyup", function (event) {
