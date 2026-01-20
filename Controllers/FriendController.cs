@@ -66,8 +66,11 @@ namespace RealTimeChatMVC.Controllers
             var targetUser = await _context.Users.FindAsync(targetId);
             if (targetUser != null) 
             {
+                // Gửi đến cả Username và ID để đảm bảo nhận được bất kể cấu hình Identity
                 await _hubContext.Clients.User(targetUser.Username).SendAsync("ReceiveFriendRequest");
                 await _hubContext.Clients.User(targetUser.Id.ToString()).SendAsync("ReceiveFriendRequest");
+                await _hubContext.Clients.User(targetUser.Username.ToLower()).SendAsync("ReceiveFriendRequest"); // Thêm fallback lowercase
+                await _hubContext.Clients.User(targetUser.Username.ToUpper()).SendAsync("ReceiveFriendRequest"); // Thêm fallback uppercase
             }
 
             return Ok("Đã gửi lời mời kết bạn");
@@ -117,45 +120,43 @@ namespace RealTimeChatMVC.Controllers
                 {
                     await _hubContext.Clients.User(requester.Username).SendAsync("UpdateFriendList");
                     await _hubContext.Clients.User(requester.Id.ToString()).SendAsync("UpdateFriendList");
-                    await _hubContext.Clients.User(requester.Username).SendAsync("ReceiveNewGroup", 0, "NewFriend", me.FullName); // Trigger reload group/friend
                 }
-
-                return Ok("Đã chấp nhận");
             }
             else
             {
-                _context.Friends.Remove(request); // Từ chối -> Xóa
+                // Từ chối -> Xóa lời mời
+                _context.Friends.Remove(request);
                 await _context.SaveChangesAsync();
-                return Ok("Đã từ chối");
             }
+
+            return Ok();
         }
 
-        // [MỚI] Xóa bạn bè
         [HttpPost]
         public async Task<IActionResult> RemoveFriend(int friendId)
         {
             var myName = User.Identity.Name;
             var me = await _context.Users.FirstOrDefaultAsync(u => u.Username == myName);
 
-            var friendship = await _context.Friends.FirstOrDefaultAsync(f => 
+            var friendRel = await _context.Friends.FirstOrDefaultAsync(f => 
                 (f.RequesterId == me.Id && f.ReceiverId == friendId) || 
                 (f.RequesterId == friendId && f.ReceiverId == me.Id));
 
-            if (friendship == null) return NotFound("Không tìm thấy bạn bè");
-
-            _context.Friends.Remove(friendship);
-            await _context.SaveChangesAsync();
-
-            // [REAL-TIME] Thông báo cho người bị xóa biết để cập nhật danh sách
-            var otherId = (friendship.RequesterId == me.Id) ? friendship.ReceiverId : friendship.RequesterId;
-            var otherUser = await _context.Users.FindAsync(otherId);
-            if (otherUser != null)
+            if (friendRel != null)
             {
-                await _hubContext.Clients.User(otherUser.Username).SendAsync("UpdateFriendList");
-                await _hubContext.Clients.User(otherUser.Id.ToString()).SendAsync("UpdateFriendList");
+                _context.Friends.Remove(friendRel);
+                await _context.SaveChangesAsync();
+                
+                // Thông báo cho người kia biết để cập nhật danh sách
+                var otherUserId = (friendRel.RequesterId == me.Id) ? friendRel.ReceiverId : friendRel.RequesterId;
+                var otherUser = await _context.Users.FindAsync(otherUserId);
+                if (otherUser != null)
+                {
+                     await _hubContext.Clients.User(otherUser.Username).SendAsync("UpdateFriendList");
+                     await _hubContext.Clients.User(otherUser.Id.ToString()).SendAsync("UpdateFriendList");
+                }
             }
-
-            return Ok("Đã xóa bạn bè");
+            return Ok();
         }
     }
 }

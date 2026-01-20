@@ -465,7 +465,10 @@
     }
 
     // 1. Kết nối tới Hub
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+    var connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chatHub")
+        .withAutomaticReconnect() // [FIX] Thêm tự động kết nối lại
+        .build();
 
     // 2. Nhận tin nhắn từ Server
     connection.on("ReceiveMessage", function (user, message, time) {

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using RealTimeChatMVC.Data;
 using RealTimeChatMVC.Hubs;
+using Microsoft.AspNetCore.SignalR; // [MỚI]
+using RealTimeChatMVC.Providers;    // [MỚI]
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,9 @@ builder.Services.AddSignalR(hubOptions =>
     // Timeout cho long-running operations
     hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(15);
 });
+
+// [FIX REALTIME] Đăng ký CustomUserIdProvider để SignalR map đúng UserId (Int) thay vì Username (String)
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 // 3. Đăng ký Kết nối SQL Server
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -77,7 +82,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ChatDbContext>();
-        context.Database.EnsureDeleted(); // <--- Bỏ comment dòng này, chạy 1 lần để Reset DB
+        // context.Database.EnsureDeleted(); // [FIX DOCKER] Comment lại để không xóa DB mỗi khi container khởi động
         context.Database.EnsureCreated(); // Tự động tạo bảng dựa trên code (không cần file Migration)
     }
     catch (Exception ex)

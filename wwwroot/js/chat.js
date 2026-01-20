@@ -1,7 +1,17 @@
 "use strict";
 
+document.addEventListener("DOMContentLoaded", function() {
+    // [FIX] Nếu đang ở trang Chat chính (có .chat-wrapper), không chạy script này để tránh xung đột kết nối
+    if (document.querySelector('.chat-wrapper')) {
+        console.log("Main chat detected, chat.js disabled to prevent conflict.");
+        return;
+    }
+
 // 1. Khởi tạo kết nối SignalR
-var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+var connection = new signalR.HubConnectionBuilder()
+    .withUrl("/chatHub")
+    .withAutomaticReconnect() // [FIX] Thêm tự động kết nối lại
+    .build();
 
 // Tắt nút gửi cho đến khi kết nối thành công
 document.getElementById("sendButton").disabled = true;
@@ -160,3 +170,5 @@ document
 
 // 6. Load lịch sử tin nhắn - LOẠI BỎ vì joinGlobalChat() sẽ load
 // (Nếu cần load khi trang vừa mở, dùng joinGlobalChat() trong window.onload thay vì)
+
+});

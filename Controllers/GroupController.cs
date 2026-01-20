@@ -299,6 +299,8 @@ namespace RealTimeChatMVC.Controllers
 
             await _hubContext.Clients.User(invitee.Username).SendAsync("ReceiveGroupInvitation");
             await _hubContext.Clients.User(invitee.Id.ToString()).SendAsync("ReceiveGroupInvitation");
+            await _hubContext.Clients.User(invitee.Username.ToLower()).SendAsync("ReceiveGroupInvitation"); // Fallback chữ thường
+            await _hubContext.Clients.User(invitee.Username.ToUpper()).SendAsync("ReceiveGroupInvitation"); // Fallback chữ hoa
 
             return true;
         }

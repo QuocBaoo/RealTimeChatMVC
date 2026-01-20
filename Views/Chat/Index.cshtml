@@ -263,6 +263,10 @@
         border: 2px solid #fff;
         border-radius: 50%;
     }
+    
+    .avatar-status.offline {
+        background: #95a5a6; /* Màu xám khi offline */
+    }
 
     /* MAIN CHAT AREA */
     .main-chat-area {
@@ -1025,12 +1029,16 @@
         var currentGroupIsPrivate = false; // Track if current chat is private
         var userMap = {}; // Lưu trữ map Username -> ID
         var userColorMap = {}; // Lưu trữ map Username -> Color
+        var unreadCounts = {}; // [MỚI] Biến toàn cục lưu số tin nhắn chưa đọc
         var friendIds = new Set(); // Lưu danh sách ID bạn bè
         var lastOnlineUsers = []; // Lưu danh sách online gần nhất
         var userDetailsMap = {}; // Lưu thông tin chi tiết (FullName)
         var currentChatTarget = null; // [MỚI] Username người đang chat cùng (nếu private)
 
-        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .withAutomaticReconnect() // [FIX] Tự động kết nối lại khi rớt mạng
+            .build();
 
         // 1. NHẬN TIN NHẮN
         connection.on("ReceiveMessage", function (user, message, time, type) {
@@ -1043,23 +1051,35 @@
             if (groupName === currentGroup) {
                 appendMessage(user, message, time, type);
             } else {
+                // [FIX] Tăng biến đếm trong bộ nhớ
+                unreadCounts[groupName] = (unreadCounts[groupName] || 0) + 1;
+
                 var groupItem = document.querySelector(`.group-item[data-groupname='${groupName}']`);
                 if (groupItem) {
                     var badge = groupItem.querySelector(".unread-badge");
                     if (badge) {
-                        var currentCount = parseInt(badge.innerText) || 0;
-                        badge.innerText = currentCount + 1;
+                        badge.innerText = unreadCounts[groupName];
                         badge.style.display = "inline-block";
                         groupItem.style.fontWeight = "bold";
                         groupItem.style.color = "#000";
                     }
                 } else {
+                    // [FIX] Nếu nhóm chưa hiện (chat riêng mới), load lại danh sách
+                    // Hàm loadGroups sẽ tự động lấy số lượng từ unreadCounts để hiển thị
                     loadGroups();
                 }
             }
         });
 
-        connection.on("ReceiveGroupInvitation", function() { loadGroupInvites(); });
+        connection.on("ReceiveGroupInvitation", function() { 
+            loadGroupInvites(); 
+            console.log("🔔 Nhận lời mời vào nhóm - UI đã cập nhật");
+            const Toast = Swal.mixin({
+                toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
+                didOpen: (toast) => { toast.addEventListener('mouseenter', Swal.stopTimer); toast.addEventListener('mouseleave', Swal.resumeTimer); }
+            });
+            Toast.fire({ icon: 'info', title: '📩 Bạn có lời mời vào nhóm mới' });
+        });
         
         // [FIX] Khi có nhóm mới (chat riêng hoặc nhóm), tải lại danh sách ngay
         connection.on("ReceiveNewGroup", function(groupId, groupName, inviter) { 
@@ -1068,6 +1088,7 @@
         });
 
         connection.on("ReceiveFriendRequest", function() {
+            console.log("🔔 Nhận lời mời kết bạn - Đang tải lại danh sách...");
             loadPendingRequests();
             const Toast = Swal.mixin({
                 toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
@@ -1181,8 +1202,6 @@
                 var fileIcon = getFileIcon(fileName);
                 if (isVideo) {
                     isMedia = true;
-                    contentHtml = `<div style="background:#000;border-radius:10px;overflow:hidden;width:300px;cursor:pointer;" onclick="openVideoModal('${message}', '${ext}')"><video style="width:100%;height:auto;pointer-events:none;"><source src="${message}" type="video/${ext === 'mp4' ? 'mp4' : 'video/' + ext}"></video><div style="padding:8px;text-align:center;background:#1A2980;color:#fff;font-size:0.9rem;">🔍 Bấm vào để xem to</div></div>`;
-                    contentHtml = `<div style="background:#000;border-radius:18px;overflow:hidden;width:300px;cursor:pointer;" onclick="openVideoModal('${message}', '${ext}')"><video style="width:100%;height:auto;pointer-events:none;"><source src="${message}" type="video/${ext === 'mp4' ? 'mp4' : 'video/' + ext}"></video><div style="padding:8px;text-align:center;background:rgba(26, 41, 128, 0.8);color:#fff;font-size:0.9rem;backdrop-filter:blur(5px);">🔍 Bấm vào để xem to</div></div>`;
                     contentHtml = `<div style="background:#000;border-radius:25px;overflow:hidden;width:300px;cursor:pointer;" onclick="openVideoModal('${message}', '${ext}')"><video style="width:100%;height:auto;pointer-events:none;display:block;"><source src="${message}" type="video/${ext === 'mp4' ? 'mp4' : 'video/' + ext}"></video><div style="padding:8px;text-align:center;background:rgba(26, 41, 128, 0.8);color:#fff;font-size:0.9rem;backdrop-filter:blur(5px);">🔍 Bấm vào để xem to</div></div>`;
                 } else {
                     // UI File Card mới
@@ -1237,7 +1256,12 @@
             return map[ext] || '📎';
         }
 
-        connection.start().then(() => console.log("SignalR Connected")).catch(err => console.error(err));
+        // [FIX] Đảm bảo kết nối xong mới Join Room (Xóa bỏ Race Condition)
+        connection.start().then(() => {
+            console.log("SignalR Connected");
+            // Sau khi kết nối thành công mới tham gia chat chung
+            joinGlobalChat();
+        }).catch(err => console.error("Lỗi kết nối SignalR:", err));
 
         document.getElementById("sendButton").addEventListener("click", function (event) {
             var input = document.getElementById("messageInput");
@@ -1351,7 +1375,8 @@
 
         window.onload = function () {
             loadGroups(); loadFriends(); loadPendingRequests(); loadGroupInvites();
-            setTimeout(() => joinGlobalChat(), 300);
+            // [FIX] Đã bỏ setTimeout joinGlobalChat ở đây, chuyển vào connection.start().then()
+            
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.user-item')) document.querySelectorAll('.user-item.active').forEach(el => el.classList.remove('active'));
                 var rl = document.getElementById("requestList"), btn = document.getElementById("btnFriendReq");
@@ -1383,7 +1408,7 @@
 
         // --- GROUP FUNCTIONS ---
         function loadGroups() {
-            fetch('/Group/GetMyGroups').then(r => r.json()).then(data => {
+            return fetch('/Group/GetMyGroups').then(r => r.json()).then(data => {
                 var groupHtml = "", privateHtml = "";
                 data.forEach(g => {
                     var icon = g.isPrivate ? "🔒" : "#";
@@ -1393,7 +1418,13 @@
 
                     var realGroupName = g.groupName; 
                     var groupCode = g.groupCode || "";
-                    var itemHtml = `<div class="group-item" id="group-${g.id}" data-groupname="${realGroupName}" onclick="joinRoom(${g.id}, '${realGroupName}', '${displayName}', '${groupCode}', ${g.isPrivate}, ${g.memberCount}, '${g.name}')"><span style="font-size:1.2rem">${icon}</span><span class="group-name">${displayName}</span><span class="unread-badge">0</span></div>`;
+                    
+                    // [FIX] Hiển thị badge từ biến unreadCounts thay vì luôn là 0
+                    var count = unreadCounts[realGroupName] || 0;
+                    var badgeStyle = count > 0 ? "display:inline-block" : "display:none";
+                    var itemStyle = count > 0 ? "font-weight:bold;color:#000" : "";
+
+                    var itemHtml = `<div class="group-item" id="group-${g.id}" data-groupname="${realGroupName}" style="${itemStyle}" onclick="joinRoom(${g.id}, '${realGroupName}', '${displayName}', '${groupCode}', ${g.isPrivate}, ${g.memberCount}, '${g.name}')"><span style="font-size:1.2rem">${icon}</span><span class="group-name">${displayName}</span><span class="unread-badge" style="${badgeStyle}">${count}</span></div>`;
                     if (g.isPrivate) privateHtml += itemHtml; else groupHtml += itemHtml;
                 });
                 document.getElementById("groupList").innerHTML = groupHtml || '<div class="text-center mt-2 text-muted small">Chưa có nhóm</div>';
@@ -1433,6 +1464,9 @@
             currentGroupId = groupId;
             currentGroupIsPrivate = isPrivate;
             currentChatTarget = isPrivate ? targetUsername : null;
+
+            // [FIX] Reset số tin nhắn chưa đọc của nhóm này về 0 khi tham gia
+            unreadCounts[groupName] = 0;
 
             // Xử lý giao diện: Chat riêng dùng icon Người, Nhóm dùng icon Nhóm
             var icon = isPrivate ? "👤" : "👥";
@@ -1526,7 +1560,7 @@
         }
 
         function loadGroupInvites() {
-            fetch('/Group/GetMyGroupInvitations').then(r => r.json()).then(data => {
+            fetch('/Group/GetMyGroupInvitations?t=' + new Date().getTime()).then(r => r.json()).then(data => {
                 var a = document.getElementById("groupInvitesArea"), l = document.getElementById("groupInviteList");
                 if (data.length > 0) {
                     a.style.display = "block"; 
@@ -1561,7 +1595,9 @@
                     var u = f.Username || f.username, n = f.FullName || f.fullName || u, c = f.AvatarColor || f.avatarColor, ac = n?n[0]:u[0];
                     if(c) userColorMap[u] = c; // Cập nhật màu từ danh sách bạn bè vào map chung
                     var isOnline = onlineSet.has(u);
-                    var statusHtml = isOnline ? '<div class="avatar-status"></div>' : '';
+                    // [FIX] Hiện chấm xám khi offline thay vì ẩn
+                    var statusClass = isOnline ? "" : "offline";
+                    var statusHtml = `<div class="avatar-status ${statusClass}"></div>`;
                     html += `<div class="user-item" onclick="startPrivateChat('${u}', '${n}')">
                                 <div class="avatar-container"><div class="avatar" style="background:${c}">${ac.toUpperCase()}</div>${statusHtml}</div>
                                 <div class="user-name-container" style="margin-left:10px;"><span class="user-name-text">${n}</span></div>
@@ -1588,7 +1624,7 @@
         }
         function toggleFriendRequests(e) { if (e) e.stopPropagation(); var el = document.getElementById("requestList"); el.style.display = (el.style.display === "none") ? "block" : "none"; }
         function loadPendingRequests() {
-            fetch('/Friend/GetPendingRequests').then(r => r.json()).then(data => {
+            fetch('/Friend/GetPendingRequests?t=' + new Date().getTime()).then(r => r.json()).then(data => {
                 var b = document.getElementById("friendReqCount");
                 if (data.length > 0) {
                     b.style.display = "inline-block"; b.innerText = data.length; 
