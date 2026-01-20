@@ -54,7 +54,8 @@ namespace RealTimeChatMVC.Controllers
                 AvatarColor = g.IsPrivate
                     ? g.Members.FirstOrDefault(m => m.Username != username)?.AvatarColor
                     : null,
-                g.GroupCode
+                g.GroupCode,
+                MemberCount = g.Members.Count // [MỚI] Trả về số lượng thành viên
             });
 
             return Json(result);

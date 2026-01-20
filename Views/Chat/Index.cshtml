@@ -33,16 +33,18 @@
 <style>
     /* --- MODERN VARIABLES --- */
     :root {
-        --primary-color: #6c5ce7;
+        --primary-color: #6c5ce7; /* Tím nhạt hiện đại */
         --primary-gradient: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
-        --bg-body: #dfe6e9;
-        --bg-glass: rgba(255, 255, 255, 0.9);
-        --bg-sidebar: rgba(255, 255, 255, 0.95);
+        --bg-body: #dfe6e9; /* Xám nhạt dịu mắt */
+        --bg-chat: #ffffff;
+        --bg-sidebar: #ffffff;
         --text-dark: #2d3436;
         --text-gray: #636e72;
-        --border-color: rgba(0,0,0,0.08);
-        --shadow-sm: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-        --hover-bg: rgba(108, 92, 231, 0.1);
+        --border-color: #f1f2f6;
+        --bubble-me: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+        --bubble-other: #f1f2f6;
+        --shadow-sm: 0 2px 10px rgba(0,0,0,0.05);
+        --hover-bg: #f8f9fa;
     }
 
     /* GLOBAL ANIMATIONS */
@@ -50,9 +52,7 @@
     @@keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     
     body {
-        background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
+        background: var(--bg-body);
         font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         color: var(--text-dark);
         overflow: hidden; /* Chặn scroll body chính */
@@ -61,46 +61,30 @@
 
     /* 1. KHUNG BAO NGOÀI */
     .chat-wrapper {
-        height: 100vh;
+        height: 100vh !important; /* Chiếm trọn màn hình */
         width: 100%;
         display: flex;
         justify-content: center;
-        padding-top: 60px;
+        padding-top: 0 !important; /* Xóa khoảng trắng trên cùng */
         box-sizing: border-box;
         background: transparent;
     }
 
     /* 2. THẺ CHAT (CLEAN UI) */
     .chat-card {
-        background: var(--bg-glass);
-        backdrop-filter: blur(10px);
+        background: var(--bg-chat);
         width: 100%;
         max-width: 1600px;
         height: 100%;
         display: flex;
         flex-direction: column;
         box-shadow: var(--shadow-sm);
-        border-radius: 12px 12px 0 0;
+        border-radius: 0; /* Bỏ bo góc để liền mạch */
         overflow: hidden;
     }
 
-    /* TASKBAR */
-    .taskbar {
-        height: 60px;
-        background: rgba(255,255,255,0.8);
-        border-bottom: 1px solid var(--border-color);
-        color: var(--text-dark);
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        justify-content: space-between;
-        z-index: 10;
-    }
-    
-    .taskbar span {
-        font-weight: 700;
-        font-size: 1.1rem;
-    }
+    /* Ẩn thanh Header cũ và Navbar của Layout */
+    .taskbar, header, nav.navbar { display: none !important; }
 
     .chat-body {
         display: flex;
@@ -118,6 +102,15 @@
         flex-direction: column;
     }
 
+    /* LOGO MỚI TRONG SIDEBAR */
+    .app-brand {
+        font-size: 1.4rem; font-weight: 800; color: var(--primary-color);
+        padding: 20px; text-align: center; 
+        border-bottom: 1px solid var(--border-color);
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .app-brand a { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px; }
+
     .sidebar-header {
         padding: 15px 20px;
         font-weight: 700;
@@ -130,7 +123,7 @@
 
     .group-list {
         flex: 1;
-        overflow-y: auto;
+        overflow-y: auto; /* Custom scrollbar sẽ áp dụng ở dưới */
         padding: 10px;
     }
 
@@ -149,10 +142,15 @@
 
     .group-item:hover,
     .group-item.active {
-        background-color: var(--hover-bg);
-        color: var(--primary-color);
+        background-color: #f0f2f5; /* Màu nền nhẹ khi hover */
+        color: var(--text-dark);
         transform: translateX(5px);
-        box-shadow: none;
+    }
+    
+    .group-item.active {
+        background-color: rgba(108, 92, 231, 0.1); /* Tím nhạt cho active */
+        color: var(--primary-color);
+        font-weight: 700;
     }
 
     /* RIGHT SIDEBAR (THÀNH VIÊN ONLINE) */
@@ -163,6 +161,24 @@
         display: flex;
         flex-direction: column;
     }
+    
+    /* USER PROFILE TRONG SIDEBAR PHẢI */
+    .my-profile {
+        padding: 15px; border-bottom: 1px solid var(--border-color);
+        display: flex; align-items: center; gap: 10px; background: #fff;
+    }
+    .avatar-small {
+        width: 36px; height: 36px; border-radius: 50%;
+        color: white; display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .btn-logout-icon {
+        background: transparent; border: none; cursor: pointer;
+        color: var(--text-gray); padding: 8px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .btn-logout-icon:hover { background: #ffe5e5; color: #ff4757; }
 
     .user-list {
         flex: 1;
@@ -180,12 +196,13 @@
         cursor: pointer;
         border-radius: 12px;
         transition: background 0.2s;
+        flex-wrap: wrap; /* Cho phép nội dung rớt dòng (Accordion) */
     }
 
     .user-item:hover {
         background: var(--hover-bg);
-        transform: translateX(-5px);
     }
+    .user-item.active { background-color: #f0f2f5; }
 
     .section-title {
         font-size: 0.8rem;
@@ -253,15 +270,15 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        background: rgba(255,255,255,0.6);
+        background: #fff;
     }
 
     /* 3. HEADER */
     .chat-header {
-        height: 60px;
+        height: 70px; /* Tăng chiều cao để chứa 2 dòng thông tin */
         padding: 0 20px;
         border-bottom: 1px solid var(--border-color);
-        background: rgba(255,255,255,0.8);
+        background: #fff;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -270,12 +287,55 @@
         box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
-    .chat-title {
-        color: var(--text-dark);
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin: 0;
+    /* HEADER STYLES */
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    
+    .btn-icon-back {
+        background: transparent; border: none; cursor: pointer;
+        padding: 6px; border-radius: 50%; display: flex;
+        align-items: center; justify-content: center;
+        color: var(--text-dark); transition: background 0.2s;
     }
+    .btn-icon-back:hover { background: #f0f2f5; }
+    .btn-icon-back svg { width: 24px; height: 24px; }
+
+    .header-info { display: flex; flex-direction: column; justify-content: center; }
+    .header-title {
+        font-weight: 800; font-size: 1.1rem; color: #000;
+        line-height: 1.2; margin: 0;
+    }
+    .header-subtitle {
+        font-size: 0.8rem; color: var(--text-gray);
+        display: flex; align-items: center; font-weight: 500;
+        margin-top: 2px;
+    }
+
+    #roomCode {
+        font-size: 0.85rem;
+        color: #636e72;
+        font-weight: 600;
+        background-color: #f1f2f6;
+        padding: 4px 12px;
+        border-radius: 15px;
+    }
+    
+    .status-badge {
+        display: flex; align-items: center; gap: 6px;
+        background: rgba(46, 204, 113, 0.1); padding: 4px 12px;
+        border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+        color: #2ecc71; text-transform: uppercase;
+    }
+    .status-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 5px #2ecc71; }
+    .status-dot.offline { background: #95a5a6; box-shadow: none; }
+    .status-badge.offline { color: #95a5a6; background: rgba(149, 165, 166, 0.1); }
+
+    .member-count-badge {
+        display: flex; align-items: center; gap: 6px; padding: 4px 12px;
+        background-color: #f1f2f6; color: #636e72; border-radius: 20px;
+        font-size: 0.75rem; font-weight: 600; cursor: default;
+    }
+    .member-count-badge svg { width: 16px; height: 16px; }
 
     /* 4. DANH SÁCH TIN NHẮN */
     .chat-box {
@@ -291,93 +351,87 @@
 
     .message-item {
         display: flex;
-        align-items: flex-start; /* Căn avatar lên trên cùng ngang với tên */
+        align-items: flex-end; /* Avatar căn dưới cùng */
         gap: 10px;
         max-width: 75%;
-        margin-bottom: 8px;
+        margin-bottom: 15px;
         animation: fadeIn 0.2s ease-out;
     }
 
     .message-content {
         padding: 12px 16px;
-        border-radius: 18px;
+        border-radius: 18px; /* Bo tròn mạnh */
         font-size: 0.95rem;
         font-weight: 500;
         line-height: 1.4;
         word-wrap: break-word;
         position: relative;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-    }
-
-    .message-content img {
-        max-width: 300px;
-        max-height: 300px;
-        border-radius: 10px;
-        padding: 0 !important;
-        margin: 0 !important;
-        display: block;
-    }
-
-    .message-item:has(img) .message-content {
-        padding: 5px !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        border: none !important;
+        box-shadow: none;
     }
 
     .message-info {
-        font-size: 0.85rem;
+        font-size: 0.75rem; /* Nhỏ lại */
         color: var(--text-gray);
         margin-top: 2px;
-        margin-left: 5px;
-        margin-right: 5px;
-        display: block;
+        opacity: 0; /* Ẩn mặc định */
+        transition: opacity 0.2s;
+        margin-top: 4px;
+        opacity: 1; /* Luôn hiện thời gian */
+        width: 100%;
+        text-align: right;
+    }
+    
+    .message-wrapper:hover .message-info {
+        opacity: 1; /* Hiện khi hover */
     }
 
     .message-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 2px;
     }
 
     .message-sender {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 700;
-        color: #c23616; /* Màu đỏ cam đậm giống Zalo */
+        color: var(--text-gray);
         margin-bottom: 4px;
         display: block;
     }
 
     /* Tin người khác (Trái) */
     .msg-left {
-        align-self: flex-start;
+        align-self: flex-start; /* Căn trái */
     }
 
     .msg-left .message-content {
-        background: white;
+        background: var(--bubble-other);
         color: var(--text-dark);
-        border-bottom-left-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        border-bottom-left-radius: 4px; /* Góc nhọn bên trái dưới */
     }
+    
+    .msg-left .message-info { text-align: left; margin-left: 5px; }
 
     /* Tin của mình (Phải) */
     .msg-right {
-        align-self: flex-end;
+        align-self: flex-end; /* Căn phải */
         flex-direction: row-reverse;
     }
 
     .msg-right .message-content {
-        background: var(--primary-gradient);
+        background: var(--bubble-me);
         color: white;
-        border-bottom-right-radius: 5px;
-        box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        border-bottom-right-radius: 4px; /* Góc nhọn bên phải dưới */
     }
+    
+    .msg-right .message-info { text-align: right; margin-right: 5px; }
 
     /* 5. KHUNG NHẬP LIỆU */
     .chat-input-area {
         padding: 15px 20px;
-        background: rgba(255,255,255,0.8);
-        border-top: 1px solid var(--border-color);
+        background: #fff;
+        border-top: none;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.03); /* Bóng đổ nhẹ ngăn cách */
         display: flex;
         gap: 10px;
         align-items: center;
@@ -438,17 +492,16 @@
 
     .input-mess {
         flex: 1;
-        border-radius: 25px;
+        border-radius: 25px; /* Bo tròn */
         padding: 12px 20px;
         border: none;
-        background: white;
+        background: #f5f6fa; /* Nền xám rất nhạt */
         font-size: 1rem;
         outline: none;
         transition: all 0.3s;
         color: var(--text-dark);
-        box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
     }
-    .input-mess:focus { background: white; box-shadow: 0 0 0 2px var(--primary-color); }
+    .input-mess:focus { background: #fff; box-shadow: 0 0 0 2px var(--primary-color); }
 
     .btn-send {
         background: none; color: var(--primary-color); border: none;
@@ -459,40 +512,36 @@
     .btn-send:hover { transform: scale(1.1); }
 
     .btn-icon {
-        background: white; border: 2px solid #ddd; width: 45px; height: 45px;
-        border-radius: 50%; font-size: 1.4rem; cursor: pointer; color: #555;
-        display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-    }
-    .btn-icon:hover { border-color: #26D0CE; background: #f0fffe; transform: scale(1.1); }
-
-    /* Style riêng cho nút đính kèm */
-    .btn-attach {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #65676b; /* Màu xám giống hình */
+        color: #636e72; /* Màu xám đậm */
         transition: all 0.2s ease;
     }
 
-    /* Định dạng SVG */
-    .btn-attach svg {
-        width: 24px;   /* Kích thước icon */
+    /* Định dạng kích thước SVG bên trong */
+    .btn-icon svg {
+        width: 24px;
         height: 24px;
-        transform: rotate(-45deg); 
     }
 
-    /* Hiệu ứng khi di chuột vào (Hover) */
-    .btn-attach:hover {
+    /* Hiệu ứng khi di chuột vào */
+    .btn-icon:hover {
         background-color: #f0f2f5; /* Nền xám nhạt */
-        color: #1A2980; /* Đổi màu icon sang xanh tím than khi hover */
+        color: var(--primary-color); /* Đổi màu icon sang tím */
         transform: scale(1.1); /* Phóng to nhẹ */
-        border-color: #1A2980;
     }
 
-    /* Hiệu ứng khi bấm (Active) */
-    .btn-attach:active {
+    /* Hiệu ứng khi click */
+    .btn-icon:active {
         transform: scale(0.95);
-        background-color: #e4e6eb;
+        background-color: #dfe6e9;
     }
 
     /* Button Sticker SVG */
@@ -510,24 +559,239 @@
     .mobile-toggle { display: none; margin-left: 10px; }
 
     /* SCROLLBAR */
-    .chat-box::-webkit-scrollbar { width: 8px; }
-    .chat-box::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 4px; }
-    .chat-box::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #dcdde1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #b2bec3; }
 
     /* USER ACTIONS POPUP */
     .user-actions {
-        display: none; background: white; border: 1px solid #eee;
-        padding: 10px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        margin-top: 5px; animation: fadeIn 0.2s ease;
+        display: none; 
+        width: 100%; /* Chiếm hết chiều rộng để rớt xuống dòng */
+        flex-basis: 100%;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        gap: 5px;
+        animation: fadeIn 0.3s ease;
     }
-    .user-item.active .user-actions { display: block; }
+    
+    /* Khi active thì hiện flex để xếp nút ngang */
+    .user-item.active .user-actions { display: flex; }
 
     .action-btn {
-        display: block; width: 100%; text-align: left; padding: 5px;
-        border: none; background: none; cursor: pointer; font-size: 0.85rem;
-        color: var(--text-dark); border-radius: 5px;
+        flex: 1; /* Chia đều chiều rộng */
+        text-align: center; padding: 8px;
+        border: 1px solid #e1e8ed; background: white; 
+        cursor: pointer; font-size: 0.8rem; font-weight: 600;
+        color: var(--text-dark); border-radius: 8px;
+        transition: all 0.2s;
     }
-    .action-btn:hover { background: #f0f2f5; color: var(--primary-color); }
+    .action-btn:hover { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+    /* --- NEW FILE CARD UI --- */
+    .file-card {
+        display: flex; align-items: center; gap: 12px;
+        background: rgba(255,255,255,0.95);
+        border: 1px solid #e1e8ed;
+        padding: 10px 15px;
+        border-radius: 12px;
+        max-width: 280px;
+        transition: all 0.2s;
+    }
+    .msg-right .file-card { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.3); color: white; }
+    .msg-right .file-name { color: white !important; }
+    .msg-right .file-size { color: rgba(255,255,255,0.8) !important; }
+    .msg-right .file-download { color: white !important; background: rgba(255,255,255,0.2); }
+    
+    .file-icon { font-size: 1.8rem; display: flex; align-items: center; }
+    .file-info { flex: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+    .file-name { 
+        font-weight: 600; font-size: 0.9rem; color: var(--text-dark);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .file-size { font-size: 0.75rem; color: var(--text-gray); margin-top: 2px; }
+    .file-download {
+        display: flex; align-items: center; justify-content: center;
+        width: 32px; height: 32px; border-radius: 50%;
+        background: #f0f2f5; color: var(--primary-color);
+        text-decoration: none; transition: all 0.2s;
+    }
+    .file-download:hover { transform: scale(1.1); }
+
+    /* --- NEW IMAGE PREVIEW UI --- */
+    .chat-image-container {
+        position: relative; border-radius: 12px; overflow: hidden; cursor: pointer;
+        max-width: 280px; display: block;
+    }
+    .chat-image-container img {
+        width: 100%; height: auto; display: block;
+        transition: transform 0.3s, filter 0.3s;
+    }
+    .chat-image-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.3);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.2s; color: white; font-size: 1.5rem;
+    }
+    .chat-image-container:hover .chat-image-overlay { opacity: 1; }
+    .chat-image-container:hover img { transform: scale(1.03); filter: brightness(0.9); }
+
+    /* --- ZALO STYLE SEND BUTTON --- */
+    /* Container bao quanh nút để căn chỉnh */
+    .chat-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 5px;
+    }
+
+    /* Nút chung */
+    .btn-zalo-send {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+    }
+    .btn-zalo-send:active { transform: scale(0.9); }
+
+    /* Style cho Mũi tên Gửi (Zalo Blue) */
+    .icon-send {
+        width: 28px; height: 28px; color: #0084ff;
+        filter: drop-shadow(0 2px 4px rgba(0, 132, 255, 0.3));
+    }
+
+    /* Style cho Nút Like (Màu đỏ/hồng) */
+    .icon-like {
+        width: 28px; height: 28px; color: #ff4757; fill: #ff4757;
+    }
+    
+    /* --- NEW GROUP ACTION BUTTONS (SOFT UI) --- */
+    /* Container chứa các nút hành động */
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Khoảng cách giữa 2 nút */
+        margin-left: 15px; /* Cách xa phần thành viên một chút */
+    }
+
+    /* Style chung cho nút tròn */
+    .btn-action {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%; /* Bo tròn hoàn toàn */
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    /* Kích thước icon bên trong */
+    .btn-action svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Style riêng cho nút Thêm (Màu Xanh) */
+    .btn-add-member { background-color: #e7f3ff; color: #0084ff; }
+    .btn-add-member:hover {
+        background-color: #d0e8ff; transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 132, 255, 0.2);
+    }
+
+    /* Style riêng cho nút Rời nhóm (Màu Đỏ) */
+    .btn-leave-group { background-color: #ffe5e5; color: #ff4757; }
+    .btn-leave-group:hover {
+        background-color: #ffd1d1; transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(255, 71, 87, 0.2);
+    }
+
+    /* --- SEARCH BAR STYLES --- */
+    .search-container {
+        display: flex; align-items: center;
+        background: #f5f6fa; border-radius: 20px;
+        padding: 5px 10px;
+    }
+    .search-container input {
+        border: none; background: transparent; outline: none;
+        flex: 1; padding: 5px; font-size: 0.9rem; color: var(--text-dark);
+    }
+    .btn-search-icon {
+        background: none; border: none; color: #636e72;
+        cursor: pointer; display: flex; align-items: center; padding: 0;
+    }
+
+    /* --- USER LIST LAYOUT FIX --- */
+    .user-name-container {
+        display: flex; align-items: center; gap: 5px;
+        flex: 1; min-width: 0;
+    }
+    .user-name-text {
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        font-weight: bold;
+    }
+    .friend-badge {
+        white-space: nowrap; font-size: 0.7rem; flex-shrink: 0;
+        color: #2ecc71; border: 1px solid #2ecc71; padding: 1px 4px; border-radius: 4px;
+    }
+
+    /* --- NEW INVITE/REQUEST CARD STYLES --- */
+    .invite-section-title {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--text-gray);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        padding-left: 5px;
+    }
+
+    .invite-card, .request-card {
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid var(--border-color);
+        transition: transform 0.2s;
+    }
+    .invite-card:hover { transform: translateY(-2px); }
+
+    .invite-header, .request-profile {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        gap: 10px;
+    }
+    .invite-name { font-weight: 700; font-size: 0.9rem; color: var(--text-dark); }
+    .invite-info { font-size: 0.75rem; color: var(--text-gray); }
+
+    .invite-actions, .request-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+    }
+
+    .btn-pill {
+        border: none;
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .btn-accept { background: var(--primary-color); color: white; flex: 1; }
+    .btn-accept:hover { background: #5b4bc4; }
+    
+    .btn-decline { background: #f1f2f6; color: var(--text-dark); flex: 1; }
+    .btn-decline:hover { background: #e1e2e6; }
 
     /* RESPONSIVE */
     @@media (max-width: 900px) {
@@ -549,16 +813,10 @@
 
 <div class="chat-wrapper">
     <div class="chat-card">
-        <div class="taskbar">
-            <span>Xin chào, @fullName</span>
-            <div style="display:flex; align-items:center; gap:15px">
-                <span style="font-size: 0.8rem; opacity: 0.8;">ID: @myId</span>
-                <button class="btn btn-sm btn-danger" onclick="confirmLogout()" style="font-size: 0.8rem; padding: 2px 10px;">Đăng xuất</button>
-            </div>
-        </div>
 
         <div class="chat-body">
             <div class="sidebar">
+                <div class="app-brand"><a href="/">💬 RealTimeChat</a></div>
                 <div class="sidebar-header" style="padding-bottom: 5px;">
                     <span>KÊNH CHUNG</span>
                 </div>
@@ -577,8 +835,8 @@
                     </div>
                 </div>
                 
-                <div id="groupInvitesArea" style="display:none; background: #fff3cd; padding: 10px; border-bottom: 1px solid #eee;">
-                    <div style="font-size: 0.75rem; font-weight:bold; color:#856404; margin-bottom:5px">📩 LỜI MỜI VÀO NHÓM</div>
+                <div id="groupInvitesArea" style="display:none; padding: 15px 10px; border-bottom: 1px solid var(--border-color);">
+                    <div class="invite-section-title">📩 Lời mời tham gia</div>
                     <div id="groupInviteList"></div>
                 </div>
 
@@ -595,30 +853,45 @@
 
             <div class="main-chat-area">
                 <div class="chat-header">
-                    <button id="btnBackToGlobal" class="btn btn-sm btn-primary" style="display:none; margin-right:10px; font-weight:bold" onclick="joinGlobalChat()">🏠 Chat Chung</button>
-                    <h3 class="chat-title" id="currentRoomName">💬 Chat Chung</h3>
-                    <div style="display: flex; align-items: center; gap: 8px; background: rgba(46, 204, 113, 0.1); padding: 5px 15px; border-radius: 20px;">
-                        <span style="width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 5px #2ecc71;"></span>
-                        <span style="font-weight: 800; font-size: 0.85rem; color: #2ecc71; text-transform: uppercase;">Online</span>
+                    <div class="header-left">
+                        <button id="backToGlobalBtn" class="btn-icon-back" onclick="joinGlobalChat()" style="display:none" title="Quay lại">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        </button>
+                        
+                        <div class="header-info">
+                            <div class="header-title" id="currentRoomName">🌎 Chat Cộng Đồng</div>
+                            <div class="header-subtitle" id="headerSubtitle">
+                                <span id="roomCode" style="display:none"></span>
+                            </div>
+                        </div>
                     </div>
-                    <div id="groupActions" style="display:none; margin-left: 10px;">
-                        <button class="btn btn-sm btn-danger" onclick="leaveGroup()">Rời nhóm</button>
-                        <button class="btn btn-sm btn-info" onclick="addMember()">Thêm TV</button>
+
+                    <div class="header-right">
+                        <div class="status-badge"><span class="status-dot"></span><span>Online</span></div>
+                        
+                        <div id="memberCountBadge" class="member-count-badge" title="Thành viên" style="margin-right:10px">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            <span id="chatMemberCount">0 thành viên</span>
+                        </div>
+
+                        <div id="groupActions" class="header-actions" style="display:none;">
+                            <button class="btn-action btn-add-member" onclick="addMember()" title="Thêm thành viên">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                            </button>
+
+                            <button class="btn-action btn-leave-group" onclick="leaveGroup()" title="Rời nhóm">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            </button>
+                        </div>
+                        
+                        <button class="btn-icon mobile-toggle" onclick="toggleUserSidebar()">👥</button>
                     </div>
-                    <button class="btn-icon mobile-toggle" onclick="toggleUserSidebar()">👥</button>
                 </div>
 
                 <div class="chat-box" id="chatBox">
                     </div>
 
                 <div class="chat-input-area">
-                    <button class="btn-icon btn-attach" onclick="document.getElementById('fileInput').click()" title="Gửi ảnh hoặc file">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M21.44 11.05L12.25 20.24C9.91 22.58 6.11 22.58 3.77 20.24C1.43 17.9 1.43 14.1 3.77 11.76L12.96 2.57C14.52 1.01 17.05 1.01 18.61 2.57C20.17 4.13 20.17 6.66 18.61 8.22L9.42 17.41C8.64 18.19 7.37 18.19 6.59 17.41C5.81 16.63 5.81 15.36 6.59 14.58L14.36 6.81" 
-                                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                    <input type="file" id="fileInput" style="display:none" onchange="sendFile()">
                     <button class="btn-sticker" id="stickerBtn" onclick="toggleStickerPanel()" aria-label="Gửi sticker">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -628,9 +901,32 @@
                         </svg>
                     </button>
 
+                    <div class="action-buttons" style="display: flex; gap: 5px; align-items: center;">
+                        <button class="btn-icon" onclick="document.getElementById('imgInput').click()" title="Gửi hình ảnh">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        </button>
+                        <input type="file" id="imgInput" style="display:none" accept="image/*" onchange="uploadImage()">
+
+                        <button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="Gửi tài liệu">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.44 11.05L12.25 20.24C9.91 22.58 6.11 22.58 3.77 20.24C1.43 17.9 1.43 14.1 3.77 11.76L12.96 2.57C14.52 1.01 17.05 1.01 18.61 2.57C20.17 4.13 20.17 6.66 18.61 8.22L9.42 17.41C8.64 18.19 7.37 18.19 6.59 17.41C5.81 16.63 5.81 15.36 6.59 14.58L14.36 6.81" 
+                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <input type="file" id="fileInput" style="display:none" onchange="uploadFile()">
+                    </div>
+
                     <input type="text" id="messageInput" class="input-mess" placeholder="Nhập tin nhắn..." autocomplete="off">
-                    <button class="btn-icon" onclick="insertEmoji('❤️')" title="Yêu thích">❤️</button>
-                    <button id="sendButton" class="btn-send">➤</button>
+                    
+                    <!-- New Dynamic Button -->
+                    <div class="chat-actions">
+                        <button id="dynamicSendBtn" class="btn-zalo-send" onclick="handleSendButton()">
+                            <svg id="iconSend" class="icon-send" style="display:none" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.49 11.11L3.69 2.15C3.33 1.96 2.89 2.05 2.63 2.36C2.37 2.67 2.36 3.12 2.6 3.44L7.8 11L2.6 18.56C2.36 18.88 2.37 19.33 2.63 19.64C2.79 19.83 3.02 19.93 3.25 19.93C3.4 19.93 3.55 19.89 3.69 19.81L21.49 10.89C21.8 10.73 22 10.41 22 10.05C22 9.69 21.8 9.37 21.49 9.21V11.11Z" fill="currentColor"/></svg>
+                            <svg id="iconLike" class="icon-like" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z" fill="currentColor"/></svg>
+                        </button>
+                    </div>
+                    <!-- Hidden original send button to keep logic working -->
+                    <button id="sendButton" style="display:none"></button>
                 </div>
 
                 <div id="stickerPanel" class="sticker-panel" style="display:none;">
@@ -662,9 +958,23 @@
             </div>
 
             <div class="user-sidebar" id="userSidebar">
+                <div class="my-profile">
+                    <div class="avatar-small" style="background:@myAvatarColor">@fullName[0].ToString().ToUpper()</div>
+                    <div style="flex:1; overflow:hidden;">
+                        <div class="user-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:700;">@fullName</div>
+                        <div style="font-size:0.75rem; color:#2ecc71; font-weight:600;">● Online</div>
+                    </div>
+                    <button class="btn-logout-icon" onclick="confirmLogout()" title="Đăng xuất">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </button>
+                </div>
                 <div style="padding: 10px;">
-                    <input type="text" id="searchUser" class="form-control form-control-sm"
-                        placeholder="Tìm ID người dùng..." onkeyup="filterUsers()">
+                    <div class="search-container">
+                        <input type="text" id="searchUser" placeholder="Tìm kiếm..." onkeyup="filterUsers()">
+                        <button class="btn-search-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="sidebar-header" style="font-size: 0.9rem;">
@@ -679,7 +989,7 @@
                         🔔 <span id="friendReqCount" class="badge-count" style="display:none">0</span>
                     </button>
                 </div>
-                <div class="user-list" id="requestList" style="border-bottom: 1px solid #eee; max-height: 200px; display:none; background:#fffdf0"></div>
+                <div class="user-list" id="requestList" style="border-bottom: 1px solid #eee; max-height: 400px; display:none; padding: 10px;"></div>
 
                 <div class="user-list" id="friendList" style="border-top: 1px solid #eee;">
                 </div>
@@ -718,6 +1028,7 @@
         var friendIds = new Set(); // Lưu danh sách ID bạn bè
         var lastOnlineUsers = []; // Lưu danh sách online gần nhất
         var userDetailsMap = {}; // Lưu thông tin chi tiết (FullName)
+        var currentChatTarget = null; // [MỚI] Username người đang chat cùng (nếu private)
 
         var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
@@ -749,7 +1060,13 @@
         });
 
         connection.on("ReceiveGroupInvitation", function() { loadGroupInvites(); });
-        connection.on("ReceiveNewGroup", function(groupId, groupName, inviter) { loadGroups(); });
+        
+        // [FIX] Khi có nhóm mới (chat riêng hoặc nhóm), tải lại danh sách ngay
+        connection.on("ReceiveNewGroup", function(groupId, groupName, inviter) { 
+            loadGroups(); 
+            if(inviter) Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: `Bạn có tin nhắn mới từ ${inviter}`, showConfirmButton: false, timer: 3000 });
+        });
+
         connection.on("ReceiveFriendRequest", function() {
             loadPendingRequests();
             const Toast = Swal.mixin({
@@ -759,6 +1076,12 @@
             Toast.fire({ icon: 'info', title: 'Bạn có lời mời kết bạn mới' });
         });
 
+        // [MỚI] Cập nhật danh sách bạn bè khi có thay đổi (được chấp nhận hoặc bị xóa)
+        connection.on("UpdateFriendList", function() {
+            loadFriends();
+            loadGroups(); // Load lại cả nhóm vì có thể chat riêng đã hiện
+        });
+
         connection.on("OnlineUsersSnapshot", function (users) { fetchAndRenderOnlineUsers(users); });
 
         function fetchAndRenderOnlineUsers(users) {
@@ -766,6 +1089,11 @@
                 .then(r => r.json())
                 .then(allUsers => {
                     allUsers.forEach(u => { userDetailsMap[u.username] = u.fullName; });
+                    allUsers.forEach(u => { 
+                        userDetailsMap[u.username] = u.fullName;
+                        // Nếu server trả về màu avatar thì lưu lại để dùng
+                        if(u.avatarColor || u.AvatarColor) userColorMap[u.username] = u.avatarColor || u.AvatarColor;
+                    });
                     renderOnlineUsers(users);
                     loadGroups(); // Cập nhật lại danh sách nhóm để hiển thị tên đầy đủ
                 });
@@ -773,6 +1101,12 @@
 
         function renderOnlineUsers(users) {
             lastOnlineUsers = users;
+            // [FIX] Chỉ cập nhật số lượng Online nếu đang ở Chat Chung (GroupId = 0)
+            if (currentGroupId === 0) {
+                updateMemberCount(users.length); 
+            }
+            updateUserStatus(); // Cập nhật trạng thái Header
+            loadFriends(); // Cập nhật trạng thái trong danh sách bạn bè
             var listHtml = "";
             users.forEach(u => {
                 var name = u.username || u.Username;
@@ -782,6 +1116,14 @@
 
                 if (!userColorMap[name]) {
                     userColorMap[name] = "#" + Math.floor(Math.random() * 16777215).toString(16);
+                    // Kiểm tra localStorage xem đã có màu lưu chưa (tránh đổi màu khi F5)
+                    var storedColor = localStorage.getItem("user_color_" + name);
+                    if (storedColor) {
+                        userColorMap[name] = storedColor;
+                    } else {
+                        userColorMap[name] = "#" + Math.floor(Math.random() * 16777215).toString(16);
+                        localStorage.setItem("user_color_" + name, userColorMap[name]);
+                    }
                 }
                 listHtml += renderUserItem({ username: name, id: id, fullName: fullName });
             });
@@ -794,12 +1136,12 @@
             var fullName = u.fullName || u.FullName || name;
             var avatar = `<div class="avatar-container"><div class="avatar" style="background:${userColorMap[name] || '#ccc'}">${name[0].toUpperCase()}</div><div class="avatar-status"></div></div>`;
             var isFriend = friendIds.has(id);
-            var friendBadge = isFriend ? `<span style="color:#2ecc71; font-size:0.7rem; border:1px solid #2ecc71; padding:1px 4px; border-radius:4px; margin-left:5px">Đã kết bạn</span>` : '';
+            var friendBadge = isFriend ? `<span class="friend-badge">Đã kết bạn</span>` : '';
             var actionButtons = isFriend ? 
                 `<button class="action-btn" onclick="createGroupWith(${id}, '${name}')">👥 Tạo nhóm</button><button class="action-btn" onclick="startPrivateChat('${name}', '${fullName}')">💬 Chat riêng</button>` : 
                 `<button class="action-btn" onclick="addFriend(${id})">➕ Kết bạn</button><button class="action-btn" onclick="createGroupWith(${id}, '${name}')">👥 Tạo nhóm</button><button class="action-btn" onclick="startPrivateChat('${name}', '${fullName}')">💬 Chat riêng</button>`;
 
-            return `<div class="user-item" onclick="toggleActions(this, event)">${avatar}<div style="flex:1; margin-left:10px;"><div style="font-weight:bold">${fullName} ${friendBadge}</div><div style="font-size:0.7rem">ID: ${id}</div></div><div class="user-actions">${actionButtons}</div></div>`;
+            return `<div class="user-item" onclick="toggleActions(this, event)">${avatar}<div style="flex:1; margin-left:10px; min-width:0;"><div class="user-name-container"><span class="user-name-text">${fullName}</span> ${friendBadge}</div><div style="font-size:0.7rem">ID: ${id}</div></div><div class="user-actions">${actionButtons}</div></div>`;
         }
 
         function toggleActions(el, event) {
@@ -818,24 +1160,47 @@
             var avatarChar = displayName ? displayName.charAt(0).toUpperCase() : "?";
 
             var contentHtml = message;
+            var isMedia = false; // Biến cờ để kiểm tra xem có phải media không
+
             if (type === "Image") {
-                contentHtml = `<img src="${message}" style="max-width:250px;max-height:250px;border-radius:10px;cursor:pointer;" onclick="openImageModal('${message}')" />`;
+                isMedia = true;
+                // UI Ảnh mới: Hover effect + Icon kính lúp
+                contentHtml = `
+                <div class="chat-image-container" onclick="openImageModal('${message}')">
+                    <img src="${message}" />
+                    <div class="chat-image-overlay">🔍</div>
+                </div>`;
             } else if (type === "File") {
                 var fileName = message.split('/').pop();
+                // Cắt bỏ phần GUID nếu có (giả sử format: GUID_Name)
+                if(fileName.indexOf('_') > 0 && fileName.length > 37) {
+                    fileName = fileName.substring(fileName.indexOf('_') + 1);
+                }
                 var ext = fileName.split('.').pop().toLowerCase();
                 var isVideo = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'wmv', 'm4v'].includes(ext);
                 var fileIcon = getFileIcon(fileName);
                 if (isVideo) {
+                    isMedia = true;
                     contentHtml = `<div style="background:#000;border-radius:10px;overflow:hidden;width:300px;cursor:pointer;" onclick="openVideoModal('${message}', '${ext}')"><video style="width:100%;height:auto;pointer-events:none;"><source src="${message}" type="video/${ext === 'mp4' ? 'mp4' : 'video/' + ext}"></video><div style="padding:8px;text-align:center;background:#1A2980;color:#fff;font-size:0.9rem;">🔍 Bấm vào để xem to</div></div>`;
+                    contentHtml = `<div style="background:#000;border-radius:18px;overflow:hidden;width:300px;cursor:pointer;" onclick="openVideoModal('${message}', '${ext}')"><video style="width:100%;height:auto;pointer-events:none;"><source src="${message}" type="video/${ext === 'mp4' ? 'mp4' : 'video/' + ext}"></video><div style="padding:8px;text-align:center;background:rgba(26, 41, 128, 0.8);color:#fff;font-size:0.9rem;backdrop-filter:blur(5px);">🔍 Bấm vào để xem to</div></div>`;
+                    contentHtml = `<div style="background:#000;border-radius:25px;overflow:hidden;width:300px;cursor:pointer;" onclick="openVideoModal('${message}', '${ext}')"><video style="width:100%;height:auto;pointer-events:none;display:block;"><source src="${message}" type="video/${ext === 'mp4' ? 'mp4' : 'video/' + ext}"></video><div style="padding:8px;text-align:center;background:rgba(26, 41, 128, 0.8);color:#fff;font-size:0.9rem;backdrop-filter:blur(5px);">🔍 Bấm vào để xem to</div></div>`;
                 } else {
-                    contentHtml = `<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.5rem;">${fileIcon}</span><div style="display:flex;flex-direction:column;gap:4px;"><span style="color:#1A2980;font-weight:bold;">${fileName}</span><a href="#" onclick="downloadFile('${message}', '${fileName}');return false;" style="color:#007bff;text-decoration:none;font-size:0.9rem;">📥 Tải xuống</a></div></div>`;
+                    // UI File Card mới
+                    contentHtml = `<div class="file-card">
+                        <div class="file-icon">${fileIcon}</div>
+                        <div class="file-info"><div class="file-name" title="${fileName}">${fileName}</div><div class="file-size">File đính kèm</div></div>
+                        <a href="#" onclick="downloadFile('${message}', '${fileName}');return false;" class="file-download" title="Tải xuống">⬇️</a>
+                    </div>`;
                 }
             }
             var avatarHtml = `<div class="avatar" style="background:${isMine ? myAvatarColor : (userColorMap[user] || '#ccc')}">${avatarChar}</div>`;
             
             // Đưa tên người gửi vào trong khung tin nhắn (chỉ hiển thị với người khác)
             var senderHtml = isMine ? "" : `<div class="message-sender">${displayName}</div>`;
-            divItem.innerHTML = `${avatarHtml}<div class="message-wrapper"><div class="message-content">${senderHtml}${contentHtml}</div><div class="message-info">${time}</div></div>`;
+            
+            // Nếu là media (ảnh/video/gif) thì bỏ background, padding và shadow
+            var contentStyle = isMedia ? ' style="background:transparent; padding:0; box-shadow:none;"' : '';
+            divItem.innerHTML = `${avatarHtml}<div class="message-wrapper"><div class="message-content"${contentStyle}>${senderHtml}${contentHtml}</div><div class="message-info">${time}</div></div>`;
             
             chatBox.appendChild(divItem);
             chatBox.scrollTop = chatBox.scrollHeight;
@@ -880,34 +1245,77 @@
                 if (currentGroup) connection.invoke("SendGroupMessage", currentGroup, input.value, "Text").catch(err => console.error(err));
                 else connection.invoke("SendMessage", currentUser, input.value, "Text").catch(err => console.error(err));
                 input.value = ""; input.focus();
+                // Reset icon state về Like
+                document.getElementById("iconSend").style.display = "none";
+                document.getElementById("iconLike").style.display = "block";
             }
             event.preventDefault();
         });
 
-        // --- FILE SENDING ---
-        function sendFile() {
-            var file = document.getElementById('fileInput').files[0];
+        // --- FILE & IMAGE UPLOAD ---
+        function uploadFile() {
+            processUpload('fileInput', 'File');
+        }
+
+        function uploadImage() {
+            processUpload('imgInput', 'Image');
+        }
+
+        function processUpload(inputId, messageType) {
+            var fileInput = document.getElementById(inputId);
+            var file = fileInput.files[0];
             if (!file) return;
+            
             // Cho phép 100MB nhưng dùng SweetAlert đẹp
             if (file.size > 100 * 1024 * 1024) { Swal.fire("Lỗi", "File quá lớn (tối đa 100MB)", "error"); return; }
 
             var formData = new FormData(); formData.append('file', file);
-            var sendBtn = document.getElementById("sendButton"); var txt = sendBtn.innerText;
-            sendBtn.disabled = true; sendBtn.innerText = "⏳...";
+            
+            // Hiển thị trạng thái đang gửi (có thể dùng toast hoặc disable nút)
+            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+            Toast.fire({ icon: 'info', title: 'Đang gửi...' });
 
             fetch('/Files/Upload', { method: 'POST', body: formData })
             .then(r => r.json()).then(data => {
                 if (data.success) {
-                    var type = "File"; if (file.type.startsWith("image/")) type = "Image";
+                    // Nếu là upload ảnh, ép kiểu về Image, ngược lại giữ nguyên logic cũ hoặc theo tham số
+                    var type = messageType;
+                    // Logic cũ: tự động detect nếu là ảnh thì chuyển type. 
+                    // Nhưng giờ đã tách nút, ta có thể tin tưởng messageType truyền vào.
                     if (currentGroup) connection.invoke("SendGroupMessage", currentGroup, data.url, type);
                     else connection.invoke("SendMessage", currentUser, data.url, type);
                 } else Swal.fire("Lỗi", data.message, "error");
             })
             .catch(() => Swal.fire("Lỗi", "Có lỗi gửi file", "error"))
-            .finally(() => { sendBtn.disabled = false; sendBtn.innerText = txt; document.getElementById('fileInput').value = ''; });
+            .finally(() => { fileInput.value = ''; });
         }
 
-        function insertEmoji(emoji) { var i=document.getElementById("messageInput"); i.value+=emoji; i.focus(); }
+        // --- DYNAMIC SEND BUTTON LOGIC ---
+        document.getElementById("messageInput").addEventListener("input", function() {
+            var inputVal = this.value.trim();
+            var iconSend = document.getElementById("iconSend");
+            var iconLike = document.getElementById("iconLike");
+
+            if (inputVal.length > 0) {
+                iconSend.style.display = "block";
+                iconLike.style.display = "none";
+            } else {
+                iconSend.style.display = "none";
+                iconLike.style.display = "block";
+            }
+        });
+
+        function handleSendButton() {
+            var input = document.getElementById("messageInput");
+            if (input.value.trim().length > 0) {
+                document.getElementById("sendButton").click(); 
+            } else {
+                insertEmoji('❤️'); 
+                document.getElementById("sendButton").click();
+            }
+        }
+
+        function insertEmoji(emoji) { var i=document.getElementById("messageInput"); i.value+=emoji; i.focus(); i.dispatchEvent(new Event('input')); }
         function switchStickerTab(tab) {
             var s=document.getElementById("stickerContent"), g=document.getElementById("gifContent"), tabs=document.querySelectorAll(".sticker-tab");
             tabs.forEach(t=>t.classList.remove("active"));
@@ -951,6 +1359,28 @@
             });
         };
 
+        // [NEW] Hàm cập nhật Header tập trung
+        function updateHeader(isPrivate, title) {
+            var backBtn = document.getElementById("backToGlobalBtn");
+            var memberBadge = document.getElementById("memberCountBadge");
+            var titleEl = document.getElementById("currentRoomName");
+            var groupActions = document.getElementById("groupActions");
+
+            // Title được set trong joinRoom, ở đây chỉ xử lý hiển thị nút
+
+            if (isPrivate) {
+                backBtn.style.display = "flex";
+                groupActions.style.display = "none";
+                if(memberBadge) memberBadge.style.display = "none";
+            } else {
+                // Logic cho Group hoặc Global
+                var isGlobal = (currentGroupId === 0);
+                backBtn.style.display = isGlobal ? "none" : "flex";
+                groupActions.style.display = isGlobal ? "none" : "flex";
+                if(memberBadge) memberBadge.style.display = "flex";
+            }
+        }
+
         // --- GROUP FUNCTIONS ---
         function loadGroups() {
             fetch('/Group/GetMyGroups').then(r => r.json()).then(data => {
@@ -963,7 +1393,7 @@
 
                     var realGroupName = g.groupName; 
                     var groupCode = g.groupCode || "";
-                    var itemHtml = `<div class="group-item" id="group-${g.id}" data-groupname="${realGroupName}" onclick="joinRoom(${g.id}, '${realGroupName}', '${displayName}', '${groupCode}', ${g.isPrivate})"><span style="font-size:1.2rem">${icon}</span><span class="group-name">${displayName}</span><span class="unread-badge">0</span></div>`;
+                    var itemHtml = `<div class="group-item" id="group-${g.id}" data-groupname="${realGroupName}" onclick="joinRoom(${g.id}, '${realGroupName}', '${displayName}', '${groupCode}', ${g.isPrivate}, ${g.memberCount}, '${g.name}')"><span style="font-size:1.2rem">${icon}</span><span class="group-name">${displayName}</span><span class="unread-badge">0</span></div>`;
                     if (g.isPrivate) privateHtml += itemHtml; else groupHtml += itemHtml;
                 });
                 document.getElementById("groupList").innerHTML = groupHtml || '<div class="text-center mt-2 text-muted small">Chưa có nhóm</div>';
@@ -977,9 +1407,14 @@
 
         function joinGlobalChat() {
             currentGroup = ""; currentGroupId = 0; currentGroupIsPrivate = false;
-            document.getElementById("currentRoomName").innerText = "💬 Chat Chung";
-            document.getElementById("groupActions").style.display = "none";
-            document.getElementById("btnBackToGlobal").style.display = "none";
+            currentChatTarget = null;
+            
+            document.getElementById("currentRoomName").innerText = "🌎 Chat Cộng Đồng";
+            document.getElementById("roomCode").style.display = "none";
+            updateHeader(false, "");
+            updateMemberCount(lastOnlineUsers.length); // [FIX] Hiển thị lại số online khi về Chat Chung
+            updateUserStatus();
+            
             document.querySelectorAll(".group-item").forEach(el => el.classList.remove("active"));
             var gb = document.getElementById("globalChatBtn"); if (gb) gb.classList.add("active");
             var cb = document.getElementById("chatBox"); cb.innerHTML = '<div class="text-center text-muted mt-3">⏳ Đang tải tin nhắn...</div>';
@@ -993,21 +1428,27 @@
         }
 
         // [FIXED] Hàm joinRoom chuẩn
-        function joinRoom(groupId, groupName, displayName, groupCode, isPrivate) {
+        function joinRoom(groupId, groupName, displayName, groupCode, isPrivate, memberCount, targetUsername) {
             currentGroup = groupName; // Tên gốc dùng cho SignalR
             currentGroupId = groupId;
             currentGroupIsPrivate = isPrivate;
+            currentChatTarget = isPrivate ? targetUsername : null;
 
             // Xử lý giao diện: Chat riêng dùng icon Người, Nhóm dùng icon Nhóm
             var icon = isPrivate ? "👤" : "👥";
-            var titleHtml = `${icon} ` + (displayName || groupName);
+            document.getElementById("currentRoomName").innerText = `${icon} ` + (displayName || groupName);
             
-            if (groupCode) titleHtml += ` <span style="font-size:0.9rem; color:#666; font-weight:normal; margin-left:10px; background:#eee; padding:2px 8px; border-radius:4px">Mã: ${groupCode}</span>`;
-            document.getElementById("currentRoomName").innerHTML = titleHtml;
+            var codeEl = document.getElementById("roomCode");
+            codeEl.innerText = groupCode ? "Mã: " + groupCode : "";
+            codeEl.style.display = groupCode ? "inline" : "none";
             
-            // Ẩn nút "Rời nhóm/Thêm TV" nếu là chat riêng
-            document.getElementById("groupActions").style.display = isPrivate ? "none" : "block";
-            document.getElementById("btnBackToGlobal").style.display = "block";
+            updateHeader(isPrivate, "");
+            updateUserStatus();
+
+            // [FIX] Cập nhật số thành viên của nhóm (nếu không phải chat riêng)
+            if (!isPrivate && memberCount !== undefined) {
+                updateMemberCount(memberCount);
+            }
 
             document.querySelectorAll(".group-item").forEach(el => el.classList.remove("active"));
             var ag = document.getElementById(`group-${groupId}`);
@@ -1025,6 +1466,23 @@
             connection.invoke("JoinRoom", groupName);
         }
 
+        function updateUserStatus() {
+            var badge = document.querySelector(".status-badge");
+            var dot = document.querySelector(".status-dot");
+            var text = badge.querySelector("span:last-child");
+            
+            if (currentChatTarget) {
+                var isOnline = lastOnlineUsers.some(u => (u.username || u.Username) === currentChatTarget);
+                if (isOnline) {
+                    badge.classList.remove("offline"); dot.classList.remove("offline"); text.innerText = "Online";
+                } else {
+                    badge.classList.add("offline"); dot.classList.add("offline"); text.innerText = "Offline";
+                }
+            } else {
+                badge.classList.remove("offline"); dot.classList.remove("offline"); text.innerText = "Online";
+            }
+        }
+
         function createGroupWith(userId, userName) {
             var name = prompt(userName ? "Nhập tên nhóm muốn tạo với " + userName + ":" : "Nhập tên nhóm mới:");
             if (!name) return;
@@ -1034,7 +1492,7 @@
             }).then(r => r.json()).then(data => {
                 Swal.fire("Thành công", "Tạo nhóm thành công! Mã: " + data.code, "success");
                 loadGroups();
-                setTimeout(() => { if (data.id) joinRoom(data.id, data.name, data.name, data.code, false); }, 300);
+                setTimeout(() => { if (data.id) joinRoom(data.id, data.name, data.name, data.code, false, 1, null); }, 300); // Mặc định 1 thành viên khi mới tạo
             }).catch(e => Swal.fire("Lỗi", "Lỗi tạo nhóm", "error"));
         }
 
@@ -1071,8 +1529,17 @@
             fetch('/Group/GetMyGroupInvitations').then(r => r.json()).then(data => {
                 var a = document.getElementById("groupInvitesArea"), l = document.getElementById("groupInviteList");
                 if (data.length > 0) {
-                    a.style.display = "block"; var h = "";
-                    data.forEach(i => { h += `<div style="background:white; padding:8px; border-radius:5px; margin-bottom:5px; box-shadow:0 2px 5px rgba(0,0,0,0.05)"><div style="font-weight:bold; font-size:0.9rem">${i.groupName}</div><div style="font-size:0.75rem; color:#666">${i.memberCount} thành viên</div><div style="margin-top:5px; display:flex; gap:5px"><button class="btn btn-sm btn-success" style="font-size:0.7rem; padding:2px 8px" onclick="respondGroupInvite(${i.inviteId}, true)">Vào</button><button class="btn btn-sm btn-secondary" style="font-size:0.7rem; padding:2px 8px" onclick="respondGroupInvite(${i.inviteId}, false)">Xóa</button></div></div>`; });
+                    a.style.display = "block"; 
+                    var h = "";
+                    data.forEach(i => { 
+                        h += `<div class="invite-card">
+                                <div class="invite-header"><div><div class="invite-name">${i.groupName}</div><div class="invite-info">${i.memberCount} thành viên</div></div></div>
+                                <div class="invite-actions">
+                                    <button class="btn-pill btn-accept" onclick="respondGroupInvite(${i.inviteId}, true)">✔ Tham gia</button>
+                                    <button class="btn-pill btn-decline" onclick="respondGroupInvite(${i.inviteId}, false)">✕</button>
+                                </div>
+                              </div>`; 
+                    });
                     l.innerHTML = h;
                 } else a.style.display = "none";
             });
@@ -1087,25 +1554,55 @@
         function loadFriends() {
             fetch('/Friend/GetFriends').then(r => r.json()).then(data => {
                 friendIds.clear(); data.forEach(f => friendIds.add(f.Id || f.id));
-                if(lastOnlineUsers.length > 0) renderOnlineUsers(lastOnlineUsers);
+                
+                var onlineSet = new Set(lastOnlineUsers.map(u => u.username || u.Username));
                 var html = "";
                 data.forEach(f => {
                     var u = f.Username || f.username, n = f.FullName || f.fullName || u, c = f.AvatarColor || f.avatarColor, ac = n?n[0]:u[0];
-                    html += `<div class="user-item" onclick="startPrivateChat('${u}', '${n}')"><div class="avatar-container"><div class="avatar" style="background:${c}">${ac.toUpperCase()}</div></div><span style="margin-left:10px; flex:1">${n}</span><button class="btn btn-sm btn-outline-danger" style="padding: 2px 8px; font-size: 0.7rem;" onclick="event.stopPropagation(); removeFriend(${f.Id || f.id})" title="Xóa bạn">❌</button></div>`;
+                    if(c) userColorMap[u] = c; // Cập nhật màu từ danh sách bạn bè vào map chung
+                    var isOnline = onlineSet.has(u);
+                    var statusHtml = isOnline ? '<div class="avatar-status"></div>' : '';
+                    html += `<div class="user-item" onclick="startPrivateChat('${u}', '${n}')">
+                                <div class="avatar-container"><div class="avatar" style="background:${c}">${ac.toUpperCase()}</div>${statusHtml}</div>
+                                <div class="user-name-container" style="margin-left:10px;"><span class="user-name-text">${n}</span></div>
+                                <button class="btn btn-sm btn-outline-danger" style="border:none; background:transparent; padding:5px;" onclick="event.stopPropagation(); removeFriend(${f.Id || f.id})" title="Xóa bạn">❌</button>
+                             </div>`;
                 });
                 document.getElementById("friendList").innerHTML = html;
             });
         }
 
         function addFriend(id) { fetch('/Friend/AddFriend?targetId=' + id, { method: 'POST' }).then(r => { if (r.ok) Swal.fire("Đã gửi", "", "success"); else Swal.fire("Lỗi", "Không thể gửi lời mời", "error"); }); }
-        function removeFriend(id) { Swal.fire({ title: 'Xóa bạn?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Xóa' }).then((r) => { if (r.isConfirmed) fetch('/Friend/RemoveFriend?friendId=' + id, { method: 'POST' }).then(res => { if(res.ok) { Swal.fire("Đã xóa", "", "success"); loadFriends(); } }); }); }
+        function removeFriend(id) { 
+            Swal.fire({ title: 'Xóa bạn?', text: "Bạn có chắc chắn muốn xóa người này?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Xóa', cancelButtonText: 'Hủy' })
+            .then((r) => { 
+                if (r.isConfirmed) {
+                    fetch('/Friend/RemoveFriend?friendId=' + id, { method: 'POST' })
+                    .then(res => { 
+                        if(res.ok) { Swal.fire("Đã xóa", "", "success"); loadFriends(); }
+                        else { Swal.fire("Lỗi", "Không thể xóa bạn bè", "error"); }
+                    })
+                    .catch(e => Swal.fire("Lỗi", "Lỗi kết nối", "error"));
+                }
+            }); 
+        }
         function toggleFriendRequests(e) { if (e) e.stopPropagation(); var el = document.getElementById("requestList"); el.style.display = (el.style.display === "none") ? "block" : "none"; }
         function loadPendingRequests() {
             fetch('/Friend/GetPendingRequests').then(r => r.json()).then(data => {
                 var b = document.getElementById("friendReqCount");
                 if (data.length > 0) {
-                    b.style.display = "inline-block"; b.innerText = data.length; var h = "";
-                    data.forEach(r => { var n = r.requesterFullName || r.requesterName; h += `<div class="user-item" style="flex-direction:column; align-items:flex-start; cursor:default; background:white; margin:5px; border-radius:8px; border:1px solid #eee"><div style="display:flex; align-items:center; width:100%"><div class="avatar" style="background:${r.requesterAvatar}">${n[0]}</div><span style="margin-left:10px; font-weight:bold">${n}</span></div><div style="margin-top:5px; display:flex; gap:5px; width:100%"><button class="btn btn-sm btn-success" style="flex:1; font-size:0.7rem" onclick="respondRequest(${r.requestId}, true)">Đồng ý</button><button class="btn btn-sm btn-secondary" style="flex:1; font-size:0.7rem" onclick="respondRequest(${r.requestId}, false)">Xóa</button></div></div>`; });
+                    b.style.display = "inline-block"; b.innerText = data.length; 
+                    var h = "";
+                    data.forEach(r => { 
+                        var n = r.requesterFullName || r.requesterName; 
+                        h += `<div class="request-card">
+                                <div class="request-profile"><div class="avatar" style="background:${r.requesterAvatar}">${n[0]}</div><div><div class="invite-name">${n}</div><div class="invite-info">Muốn kết bạn</div></div></div>
+                                <div class="request-actions">
+                                    <button class="btn-pill btn-accept" onclick="respondRequest(${r.requestId}, true)">Chấp nhận</button>
+                                    <button class="btn-pill btn-decline" onclick="respondRequest(${r.requestId}, false)">Xóa</button>
+                                </div>
+                              </div>`; 
+                    });
                     document.getElementById("requestList").innerHTML = h;
                 } else { b.style.display = "none"; document.getElementById("requestList").innerHTML = "<div style='padding:10px; text-align:center; font-size:0.8rem; color:#999'>Không có lời mời nào</div>"; }
             });
@@ -1116,7 +1613,7 @@
             if (!username) return;
             var display = fullName || userDetailsMap[username] || username;
             fetch('/Group/CreatePrivateChat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ targetUsername: username }) })
-            .then(r => r.json()).then(g => { loadGroups(); setTimeout(() => joinRoom(g.id, g.name, display, "", true), 200); })
+            .then(r => r.json()).then(g => { loadGroups(); setTimeout(() => joinRoom(g.id, g.name, display, "", true, 2, username), 200); })
             .catch(e => Swal.fire("Lỗi", "Lỗi tạo chat riêng", "error"));
         }
 
@@ -1129,5 +1626,13 @@
             Swal.fire({ title: 'Đăng xuất?', icon: 'question', showCancelButton: true, confirmButtonText: 'Đăng xuất' }).then((r) => { if (r.isConfirmed) window.location.href = '/Account/Logout'; });
         }
         function toggleUserSidebar() { document.getElementById("userSidebar").classList.toggle("show"); }
+
+        // Hàm cập nhật số lượng thành viên
+        function updateMemberCount(count) {
+            var countElement = document.getElementById("chatMemberCount");
+            if (countElement) {
+                countElement.innerText = count + " thành viên";
+            }
+        }
     </script>
 </div>
