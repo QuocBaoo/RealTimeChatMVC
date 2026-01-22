@@ -1374,8 +1374,19 @@
         document.getElementById("messageInput").addEventListener("keyup", function (event) { if (event.key === "Enter") document.getElementById("sendButton").click(); });
 
         window.onload = function () {
-            loadGroups(); loadFriends(); loadPendingRequests(); loadGroupInvites();
-            // [FIX] Đã bỏ setTimeout joinGlobalChat ở đây, chuyển vào connection.start().then()
+            // [FIX] Load danh sách User trước để map Username -> FullName chính xác
+            fetch('/Group/GetAllUsers')
+                .then(r => r.json())
+                .then(allUsers => {
+                    allUsers.forEach(u => { 
+                        userDetailsMap[u.username] = u.fullName;
+                        if(u.avatarColor || u.AvatarColor) userColorMap[u.username] = u.avatarColor || u.AvatarColor;
+                    });
+                    loadGroups(); // Load nhóm sau khi đã có map tên
+                })
+                .catch(() => loadGroups()); // Fallback
+
+            loadFriends(); loadPendingRequests(); loadGroupInvites();
             
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('.user-item')) document.querySelectorAll('.user-item.active').forEach(el => el.classList.remove('active'));
