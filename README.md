@@ -1,6 +1,6 @@
 # 💬 RealTimeChatMVC
 
-> **Đồ Án Cuối Kỳ Môn Lập Trình Mạng**
+>
 >
 > Ứng dụng chat thời gian thực đa nền tảng, tốc độ cao, sử dụng công nghệ SignalR.
 
@@ -24,39 +24,42 @@
 | **Frontend** | Razor Views, JavaScript, Bootstrap 5 |
 | **Database** | SQL Server 2022, Entity Framework Core |
 | **Hạ Tầng** | Docker, Docker Compose |
-| **IDE** | Visual Studio 2022 / VS Code |
+| **IDE** | VS Code (Visual Studio Code) |
 
 > **Kiến thức áp dụng:** WebSocket, Xử lý đồng thời (Concurrency), Lập trình bất đồng bộ (Async/Await), Quản lý State.
 
 ---
 
-## ⚙️ Hướng Dẫn Cài Đặt & Chạy
+## ⚙️ Hướng Dẫn Cài Đặt & Chạy (VS Code)
 
 Bạn có thể chạy dự án dễ dàng theo 2 cách dưới đây:
 
 ### 🌟 Cách 1: Chạy Bằng Docker (Khuyên Dùng)
 Cách này nhanh nhất, không cần cài đặt SQL Server hay môi trường phức tạp.
 
-1.  **Mở Terminal** tại thư mục dự án.
+1.  **Mở Terminal** trong VS Code (`Ctrl + `).
 2.  **Khởi chạy** bằng lệnh sau:
     ```bash
     docker-compose up -d --build
     ```
 3.  **Truy cập**: Mở trình duyệt vào `http://localhost:5000`
 
-### 🛠️ Cách 2: Chạy Thủ Công (Visual Studio)
-Dành cho việc phát triển (Dev) hoặc Debug.
+### 🛠️ Cách 2: Chạy Thủ Công (Dotnet CLI)
+Dành cho việc phát triển (Dev) và Debug trực tiếp.
 
-1.  **Cấu hình Database**: Mở `appsettings.json` và sửa `DefaultConnection` cho đúng với SQL Server của bạn.
-2.  **Khởi tạo Database**:
+1.  **Cấu hình Database**:
+    *   Mở file `appsettings.json`.
+    *   Sửa chuỗi kết nối `DefaultConnection` cho đúng với SQL Server của bạn.
+2.  **Mở Terminal** trong VS Code.
+3.  **Khởi tạo Database**:
     ```bash
     dotnet ef database update
     ```
-3.  **Chạy dự án**: Nhấn nút **Play** (▶) trong Visual Studio hoặc gõ:
+4.  **Chạy dự án**:
     ```bash
     dotnet run
     ```
-4.  **Truy cập**: Vào địa chỉ `https://localhost:7123` (hoặc port hiển thị).
+5.  **Truy cập**: Vào địa chỉ `https://localhost:7123` (hoặc port hiển thị trên màn hình console).
 
 ---
 
@@ -66,5 +69,5 @@ Dành cho việc phát triển (Dev) hoặc Debug.
 *   `Views/`: Giao diện người dùng.
 *   `wwwroot/`: File tĩnh (CSS, JS, Ảnh).
 
----
-*Developed by [Tên Của Bạn] - [MSSV]*
+
+*
